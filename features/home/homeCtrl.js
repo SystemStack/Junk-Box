@@ -7,6 +7,5 @@ angular
         },function(){
             $scope.displayToUser("Failed to grab most recent purchases");
         });
-        console.log();
     }();
 });

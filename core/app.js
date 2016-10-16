@@ -16,6 +16,11 @@ angular.module("junkBox",
        .accentPalette('green');
 
     $stateProvider
+      .state("login", {
+        url     : "/login",
+        templateUrl : "features/login/login.html",
+        controller  : "loginCtrl"
+      })
       .state("home", {
         url     : "/home",
         templateUrl : "features/home/home.html",

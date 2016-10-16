@@ -1,0 +1,79 @@
+<md-content class="md-primary" layout="row" layout-align="center center">
+  <md-card class="md-whiteframe-z4" flex-offset="10" flex="80" ng-if="!switchToNewAccountView">
+  <section layout="row" layout-align="center center">
+    <md-input-container>
+      <label>Email Account</label>
+      <input>
+    </md-input-container>
+  </section>
+  <section layout="row" layout-align="center center">
+    <md-input-container>
+      <label>Password</label>
+      <input type="password">
+    </md-input-container>
+  </section>
+  <section layout="row" layout-align="center center">
+  <md-button ng-click="newAccount()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">New account?</md-button>
+    <md-button ng-click="logIn()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">Login</md-button>
+  </section>
+  </md-card>
+  <md-card class="md-whiteframe-z4" flex-offset="10" flex="80" ng-if="switchToNewAccountView">
+    <md-input-container>
+      <label>Email Account</label>
+      <input>
+    </md-input-container>
+    <div layout="row">
+      <md-input-container flex="50">
+        <label>New Password</label>
+        <input type="password">
+      </md-input-container>
+      <md-input-container flex="grow">
+        <label>Verify Password</label>
+        <input type="password">
+      </md-input-container>
+    </div>
+    <md-input-container flex>
+      <label>Address</label>
+      <input required
+             ng-model="address.streetName"
+             placeholder="Address">
+    </md-input-container>
+  </div>
+  <div layout="row">
+    <md-input-container flex>
+      <input ng-model="address.streetName2"
+             placeholder="Address 2">
+    </md-input-container>
+  </div>
+  <div layout="row">
+    <md-input-container flex>
+      <label>City</label>
+      <input required
+             ng-model="address.city">
+    </md-input-container>
+    <md-input-container flex>
+      <label>State</label>
+      <md-select ng-model="address.state">
+        <md-option required
+                   ng-repeat="state in states"
+                   value="{{state}}">
+        {{state}}
+        </md-option>
+      </md-select>
+    </md-input-container>
+    <md-input-container flex>
+      <label>Postal Code</label>
+      <input name="postalCode"
+             ng-model="address.postalCode"
+             placeholder="12345"
+             required
+             md-maxlength="5">
+    </md-input-container>
+  </div>
+  </section>
+  <section layout="row" layout-align="center center">
+  <md-button ng-click="newAccount()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">Back to login?</md-button>
+    <md-button ng-click="register()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">Register</md-button>
+  </section>
+  </md-card>
+</md-content>
