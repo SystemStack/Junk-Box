@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Product App</title>
+</head>
+<body>
+
+    <div>
+        <h2>All Customers</h2>
+        <ul id="customers" />
+    </div>
+    <div>
+        <h2>Search by ID</h2>
+        <input type="text" id="custId" size="5" />
+        <input type="button" value="Search" onclick="find();" />
+        <p id="customer" />
+    </div>
+    <div>
+        <h2>Search by First Name</h2>
+        <input type="text" id="custFirstName" size="20" />
+        <input type="button" value="Search" onclick="findName();" />
+        <p id="customerName" />
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+    var uri = 'api/customers';
+
+    $(document).ready(function () {
+      // Send an AJAX request
+      $.getJSON(uri)
+          .done(function (data) {
+              // On success, 'data' contains a list of products.
+              console.log(data);
+            $.each(data, function (key, item) {
+              // Add a list item for the product.
+              $('<li>', { text: item['Id'] + ': ' + item['FirstName'] + ' ' + item['LastName'] }).appendTo($('#customers'));
+            });
+          });
+    });
+
+    function formatItem(item) {
+      return item.Name + ': $' + item.Price;
+    }
+
+    function find() {
+      var id = $('#custId').val();
+      $.getJSON(uri + '/' + id)
+          .done(function (data) {
+            $('#customer').text(data['FirstName'] + ' ' + data['LastName'] + ' Email: ' + data['Email']);
+          })
+          .fail(function (jqXHR, textStatus, err) {
+            $('#customer').text('Error: ' + err);
+          });
+    }
+
+    function findName() {
+        var id = $('#custFirstName').val();
+        $.getJSON(uri + '/' + id)
+            .done(function (data) {
+                $('#customerName').text(data['FirstName'] + ' ' + data['LastName'] + ' Email: ' + data['Email']);
+            })
+            .fail(function (jqXHR, textStatus, err) {
+                $('#customerName').text('Error: ' + err);
+            });
+    }
+    </script>
+</body>
+</html>
