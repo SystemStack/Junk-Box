@@ -54,3 +54,9 @@ C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\b
 C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\obj\Debug\JunkBox.csprojResolveAssemblyReference.cache
 C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\obj\Debug\JunkBox.dll
 C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\obj\Debug\JunkBox.pdb
+C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\bin\EntityFramework.dll
+C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\bin\EntityFramework.SqlServer.dll
+C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\bin\MySql.Data.dll
+C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\bin\MySql.Data.Entity.EF6.dll
+C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\bin\EntityFramework.xml
+C:\Users\Walter\Desktop\GitHub\SoftwareEngineeringGroup\JunkBoxService\JunkBox\bin\EntityFramework.SqlServer.xml
