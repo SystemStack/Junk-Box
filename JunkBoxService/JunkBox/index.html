@@ -56,7 +56,7 @@
 
     function findName() {
         var id = $('#custFirstName').val();
-        $.getJSON(uri + '/' + id)
+        $.getJSON(uri + '/?firstName=' + id)
             .done(function (data) {
                 $('#customerName').text(data['FirstName'] + ' ' + data['LastName'] + ' Email: ' + data['Email']);
             })

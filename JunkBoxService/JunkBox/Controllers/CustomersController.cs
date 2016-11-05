@@ -35,7 +35,8 @@ namespace JunkBox.Controllers
             return Ok(customer);
         }
 
-        //Does not work yet
+        //Works!! Had to change the API call from /api/customers/Gale to /api/customers/?firstName=Gale
+        //Currently is case sensitive for searches. (Gale returns a result where gale does not)
         public IHttpActionResult GetCustomerByFirstName(string firstName)
         {
             var customer = customers.FirstOrDefault((p) => p.FirstName == firstName);
