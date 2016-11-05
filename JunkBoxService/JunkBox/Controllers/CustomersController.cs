@@ -18,6 +18,10 @@ namespace JunkBox.Controllers
             new Customer { Id = 1, FirstName = "Gale", LastName = "Smith", Email = "gale@mail.com", BillingAddress = new Address(), ShippingAddress = new Address()},
             new Customer { Id = 2, FirstName = "Walter", LastName = "Cronkite", Email = "news@google.com", BillingAddress = new Address(), ShippingAddress = new Address()},
             new Customer { Id = 3, FirstName = "SuperDude", LastName = "CodeWizard", Email= "it@codewriter.org", BillingAddress = new Address(), ShippingAddress = new Address()},
+            new Customer { Id = 4, FirstName = "Kevin", LastName = "Smith", Email= "", BillingAddress = new Address(), ShippingAddress = new Address()},
+            new Customer { Id = 5, FirstName = "John", LastName = "Cena", Email= "guy@fighting.kill", BillingAddress = new Address(), ShippingAddress = new Address()},
+            new Customer { Id = 6, FirstName = "Gale", LastName = "SecondName", Email= "123@456.789", BillingAddress = new Address(), ShippingAddress = new Address()},
+            new Customer { Id = 7, FirstName = "Tina", LastName = "Smith", Email= "turner@pop.com", BillingAddress = new Address(), ShippingAddress = new Address()}
         };
 
         public IEnumerable<Customer> GetAllCustomers()
@@ -44,6 +48,17 @@ namespace JunkBox.Controllers
             {
                 return NotFound();
             }
+            return Ok(customer);
+        }
+
+        public IHttpActionResult GetCustomerByFirstAndLastName(string firstName, string lastName)
+        {
+            var customer = customers.FirstOrDefault((p) => p.FirstName == firstName && p.LastName == lastName );
+            if(customer == null)
+            {
+                return NotFound();
+            }
+
             return Ok(customer);
         }
     }
