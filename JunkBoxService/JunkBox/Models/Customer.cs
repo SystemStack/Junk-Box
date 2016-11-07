@@ -13,5 +13,6 @@ namespace JunkBox.Models
         public string Email { get; set; }
         public Address BillingAddress { get; set; }
         public Address ShippingAddress { get; set; }
+        public Orders Order { get; set; }
     }
 }

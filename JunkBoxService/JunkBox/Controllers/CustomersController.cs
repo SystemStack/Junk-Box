@@ -12,11 +12,12 @@ namespace JunkBox.Controllers
     public class CustomersController : ApiController
     {
         Address mockAddress = new Address { };
+
         //Mock Database
         Customer[] customers = new Customer[]
         {
-            new Customer { Id = 1, FirstName = "Gale", LastName = "Smith", Email = "gale@mail.com", BillingAddress = new Address(), ShippingAddress = new Address()},
-            new Customer { Id = 2, FirstName = "Walter", LastName = "Cronkite", Email = "news@google.com", BillingAddress = new Address(), ShippingAddress = new Address()},
+            new Customer { Id = 1, FirstName = "Gale", LastName = "Smith", Email = "gale@mail.com", BillingAddress =  new Address() {Street = "123 4th St", City = "NFDL", State = "WI", ZipCode = "54937" }, ShippingAddress = new Address(), Order = new Orders() {OrderID = 1, PurchasePrice = 4.44, Month = 11, Day = 4, Year = 2016  } },
+            new Customer { Id = 2, FirstName = "Walter", LastName = "Cronkite", Email = "news@google.com", BillingAddress = new Address() {Street = "456 7th St", City = "Oshkosh", State = "WI", ZipCode = "54901"}, ShippingAddress = new Address()},
             new Customer { Id = 3, FirstName = "SuperDude", LastName = "CodeWizard", Email= "it@codewriter.org", BillingAddress = new Address(), ShippingAddress = new Address()},
             new Customer { Id = 4, FirstName = "Kevin", LastName = "Smith", Email= "", BillingAddress = new Address(), ShippingAddress = new Address()},
             new Customer { Id = 5, FirstName = "John", LastName = "Cena", Email= "guy@fighting.kill", BillingAddress = new Address(), ShippingAddress = new Address()},
@@ -24,6 +25,7 @@ namespace JunkBox.Controllers
             new Customer { Id = 7, FirstName = "Tina", LastName = "Smith", Email= "turner@pop.com", BillingAddress = new Address(), ShippingAddress = new Address()}
         };
 
+        
         public IEnumerable<Customer> GetAllCustomers()
         {
             return customers;
