@@ -6,11 +6,16 @@ using System.Net.Http;
 using System.Web.Http;
 
 using JunkBox.Models;
+using JunkBox.DataAccess;
+using MySql.Data.MySqlClient;
 
 namespace JunkBox.Controllers
 {
     public class CustomersController : ApiController
     {
+        //Every controller that needs to use the database will have to have a dataAccess object.
+        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+
         Address mockAddress = new Address { };
 
         //Mock Database
@@ -28,6 +33,9 @@ namespace JunkBox.Controllers
         
         public IEnumerable<Customer> GetAllCustomers()
         {
+            //Will progress on this further, later.
+            
+            //MySqlDataReader result = dataAccess.query("SELECT * FROM Customer");
             return customers;
         }
 
