@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.IO;
 
+using System.Data.Common;
 using MySql.Data.MySqlClient;
 using System.Configuration;
 
@@ -49,7 +50,7 @@ namespace JunkBox.DataAccess
                 connection.Close();
         }
 
-        public object query(string query)
+        public DbDataReader query(string query)
         {
             OpenConnection();
 

@@ -8,6 +8,7 @@ using System.Web.Http;
 using JunkBox.Models;
 using JunkBox.DataAccess;
 using MySql.Data.MySqlClient;
+using System.Data.Common;
 
 namespace JunkBox.Controllers
 {
@@ -35,7 +36,9 @@ namespace JunkBox.Controllers
         {
             //Will progress on this further, later.
             
-            //MySqlDataReader result = dataAccess.query("SELECT * FROM Customer");
+            //DbDataReader result = dataAccess.query("SELECT * FROM Customer");
+
+            
             return customers;
         }
 
