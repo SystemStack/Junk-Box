@@ -38,10 +38,12 @@
       $.getJSON(uri)
           .done(function (data) {
               // On success, 'data' contains a list of products.
-              //console.log(data);
+              console.log(data);
             $.each(data, function (key, item) {
               // Add a list item for the product.
-              $('<li>', { text: item['Id'] + ': ' + item['FirstName'] + ' ' + item['LastName'] + ' ' + getBillingAddress(item) }).appendTo($('#customers'));
+                //$('<li>', { text: item });
+                console.log("ITEM: " + item['Id'] + " : " + item['FirstName']);
+                $('<li>', { text: item['Id'] + ': ' + item['FirstName'] + ' ' + item['LastName'] }).appendTo('#customers');// + ' ' + getBillingAddress(item) }).appendTo($('#customers'));
             });
           });
     });
@@ -54,7 +56,7 @@
       var id = $('#custId').val();
       $.getJSON(uri + '/' + id)
           .done(function (data) {
-            $('#customer').text(data['FirstName'] + ' ' + data['LastName'] + ' Email: ' + data['Email'] + ' Billing Address: ' + getBillingAddress(data) + ' ' + getOrderInfo(data) );
+              $('#customer').text(data['FirstName'] + ' ' + data['LastName'] + ' Email: ' + data['Email']);// + ' Billing Address: ' + getBillingAddress(data) + ' ' + getOrderInfo(data) );
           })
           .fail(function (jqXHR, textStatus, err) {
             $('#customer').text('Error: ' + err);
@@ -62,6 +64,8 @@
     }
     /** Function which returns the Bill Address **/
     function getBillingAddress(data) {
+        if (!data)
+            return;
         var address = data['BillingAddress'];
         return address['Street'] + " " + address['City'] + ", " +
                address['State'] + " " + address['ZipCode'];
@@ -69,6 +73,8 @@
 
     /** Function which returns Order information **/
     function getOrderInfo(data) {
+        if (!data)
+            return;
         var order = data['Order'];
         return "OrderID: " + order['OrderID'] + " Purchase Price: $" + order['PurchasePrice'] +
                " Date Purchased: " + order['Month'] + "/" + order['Day'] + "/" + order['Year'];

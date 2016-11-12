@@ -9,6 +9,7 @@ using JunkBox.Models;
 using JunkBox.DataAccess;
 using MySql.Data.MySqlClient;
 using System.Data.Common;
+using System.Collections;
 
 namespace JunkBox.Controllers
 {
@@ -34,22 +35,52 @@ namespace JunkBox.Controllers
         
         public IEnumerable<Customer> GetAllCustomers()
         {
-            //Will progress on this further, later.
-            
-            //DbDataReader result = dataAccess.query("SELECT * FROM Customer");
+            dataAccess.OpenConnection();
+            DbDataReader result = dataAccess.query("SELECT * FROM Customer");
 
-            
-            return customers;
+            Queue<Customer> customer = new Queue<Customer>();
+
+            while(result.Read() != false)
+            {
+                
+                Customer c = new Customer();
+                c.Id = (int)result.GetValue(0);
+                c.FirstName = (string)result.GetValue(1);
+                c.LastName = (string)result.GetValue(2);
+                c.Email = (string)result.GetValue(3);
+                //c.Phone =
+
+                customer.Enqueue(c);
+            }
+
+            dataAccess.CloseConnection();
+            return customer;
         }
 
         public IHttpActionResult GetCustomer(int id)
         {
-            var customer = customers.FirstOrDefault((p) => p.Id == id);
+            dataAccess.OpenConnection();
+            DbDataReader result = dataAccess.select("SELECT * FROM Customer WHERE id = '"+id+"'");
+            if(result.HasRows)
+            {
+                result.Read();
+                Customer c = new Customer();
+                c.Id = (int)result["Id"];
+                c.FirstName = (string)result["FirstName"];
+                c.LastName = (string)result["LastName"];
+                c.Email = (string)result["Email"];
+                dataAccess.CloseConnection();
+                return Ok(c);
+            }
+            dataAccess.CloseConnection();
+            return NotFound();
+            /*var customer = customers.FirstOrDefault((p) => p.Id == id);
             if (customer == null)
             {
                 return NotFound();
             }
             return Ok(customer);
+            */
         }
 
         //Works!! Had to change the API call from /api/customers/Gale to /api/customers/?firstName=Gale
