@@ -35,17 +35,13 @@ namespace JunkBox.Controllers
         
         public IEnumerable<Customer> GetAllCustomers()
         {
-            //Will progress on this further, later.
             dataAccess.OpenConnection();
             DbDataReader result = dataAccess.query("SELECT * FROM Customer");
 
             Queue<Customer> customer = new Queue<Customer>();
-            //System.Collections.ArrayList<> cust = new System.Collections.ArrayList<Customer>();
-            //System.Windows.Forms.MessageBox.Show("LOOPING THROUGH RESULTS! " + result.IsClosed);
 
             while(result.Read() != false)
             {
-                //System.Windows.Forms.MessageBox.Show("FOUND A ROW!");
                 
                 Customer c = new Customer();
                 c.Id = (int)result.GetValue(0);
@@ -55,30 +51,36 @@ namespace JunkBox.Controllers
                 //c.Phone =
 
                 customer.Enqueue(c);
-                //System.Windows.Forms.MessageBox.Show("ADDED: " + customer.Count);
             }
 
-            Customer[] cust = new Customer[customer.Count];
-            for(int x = 0; x < customer.Count; x++)
-            {
-                cust[x] = customer.Dequeue();
-            }
-
-            //System.Windows.Forms.MessageBox.Show("COUNT! " + customer.Count);
-            //return result;
-            //return customers;
             dataAccess.CloseConnection();
-            return cust;
+            return customer;
         }
 
         public IHttpActionResult GetCustomer(int id)
         {
-            var customer = customers.FirstOrDefault((p) => p.Id == id);
+            dataAccess.OpenConnection();
+            DbDataReader result = dataAccess.select("SELECT * FROM Customer WHERE id = '"+id+"'");
+            if(result.HasRows)
+            {
+                result.Read();
+                Customer c = new Customer();
+                c.Id = (int)result["Id"];
+                c.FirstName = (string)result["FirstName"];
+                c.LastName = (string)result["LastName"];
+                c.Email = (string)result["Email"];
+                dataAccess.CloseConnection();
+                return Ok(c);
+            }
+            dataAccess.CloseConnection();
+            return NotFound();
+            /*var customer = customers.FirstOrDefault((p) => p.Id == id);
             if (customer == null)
             {
                 return NotFound();
             }
             return Ok(customer);
+            */
         }
 
         //Works!! Had to change the API call from /api/customers/Gale to /api/customers/?firstName=Gale

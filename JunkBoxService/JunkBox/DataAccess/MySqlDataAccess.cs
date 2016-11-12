@@ -65,13 +65,18 @@ namespace JunkBox.DataAccess
 
         public DbDataReader query(string query)
         {
-           // OpenConnection();
-
             MySqlCommand cmd = new MySqlCommand(query, connection);
 
             MySqlDataReader reader = cmd.ExecuteReader();
 
-            //CloseConnection();
+            return reader;
+        }
+
+        public DbDataReader select(string query)
+        {
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+
+            MySqlDataReader reader = cmd.ExecuteReader();
 
             return reader;
         }

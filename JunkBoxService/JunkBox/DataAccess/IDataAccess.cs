@@ -13,5 +13,7 @@ namespace JunkBox.DataAccess
         DbDataReader query(string query);
         void OpenConnection();
         void CloseConnection();
+
+        DbDataReader select(string query);
     }
 }
