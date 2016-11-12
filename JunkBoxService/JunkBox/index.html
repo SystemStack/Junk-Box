@@ -41,7 +41,8 @@
               //console.log(data);
             $.each(data, function (key, item) {
               // Add a list item for the product.
-              $('<li>', { text: item['Id'] + ': ' + item['FirstName'] + ' ' + item['LastName'] + ' ' + getBillingAddress(item) }).appendTo($('#customers'));
+                $('<li>', { text: item });
+                //$('<li>', { text: item['Id'] + ': ' + item['FirstName'] + ' ' + item['LastName'] });// + ' ' + getBillingAddress(item) }).appendTo($('#customers'));
             });
           });
     });

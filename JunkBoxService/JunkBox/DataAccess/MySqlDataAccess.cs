@@ -8,6 +8,7 @@ using System.Data.Common;
 using MySql.Data.MySqlClient;
 using System.Configuration;
 
+
 //My initial solution for how to handle data access. A singleton object.
 namespace JunkBox.DataAccess
 {
@@ -32,19 +33,31 @@ namespace JunkBox.DataAccess
         {
         }
 
-        private void OpenConnection()
+        public void OpenConnection()
         {
             try
             {
-                connection = new MySqlConnection(defaultConnectionString);
+                //System.Windows.Forms.MessageBox.Show(defaultConnectionString);
+                connection = new MySqlConnection(remoteConnectionString);
+                connection.Open();
             }
-            catch(Exception e)
+            catch(Exception ex)
             {
-                Console.WriteLine(e.Message);
+                try
+                {
+                    //System.Windows.Forms.MessageBox.Show(remoteConnectionString);
+                    
+                    connection = new MySqlConnection(defaultConnectionString);
+                    connection.Open();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
         }
 
-        private void CloseConnection()
+        public void CloseConnection()
         {
             if (connection != null)
                 connection.Close();
@@ -52,13 +65,13 @@ namespace JunkBox.DataAccess
 
         public DbDataReader query(string query)
         {
-            OpenConnection();
+           // OpenConnection();
 
             MySqlCommand cmd = new MySqlCommand(query, connection);
 
             MySqlDataReader reader = cmd.ExecuteReader();
 
-            CloseConnection();
+            //CloseConnection();
 
             return reader;
         }

@@ -9,6 +9,7 @@ using JunkBox.Models;
 using JunkBox.DataAccess;
 using MySql.Data.MySqlClient;
 using System.Data.Common;
+using System.Collections;
 
 namespace JunkBox.Controllers
 {
@@ -35,11 +36,39 @@ namespace JunkBox.Controllers
         public IEnumerable<Customer> GetAllCustomers()
         {
             //Will progress on this further, later.
-            
-            //DbDataReader result = dataAccess.query("SELECT * FROM Customer");
+            dataAccess.OpenConnection();
+            DbDataReader result = dataAccess.query("SELECT * FROM Customer");
 
-            
-            return customers;
+            Queue<Customer> customer = new Queue<Customer>();
+            //System.Collections.ArrayList<> cust = new System.Collections.ArrayList<Customer>();
+            //System.Windows.Forms.MessageBox.Show("LOOPING THROUGH RESULTS! " + result.IsClosed);
+
+            while(result.Read() != false)
+            {
+                //System.Windows.Forms.MessageBox.Show("FOUND A ROW!");
+                
+                Customer c = new Customer();
+                c.Id = (int)result.GetValue(0);
+                c.FirstName = (string)result.GetValue(1);
+                c.LastName = (string)result.GetValue(2);
+                c.Email = (string)result.GetValue(3);
+                //c.Phone =
+
+                customer.Enqueue(c);
+                //System.Windows.Forms.MessageBox.Show("ADDED: " + customer.Count);
+            }
+
+            Customer[] cust = new Customer[customer.Count];
+            for(int x = 0; x < customer.Count; x++)
+            {
+                cust[x] = customer.Dequeue();
+            }
+
+            //System.Windows.Forms.MessageBox.Show("COUNT! " + customer.Count);
+            //return result;
+            //return customers;
+            dataAccess.CloseConnection();
+            return cust;
         }
 
         public IHttpActionResult GetCustomer(int id)
