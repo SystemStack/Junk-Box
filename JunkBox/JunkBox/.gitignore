@@ -5,5 +5,4 @@ node_modules\
 dist/
 gulpfile.js
 obj/
-Views/
 bin/

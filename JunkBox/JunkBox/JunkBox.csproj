@@ -260,8 +260,6 @@
     <Content Include="bin\System.Web.WebPages.Razor.xml" />
     <Content Include="bin\System.Web.WebPages.xml" />
     <Content Include="bin\WebGrease.dll" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="core\app.js" />
     <Content Include="core\controllers.js" />
     <Content Include="core\css\angular-material.css" />
@@ -287,7 +285,6 @@
     <Content Include="features\queries\queries.html" />
     <Content Include="features\queries\queriesCtrl.js" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
     <Content Include="index.html" />
     <Content Include="bin\JunkBox.dll.config" />
     <Content Include="bin\roslyn\Microsoft.CSharp.Core.targets" />
@@ -303,9 +300,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />

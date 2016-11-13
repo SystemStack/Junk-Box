@@ -5,7 +5,7 @@ using System.Web.Http;
 
 namespace JunkBox {
     public static class WebApiConfig {
-        public static void Register(HttpConfiguration config) {
+        public static void Register (HttpConfiguration config) {
             // Web API configuration and services
 
             // Web API routes
