@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 
-namespace JunkBox
-{
-    public static class WebApiConfig
-    {
-        public static void Register(HttpConfiguration config)
-        {
+namespace JunkBox {
+    public static class WebApiConfig {
+        public static void Register(HttpConfiguration config) {
             // Web API configuration and services
 
             // Web API routes
@@ -18,6 +15,12 @@ namespace JunkBox
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "login",
+                routeTemplate: "api/{controller}/{action}/{email}",
+                defaults: new { action = "POST" }
             );
         }
     }
