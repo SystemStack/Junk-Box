@@ -17,11 +17,6 @@ namespace JunkBox {
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            config.Routes.MapHttpRoute(
-                name: "login",
-                routeTemplate: "api/{controller}/{action}/{email}",
-                defaults: new { action = "POST" }
-            );
         }
     }
 }

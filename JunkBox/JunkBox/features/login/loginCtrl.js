@@ -3,8 +3,8 @@ angular
 .controller('loginCtrl', function ($scope, Login) {
     $scope.switchToNewAccountView = false;
     $scope.login = {
-        email: "broadl21@uwosh.edu",
-        password:"Text"
+        "email": "levi.broadnax@gmail.com",
+        "password": "Text"
     };
 
     $scope.newAccount = function () {
@@ -20,6 +20,5 @@ angular
             console.log(data);
         });
     };
-
 
 });

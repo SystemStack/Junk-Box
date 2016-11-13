@@ -4,8 +4,9 @@ angular
     return {
         login: function (user) {
             var deferred = $q.defer();
-            $http.post('api/login/login'+ user.email)
-               .success(function (data, status, headers, config) {
+            email = encodeURIComponent(user.email).replace(/\./g,"PERIODHERE");
+            $http.post('/Login/Login/' + email + "," + user.password)
+                .success(function (data, status, headers, config) {
                    console.log(data);
                    deferred.resolve(data);
                }).error(function (error) {
