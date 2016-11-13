@@ -20,28 +20,27 @@
     <md-card class="md-whiteframe-z4" flex-offset="10" flex="80" ng-if="switchToNewAccountView">
         <md-input-container>
             <label>Email Account</label>
-            <input>
+            <input ng-model="account.email" type="email">
         </md-input-container>
         <div layout="row">
             <md-input-container flex="50">
                 <label>New Password</label>
-                <input type="password">
+                <input ng-model="account.password" type="password">
             </md-input-container>
             <md-input-container flex="grow">
                 <label>Verify Password</label>
-                <input type="password">
+                <input ng-model="account.password2" type="password">
             </md-input-container>
         </div>
         <md-input-container flex>
             <label>Address</label>
             <input required
-                   ng-model="address.streetName"
+                   ng-model="account.address"
                    placeholder="Address">
         </md-input-container>
-        </div>
         <div layout="row">
             <md-input-container flex>
-                <input ng-model="address.streetName2"
+                <input ng-model="account.address2"
                        placeholder="Address 2">
             </md-input-container>
         </div>
@@ -49,11 +48,11 @@
             <md-input-container flex>
                 <label>City</label>
                 <input required
-                       ng-model="address.city">
+                       ng-model="account.city">
             </md-input-container>
             <md-input-container flex>
                 <label>State</label>
-                <md-select ng-model="address.state">
+                <md-select ng-model="account.state">
                     <md-option required
                                ng-repeat="state in states"
                                value="{{state}}">
@@ -61,16 +60,23 @@
                     </md-option>
                 </md-select>
             </md-input-container>
+        </div>
+        <div layout="row">
+            <md-input-container flex="50">
+                <label>Phone</label>
+                <input name="phone"
+                       ng-model="account.phone"/>
+            </md-input-container>
             <md-input-container flex>
                 <label>Postal Code</label>
                 <input name="postalCode"
-                       ng-model="address.postalCode"
+                       ng-model="account.postalCode"
                        placeholder="12345"
                        required
+                       type="number"
                        md-maxlength="5">
             </md-input-container>
         </div>
-        </section>
         <section layout="row" layout-align="center center">
             <md-button ng-click="newAccount()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">Back to login?</md-button>
             <md-button ng-click="register()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">Register</md-button>

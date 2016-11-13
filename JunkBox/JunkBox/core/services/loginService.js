@@ -14,6 +14,18 @@ angular
                    deferred.reject(error);
                });
             return deferred.promise;
+        },
+        register: function (user) {
+            var deferred = $q.defer();
+            $http.post('/Login/Register/' + user)
+                 .success(function (data) {
+                     console.log(data);
+                     deferred.resolve(data);
+                 }).error(function (error) {
+                     console.log(error);
+                     deferred.reject(error);
+                 });
+            return deferred.promise;
         }
     };
 });
