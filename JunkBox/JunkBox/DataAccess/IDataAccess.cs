@@ -16,5 +16,6 @@ namespace JunkBox.DataAccess
 
         List<Dictionary<string, string>> Select(string query);
         int Insert(string query);
+        int Insert(string table, Dictionary<string, string> parameters);
     }
 }

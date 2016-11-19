@@ -105,28 +105,29 @@ namespace JunkBox.DataAccess
             return cmd.ExecuteNonQuery();
         }
 
-        /*
-        public int Insert(Dictionary<string, object> parameters)
+        
+        public int Insert(string table, Dictionary<string, string> parameters)
         {
             OpenConnection();
             //"INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) 
             //VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');
-            string query = "INSERT INTO @table () VALUES ();";
+            
 
-            string columns = "";
-            string values = "";
-            foreach (KeyValuePair<string, object> entry in parameters)
-            {
-                columns += "";
-            }
+            string[] keys = parameters.Keys.ToArray();
+            string columns = String.Join(", ", keys);
 
-            MySqlCommand cmd = new MySqlCommand();
+            string[] vals = parameters.Values.ToArray();
+            string values = "'" + String.Join("', '", vals) + "'";
 
+            string query = "INSERT INTO " + table + " (" + columns + ") VALUES (" + values + ");";
+
+
+            MySqlCommand cmd = new MySqlCommand(query, connection);
             int result = cmd.ExecuteNonQuery();
 
             CloseConnection();
 
             return result;
-        }*/
+        }
     }
 }

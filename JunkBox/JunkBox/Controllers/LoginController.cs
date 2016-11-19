@@ -64,6 +64,22 @@ namespace JunkBox.Controllers {
             String password = id.Split(',')[1];
             //return password;
             */
+
+            //We create a Dictionary<string, string> object and pass it into dataAccess.Insert
+            Dictionary<string, string> parameters = new Dictionary<string, string>() {
+                {"QueryID", "3"},
+                {"AddressID", "2"},
+                {"FirstName", "InsertTest"},
+                {"LastName", "IHopeThisWorks"},
+                {"Phone", "1112224444"},
+                {"Hash", "g"},
+                {"Salt", "4"},
+                {"Email", "test@guy.com"}
+            };
+
+            int result = dataAccess.Insert("Customer", parameters);
+
+
             return HttpUtility.UrlDecode(id).ToString();
         }
 
