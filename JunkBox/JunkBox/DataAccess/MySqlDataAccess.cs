@@ -129,5 +129,37 @@ namespace JunkBox.DataAccess
 
             return result;
         }
+
+        public int Update(string table, Dictionary<string, string> items, string key, string value)
+        {
+            //UPDATE `cs341_t5`.`Customer` 
+            //SET `QueryID` = '2', `AddressID` = '9', `FirstName` = 'UpdateTest', `Phone` = '111222444', `Hash` = 't', `Salt` = '3', `Email` = 'test2@guy.com' 
+            //WHERE `Customer`.`CustomerID` = 27;
+            OpenConnection();
+
+
+            string[] i = new string[items.Count];
+            int iCount = 0;
+            foreach (KeyValuePair<string, string> set in items)
+            {
+                i[iCount++] = set.Key + "='" + set.Value + "'";
+            }
+
+            string itemList = String.Join(", ", i);
+
+
+            string query = "UPDATE " + table + " SET " + itemList + " WHERE " + key + "=@value;";
+
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+            cmd.Parameters.Add(new MySqlParameter("value", value));
+
+
+            int result = cmd.ExecuteNonQuery();
+
+            CloseConnection();
+
+            return result;
+        }
+
     }
 }
