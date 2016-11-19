@@ -21,6 +21,8 @@ namespace JunkBox.DataAccess
 
         private MySqlConnection connection = null;
 
+        private int updateID = -1;
+
         public static MySqlDataAccess GetDataAccess()
         {
             if (instance == null)
@@ -41,12 +43,12 @@ namespace JunkBox.DataAccess
                 connection = new MySqlConnection(remoteConnectionString);
                 connection.Open();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 try
                 {
                     //System.Windows.Forms.MessageBox.Show(remoteConnectionString);
-                    
+
                     connection = new MySqlConnection(defaultConnectionString);
                     connection.Open();
                 }
@@ -77,6 +79,81 @@ namespace JunkBox.DataAccess
             MySqlCommand cmd = new MySqlCommand(query, connection);
 
             MySqlDataReader reader = cmd.ExecuteReader();
+
+            return reader;
+        }
+
+        public DbDataReader findCustomer(String userName)
+        {
+            String command = "SELECT FirstName, LastName FROM `Customer` WHERE UserName = '" + userName + "'";
+
+            return executeCommand(command);
+        }
+
+        public DbDataReader findUserPurchasePrice(String userName)
+        {
+            String command = "SELECT * FROM Orders JOIN Customer ON Orders.CustomerId = Customer.Id WHERE Customer.UserName = '" + userName + "'";
+
+            return executeCommand(command);
+
+        }
+
+        public void updateCustomerName(String firstName, String lastName, String userName)
+        {
+            String command = "UPDATE Customer SET `FirstName= '" + firstName + "',LastName = '" + lastName + "' WHERE Email = '" + userName + "'";
+
+            execute(command);
+
+        }
+
+        public void updateCustomerEmail(String firstName, String lastName, String oldEmail, String newEmail)
+        {
+
+            String command = "UPDATE Customer SET Email = '" + newEmail + "' WHERE FirstName = '" + firstName +
+                             "' AND LastName = '" + lastName + "' WHERE Email = '" + oldEmail + "'";
+
+            execute(command);
+        }
+
+        public void updateCustomerPhoneNumber(String firstName, String lastName, String email, String newPhone)
+        {
+            String command = "UPDATE Customer SET Phone= '" + newPhone + "' WHERE FirstName = '" + firstName +
+                             "' AND LastName = '" + lastName + "' AND Email = '" + email + "'";
+
+            execute(command);
+        }
+
+        private void executeID(String command)
+        {
+            OpenConnection();
+
+            MySqlCommand cmd = new MySqlCommand(command, connection);
+
+            MySqlDataReader reader = cmd.ExecuteReader();
+
+            updateID = (int)cmd.LastInsertedId;
+            CloseConnection();
+
+        }
+        private void execute(String command)
+        {
+            OpenConnection();
+
+            MySqlCommand cmd = new MySqlCommand(command, connection);
+
+            MySqlDataReader reader = cmd.ExecuteReader();
+
+            CloseConnection();
+        }
+        private DbDataReader executeCommand(String command)
+        {
+            OpenConnection();
+
+            MySqlCommand cmd = new MySqlCommand(command, connection);
+
+            MySqlDataReader reader = cmd.ExecuteReader();
+
+            CloseConnection();
 
             return reader;
         }

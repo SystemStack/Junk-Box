@@ -82,6 +82,22 @@ namespace JunkBox.Controllers
             return Ok(customer);
             */
         }
+        public IHttpActionResult FindCustomerName(String userName)
+        {
+            dataAccess.OpenConnection();
+            DbDataReader result = dataAccess.findCustomer(userName);
+            if (result.HasRows)
+            {
+                result.Read();
+                Customer c = new Customer();
+                c.FirstName = (string)result["FirstName"];
+                c.LastName = (string)result["LastName"];
+                dataAccess.CloseConnection();
+                return Ok(c);
+            }
+            dataAccess.CloseConnection();
+            return NotFound();
+        }
 
         //Works!! Had to change the API call from /api/customers/Gale to /api/customers/?firstName=Gale
         //Currently is case sensitive for searches. (Gale returns a result where gale does not)

@@ -15,5 +15,13 @@ namespace JunkBox.DataAccess
         void CloseConnection();
 
         DbDataReader select(string query);
+
+        DbDataReader findUserPurchasePrice(String userName);
+        DbDataReader findCustomer(String userName);
+
+      
+        void updateCustomerName(String firstName, string lastName, String userName);
+        void updateCustomerEmail(String firstName, String lastName, String oldEmail, String newEmail);
+        void updateCustomerPhoneNumber(String firstName, String lastName, String email, String newPhone);
     }
 }
