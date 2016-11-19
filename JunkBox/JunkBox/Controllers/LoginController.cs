@@ -80,6 +80,20 @@ namespace JunkBox.Controllers {
             int result = dataAccess.Insert("Customer", parameters);
 
 
+            /*
+
+            //Example of gaining some info that we just entered
+            List<Dictionary<string, string>> cust = dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='test@guy.com'");
+            string custId = cust.First()["CustomerID"];
+            System.Windows.Forms.MessageBox.Show(custId);
+
+            //Example of delete
+            int delete = dataAccess.Delete("Customer", "CustomerID", custId);
+            System.Windows.Forms.MessageBox.Show(delete.ToString());
+
+            */
+
+
             return HttpUtility.UrlDecode(id).ToString();
         }
 

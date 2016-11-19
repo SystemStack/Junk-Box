@@ -59,16 +59,6 @@ namespace JunkBox.DataAccess
             return reader;
         }
 
-        /*
-        public DbDataReader Select(string query)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            return reader;
-        }*/
-
         public List<Dictionary<string, string>> Select(string query)
         {
             List<Dictionary<string, string>> rows = null;
@@ -97,14 +87,6 @@ namespace JunkBox.DataAccess
 
             return rows;
         }
-
-        public int Insert(string query)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-
-            return cmd.ExecuteNonQuery();
-        }
-
         
         public int Insert(string table, Dictionary<string, string> parameters)
         {
@@ -123,6 +105,24 @@ namespace JunkBox.DataAccess
 
 
             MySqlCommand cmd = new MySqlCommand(query, connection);
+            int result = cmd.ExecuteNonQuery();
+
+            CloseConnection();
+
+            return result;
+        }
+
+        public int Delete(string table, string key, string value)
+        {
+            //"DELETE FROM `cs341_t5`.`Customer` WHERE `Customer`.`CustomerID` = 9"
+
+            OpenConnection();
+            string query = "DELETE FROM " + table + " WHERE " + key + "=@value";
+
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+            cmd.Parameters.Add(new MySqlParameter("value", value));
+
+
             int result = cmd.ExecuteNonQuery();
 
             CloseConnection();
