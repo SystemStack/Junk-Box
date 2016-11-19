@@ -13,6 +13,7 @@ namespace JunkBox.Controllers {
             id = id.Replace("PERIODHERE", ".");
             String password = id.Split(',')[1];
             //return password;
+            System.Windows.Forms.MessageBox.Show("HEY!!!!!");
             return HttpUtility.UrlDecode(id).ToString();
         }
 
