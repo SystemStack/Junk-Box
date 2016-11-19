@@ -18,7 +18,7 @@ namespace JunkBox.Controllers {
             id = id.Replace("PERIODHERE", ".");
             String password = id.Split(',')[1];
             //return password;
-            //System.Windows.Forms.MessageBox.Show("HEY!!!!!");
+            System.Windows.Forms.MessageBox.Show(id);
 
             dataAccess.OpenConnection();
 
@@ -26,7 +26,7 @@ namespace JunkBox.Controllers {
             while(reader.Read())
             {
                 
-                System.Windows.Forms.MessageBox.Show((string)reader["FirstName"]);
+                //System.Windows.Forms.MessageBox.Show((string)reader["FirstName"]);
             }
 
             dataAccess.CloseConnection();
@@ -37,9 +37,20 @@ namespace JunkBox.Controllers {
         // POST: Login/Login/email@site.domain,passW0rd1
         [HttpPost]
         public String Register (String id) {
+            //System.Windows.Forms.MessageBox.Show(id.GetType().ToString());
+
+
+            dataAccess.OpenConnection();
+
+            dataAccess.insert("INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');");
+
+            dataAccess.CloseConnection();
+
+            /*
             id = id.Replace("PERIODHERE", ".");
             String password = id.Split(',')[1];
             //return password;
+            */
             return HttpUtility.UrlDecode(id).ToString();
         }
 

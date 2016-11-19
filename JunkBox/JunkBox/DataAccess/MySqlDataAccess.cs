@@ -68,5 +68,11 @@ namespace JunkBox.DataAccess
             return reader;
         }
 
+        public int insert(string query)
+        {
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+
+            return cmd.ExecuteNonQuery();
+        }
     }
 }
