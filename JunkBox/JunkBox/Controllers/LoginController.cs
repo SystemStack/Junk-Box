@@ -80,7 +80,7 @@ namespace JunkBox.Controllers {
             int result = dataAccess.Insert("Customer", parameters);
 
 
-            
+            /*
 
             //Example of gaining some info that we just entered
             List<Dictionary<string, string>> cust = dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='test@guy.com'");
@@ -92,17 +92,17 @@ namespace JunkBox.Controllers {
             int delete = dataAccess.Delete("Customer", "CustomerID", custId);
             System.Windows.Forms.MessageBox.Show(delete.ToString());
 
-            */
-
             
+
+            //Example of update
             Dictionary<string, string> items = new Dictionary<string, string> {
                 {"FirstName", "UpdatedFirstName"},
                 {"LastName", "updatedLastNAME"},
                 {"Email", "update@testguy.com"}
             };
-
             int update = dataAccess.Update("Customer", items, "CustomerID", custId);
             
+            */
 
             return HttpUtility.UrlDecode(id).ToString();
         }
