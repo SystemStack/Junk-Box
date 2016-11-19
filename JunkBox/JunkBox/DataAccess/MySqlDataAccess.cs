@@ -50,7 +50,7 @@ namespace JunkBox.DataAccess
                 connection.Close();
         }
 
-        public DbDataReader query(string query)
+        public DbDataReader Query(string query)
         {
             MySqlCommand cmd = new MySqlCommand(query, connection);
 
@@ -59,20 +59,74 @@ namespace JunkBox.DataAccess
             return reader;
         }
 
-        public DbDataReader select(string query)
+        /*
+        public DbDataReader Select(string query)
         {
             MySqlCommand cmd = new MySqlCommand(query, connection);
 
             MySqlDataReader reader = cmd.ExecuteReader();
 
             return reader;
+        }*/
+
+        public List<Dictionary<string, string>> Select(string query)
+        {
+            List<Dictionary<string, string>> rows = null;
+
+            OpenConnection();
+
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                rows = new List<Dictionary<string, string>>();
+                while (reader.Read())
+                {
+                    var row = new Dictionary<string, string>();
+                    for (var i = 0; i < reader.FieldCount; i++)
+                    {
+                        var columnName = reader.GetName(i);
+                        var columnValue = reader.IsDBNull(i) ? null : reader.GetString(i);
+                        row.Add(columnName, columnValue);
+                    }
+                    rows.Add(row);
+                }
+            }
+
+
+            CloseConnection();
+
+            return rows;
         }
 
-        public int insert(string query)
+        public int Insert(string query)
         {
             MySqlCommand cmd = new MySqlCommand(query, connection);
 
             return cmd.ExecuteNonQuery();
         }
+
+        /*
+        public int Insert(Dictionary<string, object> parameters)
+        {
+            OpenConnection();
+            //"INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) 
+            //VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');
+            string query = "INSERT INTO @table () VALUES ();";
+
+            string columns = "";
+            string values = "";
+            foreach (KeyValuePair<string, object> entry in parameters)
+            {
+                columns += "";
+            }
+
+            MySqlCommand cmd = new MySqlCommand();
+
+            int result = cmd.ExecuteNonQuery();
+
+            CloseConnection();
+
+            return result;
+        }*/
     }
 }

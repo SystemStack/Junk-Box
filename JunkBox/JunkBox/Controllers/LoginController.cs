@@ -18,18 +18,31 @@ namespace JunkBox.Controllers {
             id = id.Replace("PERIODHERE", ".");
             String password = id.Split(',')[1];
             //return password;
-            System.Windows.Forms.MessageBox.Show(id);
+            //System.Windows.Forms.MessageBox.Show(id);
 
-            dataAccess.OpenConnection();
+            //Give the Select function a Select Command
+            //Results will be populated inside a list of Key/Value pairs
+            List<Dictionary<string, string>> results = dataAccess.Select("SELECT * FROM Customer");
 
-            DbDataReader reader = dataAccess.select("SELECT * FROM Customer");
-            while(reader.Read())
+            //This is how we can iterate over that list
+            foreach(Dictionary<string, string> row in results)
             {
-                
-                //System.Windows.Forms.MessageBox.Show((string)reader["FirstName"]);
-            }
+                //We have a lot of data contained in the dictionary item
+                //string keys = "";
+                //string values = "";
 
-            dataAccess.CloseConnection();
+                //We can iterate over every key/value pair
+                //foreach(KeyValuePair<string, string> item in row)
+                //{
+                //    keys += " " + item.Key;
+                //    values += " " + item.Value;
+                //}
+                //System.Windows.Forms.MessageBox.Show("KEYS: " + keys + " VALUES: " + values);
+
+
+                //Or we can just access the specific data we want
+                System.Windows.Forms.MessageBox.Show("FirstName: " + row["FirstName"].ToString());
+            }
 
             return HttpUtility.UrlDecode(id).ToString();
         }
@@ -40,11 +53,11 @@ namespace JunkBox.Controllers {
             //System.Windows.Forms.MessageBox.Show(id.GetType().ToString());
 
 
-            dataAccess.OpenConnection();
+            //dataAccess.OpenConnection();
 
-            dataAccess.insert("INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');");
+            //dataAccess.insert("INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');");
 
-            dataAccess.CloseConnection();
+            //dataAccess.CloseConnection();
 
             /*
             id = id.Replace("PERIODHERE", ".");

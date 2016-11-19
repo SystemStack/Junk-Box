@@ -10,11 +10,11 @@ namespace JunkBox.DataAccess
     //This will probably end up being updated further with different functions like "Select, update, insert, delete, etc"
     interface IDataAccess
     {
-        DbDataReader query(string query);
+        DbDataReader Query(string query);
         void OpenConnection();
         void CloseConnection();
 
-        DbDataReader select(string query);
-        int insert(string query);
+        List<Dictionary<string, string>> Select(string query);
+        int Insert(string query);
     }
 }
