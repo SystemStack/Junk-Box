@@ -77,7 +77,7 @@ namespace JunkBox.Controllers {
                 {"Email", "test@guy.com"}
             };
 
-            int result = dataAccess.Insert("Customer", parameters);
+            //int result = dataAccess.Insert("Customer", parameters);
 
 
             /*
@@ -103,6 +103,14 @@ namespace JunkBox.Controllers {
             int update = dataAccess.Update("Customer", items, "CustomerID", custId);
             
             */
+
+            //Example of update With table Join
+            Dictionary<string, string> items = new Dictionary<string, string> {
+                {"BillingCity", "Oshkosh"}
+            };
+            int update = dataAccess.Update("Customer JOIN Address", items, "Address.AddressID", "5");
+
+            //UPDATE address JOIN customer SET BillingCity='Oshkosh' WHERE Address.AddressID = Customer.AddressID = 5
 
             return HttpUtility.UrlDecode(id).ToString();
         }
