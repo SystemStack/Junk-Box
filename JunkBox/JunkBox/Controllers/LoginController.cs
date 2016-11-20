@@ -186,7 +186,6 @@ namespace JunkBox.Controllers {
 
         private static bool VerifyHash(string plainText, string hashValue)
         {
-            // Convert base64-encoded hash value into a byte array.
             byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
 
             int hashSizeInBits = 512, 
