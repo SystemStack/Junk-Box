@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 //QueuedForDeletion
 namespace JunkBox {
     public class BundleConfig {

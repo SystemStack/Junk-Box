@@ -1,30 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using JunkBox.DataAccess;
+using System.Security.Cryptography;
 
-namespace JunkBox.Controllers
-{
-    public class HomeController : Controller
-    {
-        public ActionResult Index()
-        {
-            return View();
-        }
+namespace JunkBox.Controllers {
+    public class HomeController : Controller {
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
+        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
-            return View();
-        }
+        // POST: Login/Login/email@site.domain,passW0rd1
+        [HttpPost]
+        public String GetRecentPurchases (String id) {
+            id = id.Replace("PERIODHERE", ".");
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
+            List<Dictionary<string, string>> results = dataAccess.Select("SELECT * FROM Customer WHERE Email = '" + id + "'");
 
-            return View();
+            foreach (Dictionary<string, string> row in results) {
+                string keys = "";
+                string values = "";
+                foreach (KeyValuePair<string, string> item in row) {
+                    keys += " " + item.Key;
+                    values += " " + item.Value;
+                }
+                System.Windows.Forms.MessageBox.Show("KEYS: " + keys + " VALUES: " + values);
+                System.Windows.Forms.MessageBox.Show("FirstName: " + row["FirstName"].ToString());
+            }
+            dataAccess.CloseConnection();
+            return HttpUtility.UrlDecode(id).ToString();
         }
     }
 }
