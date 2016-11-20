@@ -9,6 +9,5 @@ namespace JunkBox.Models
     {
         public string email { get; set; }
         public string password { get; set; }
-        public string hash { get; set; }
     }
 }

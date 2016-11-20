@@ -4,8 +4,7 @@ angular
     $scope.switchToNewAccountView = false;
     $scope.login = {
         "email": "levi.broadnax@gmail.com",
-        "password": "Text",
-        "hash": "dummyHash"
+        "password": "Text"
     };
     $scope.account = {
         "email": "",
@@ -48,7 +47,6 @@ angular
 
 
     $scope.logIn = function () {
-        console.log("LOGIN FUNCTION: " + $scope.login);
         Login.login($scope.login).then(function (data) {
             console.log(data);
         });
