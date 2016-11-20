@@ -82,8 +82,8 @@ namespace JunkBox.Controllers {
                 {"FirstName", id.firstName},
                 {"LastName", id.lastName},
                 {"Phone", id.phone},
-                {"Hash", ""},
-                {"Salt", ""},
+                {"Hash", id.hash},
+                {"Salt", id.salt},
                 {"Email", id.email}
             };
             int customerResult = dataAccess.Insert("Customer", newUserDetails);

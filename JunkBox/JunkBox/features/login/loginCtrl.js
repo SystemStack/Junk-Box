@@ -17,7 +17,9 @@ angular
         "phone": "",
         "postalCode": "",
         "firstName": "",
-        "lastName": ""
+        "lastName": "",
+        "hash": "dummyHash",
+        "salt": "dummySalt"
         
     };
     $scope.newAccount = function () {
@@ -39,6 +41,10 @@ angular
         };
 
         if (validate()) {
+            //I think we want to generate the hash/salt and send those through
+            //instead of sending the plain-text passwords
+            $scope.account.password = "";
+            $scope.account.password2 = "";
             Login.register($scope.account).then(function (data) {
                 console.log(data);
             });
