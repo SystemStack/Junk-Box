@@ -6,6 +6,8 @@ using System.Web.Mvc;
 
 using JunkBox.DataAccess;
 using System.Data.Common;
+using System.Web.Script.Serialization;
+using JunkBox.Models;
 
 namespace JunkBox.Controllers {
     public class LoginController : Controller {
@@ -49,22 +51,43 @@ namespace JunkBox.Controllers {
 
         // POST: Login/Login/email@site.domain,passW0rd1
         [HttpPost]
-        public String Register (String id) {
-            //System.Windows.Forms.MessageBox.Show(id.GetType().ToString());
+        public ActionResult Register (RegisterModel id) {
+
+            if(dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='" + id.email + "'").Count >= 1)
+            {
+                return Json(new { result="Email address already registered"});
+            }
 
 
-            //dataAccess.OpenConnection();
+            Dictionary<string, string> newUserAddress = new Dictionary<string, string>() {
+                {"BillingCity", id.city},
+                {"BillingState", id.state},
+                {"BillingZip", ""},
+                {"BillingAddress", id.address},
+                {"BillingAddress2", id.address2},
+                {"ShippingCity", id.city},
+                {"ShippingState", id.state},
+                {"ShippingZip", ""},
+                {"ShippingAddress", id.address},
+                {"ShippingAddress2", id.address2}
+            };
+            int addressResult = dataAccess.Insert("Address", newUserAddress);
 
-            //dataAccess.insert("INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');");
 
-            //dataAccess.CloseConnection();
+            Dictionary<string, string> newUserDetails = new Dictionary<string, string>() {
+                {"QueryID", ""},
+                {"AddressID", ""},
+                {"FirstName", ""},
+                {"LastName", ""},
+                {"Phone", id.phone},
+                {"Hash", "g"},
+                {"Salt", "4"},
+                {"Email", id.email}
+            };
+            int customerResult = dataAccess.Insert("Customer", newUserDetails);
+
 
             /*
-            id = id.Replace("PERIODHERE", ".");
-            String password = id.Split(',')[1];
-            //return password;
-            */
-
             //We create a Dictionary<string, string> object and pass it into dataAccess.Insert
             Dictionary<string, string> parameters = new Dictionary<string, string>() {
                 {"QueryID", "3"},
@@ -76,24 +99,23 @@ namespace JunkBox.Controllers {
                 {"Salt", "4"},
                 {"Email", "test@guy.com"}
             };
-
-            //int result = dataAccess.Insert("Customer", parameters);
-
+            int result = dataAccess.Insert("Customer", parameters);
+            */
 
             /*
-
             //Example of gaining some info that we just entered
             List<Dictionary<string, string>> cust = dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='test@guy.com'");
             string custId = cust.First()["CustomerID"];
             System.Windows.Forms.MessageBox.Show(custId);
-
+            */
+            
             /*
             //Example of delete
             int delete = dataAccess.Delete("Customer", "CustomerID", custId);
             System.Windows.Forms.MessageBox.Show(delete.ToString());
-
+            */
             
-
+            /*
             //Example of update
             Dictionary<string, string> items = new Dictionary<string, string> {
                 {"FirstName", "UpdatedFirstName"},
@@ -104,15 +126,16 @@ namespace JunkBox.Controllers {
             
             */
 
+            /*
+            // UPDATE address JOIN customer SET BillingCity = 'Oshkosh' WHERE Address.AddressID = Customer.AddressID = 5
             //Example of update With table Join
             Dictionary<string, string> items = new Dictionary<string, string> {
                 {"BillingCity", "Oshkosh"}
             };
             int update = dataAccess.Update("Customer JOIN Address", items, "Address.AddressID", "5");
+            */
 
-            //UPDATE address JOIN customer SET BillingCity='Oshkosh' WHERE Address.AddressID = Customer.AddressID = 5
-
-            return HttpUtility.UrlDecode(id).ToString();
+            return Json(new { result="OK!"});
         }
 
     }

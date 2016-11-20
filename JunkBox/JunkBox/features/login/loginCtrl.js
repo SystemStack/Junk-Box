@@ -36,7 +36,7 @@ angular
         };
 
         if (validate()) {
-            Login.register($scope.login).then(function (data) {
+            Login.register($scope.account).then(function (data) {
                 console.log(data);
             });
         }

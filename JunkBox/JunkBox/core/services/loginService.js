@@ -17,7 +17,7 @@ angular
         },
         register: function (user) {
             var deferred = $q.defer();
-            $http.post('/Login/Register/' + user)
+            $http.post('/Login/Register/' , { id: user })
                  .success(function (data) {
                      console.log(data);
                      deferred.resolve(data);
