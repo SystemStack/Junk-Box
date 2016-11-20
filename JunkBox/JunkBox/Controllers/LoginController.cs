@@ -8,13 +8,15 @@ using JunkBox.DataAccess;
 using System.Data.Common;
 using System.Web.Script.Serialization;
 using JunkBox.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace JunkBox.Controllers {
     public class LoginController : Controller {
 
         private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
-        // POST: Login/Login/email@site.domain,passW0rd1
+        // POST: Login/Login/{data}
         [HttpPost]
         public ActionResult Login (LoginModel id) {
 
@@ -22,12 +24,19 @@ namespace JunkBox.Controllers {
 
             if(userRecord.Count <= 0)
             {
-                return Json(new { result="Not Registered" });
+                return Json(new { result="Fail" });
             }
 
-            string userSalt = userRecord.First()["Salt"];
+            bool verifyHash = LoginController.VerifyHash(id.password, userRecord.First()["Hash"]);
 
-            return Json(new { salt=userSalt });
+            if (verifyHash)
+            {
+                return Json(new { result="Success" });
+            }
+            else
+            {
+                return Json(new { result="Fail" });
+            }
         }
 
         // POST: Login/Register/{data}
@@ -36,9 +45,8 @@ namespace JunkBox.Controllers {
 
             if(dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='" + id.email + "'").Count >= 1)
             {
-                return Json(new { result="Email address already registered"});
+                return Json(new { result="Fail"});
             }
-
 
             Dictionary<string, string> newUserAddress = new Dictionary<string, string>() {
                 {"BillingCity", id.city},
@@ -57,18 +65,24 @@ namespace JunkBox.Controllers {
             //Get the AddressID of the record we just inserted
             string addressId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
 
+
+            byte[] salt = LoginController.ComputeSaltBytes();
+
+            string hashString = LoginController.ComputeHash(id.password, salt);
+            string saltString = Convert.ToBase64String(salt);
+
+
             Dictionary<string, string> newUserDetails = new Dictionary<string, string>() {
                 {"QueryID", ""},
                 {"AddressID", addressId},
                 {"FirstName", id.firstName},
                 {"LastName", id.lastName},
                 {"Phone", id.phone},
-                {"Hash", id.hash},
-                {"Salt", id.salt},
+                {"Hash", hashString},
+                {"Salt", saltString},
                 {"Email", id.email}
             };
             int customerResult = dataAccess.Insert("Customer", newUserDetails);
-
 
             /*
             //We create a Dictionary<string, string> object and pass it into dataAccess.Insert
@@ -91,13 +105,13 @@ namespace JunkBox.Controllers {
             string custId = cust.First()["CustomerID"];
             System.Windows.Forms.MessageBox.Show(custId);
             */
-            
+
             /*
             //Example of delete
             int delete = dataAccess.Delete("Customer", "CustomerID", custId);
             System.Windows.Forms.MessageBox.Show(delete.ToString());
             */
-            
+
             /*
             //Example of update
             Dictionary<string, string> items = new Dictionary<string, string> {
@@ -118,8 +132,77 @@ namespace JunkBox.Controllers {
             int update = dataAccess.Update("Customer JOIN Address", items, "Address.AddressID", "5");
             */
 
-            return Json(new { result="OK!"});
+            return Json(new { result="Success"});
         }
 
+        private static byte[] ComputeSaltBytes()
+        {
+            byte[] saltBytes;
+
+            int minSaltSize = 4;
+            int maxSaltSize = 8;
+
+            Random random = new Random();
+            int saltSize = random.Next(minSaltSize, maxSaltSize);
+
+            saltBytes = new byte[saltSize];
+
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+
+            rng.GetNonZeroBytes(saltBytes);
+
+            return saltBytes;
+        }
+
+        private static string ComputeHash(string plainText, byte[] saltBytes)
+        {
+            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+
+            byte[] plainTextWithSaltBytes = new byte[plainTextBytes.Length + saltBytes.Length];
+
+            for (int i = 0; i < plainTextBytes.Length; i++)
+                plainTextWithSaltBytes[i] = plainTextBytes[i];
+
+            for (int i = 0; i < saltBytes.Length; i++)
+                plainTextWithSaltBytes[plainTextBytes.Length + i] = saltBytes[i];
+
+            HashAlgorithm hash = new SHA512Managed();
+
+            byte[] hashBytes = hash.ComputeHash(plainTextWithSaltBytes);
+
+            byte[] hashWithSaltBytes = new byte[hashBytes.Length +
+                                                saltBytes.Length];
+
+            for (int i = 0; i < hashBytes.Length; i++)
+                hashWithSaltBytes[i] = hashBytes[i];
+
+            for (int i = 0; i < saltBytes.Length; i++)
+                hashWithSaltBytes[hashBytes.Length + i] = saltBytes[i];
+
+            string hashValue = Convert.ToBase64String(hashWithSaltBytes);
+
+            return hashValue;
+        }
+
+        private static bool VerifyHash(string plainText, string hashValue)
+        {
+            // Convert base64-encoded hash value into a byte array.
+            byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
+
+            int hashSizeInBits = 512, 
+                hashSizeInBytes = hashSizeInBits / 8;
+
+            if (hashWithSaltBytes.Length < hashSizeInBytes)
+                return false;
+
+            byte[] saltBytes = new byte[hashWithSaltBytes.Length - hashSizeInBytes];
+
+            for (int i = 0; i < saltBytes.Length; i++)
+                saltBytes[i] = hashWithSaltBytes[hashSizeInBytes + i];
+
+            string expectedHashString = LoginController.ComputeHash(plainText, saltBytes);
+
+            return (hashValue == expectedHashString);
+        }
     }
 }
