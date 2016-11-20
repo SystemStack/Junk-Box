@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.IO;
 
 using System.Data.Common;
 using MySql.Data.MySqlClient;
@@ -10,8 +8,7 @@ using System.Configuration;
 
 
 //My initial solution for how to handle data access. A singleton object.
-namespace JunkBox.DataAccess
-{
+namespace JunkBox.DataAccess {
     public class MySqlDataAccess : IDataAccess
     {
         private static string defaultConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -46,8 +43,13 @@ namespace JunkBox.DataAccess
 
         public void CloseConnection()
         {
-            if (connection != null)
+            System.Windows.Forms.MessageBox.Show("Getting here");
+            if (connection != null) {
                 connection.Close();
+            } else {
+                System.Windows.Forms.MessageBox.Show("Not Closing");
+            }
+
         }
 
         public DbDataReader Query(string query)

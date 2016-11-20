@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
 using JunkBox.DataAccess;
+
 using System.Data.Common;
 using System.Web.Script.Serialization;
 using JunkBox.Models;
 using System.Security.Cryptography;
 using System.Text;
+using System.Linq;
 
 namespace JunkBox.Controllers {
     public class LoginController : Controller {
@@ -18,6 +18,7 @@ namespace JunkBox.Controllers {
 
         // POST: Login/Login/{data}
         [HttpPost]
+
         public ActionResult Login (LoginModel id) {
 
             List<Dictionary<string, string>> userRecord = dataAccess.Select("SELECT Hash, Salt FROM Customer WHERE Email='" + id.email + "'");
@@ -65,7 +66,6 @@ namespace JunkBox.Controllers {
             //Get the AddressID of the record we just inserted
             string addressId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
 
-
             byte[] salt = LoginController.ComputeSaltBytes();
 
             string hashString = LoginController.ComputeHash(id.password, salt);
@@ -83,21 +83,6 @@ namespace JunkBox.Controllers {
                 {"Email", id.email}
             };
             int customerResult = dataAccess.Insert("Customer", newUserDetails);
-
-            /*
-            //We create a Dictionary<string, string> object and pass it into dataAccess.Insert
-            Dictionary<string, string> parameters = new Dictionary<string, string>() {
-                {"QueryID", "3"},
-                {"AddressID", "2"},
-                {"FirstName", "InsertTest"},
-                {"LastName", "IHopeThisWorks"},
-                {"Phone", "1112224444"},
-                {"Hash", "g"},
-                {"Salt", "4"},
-                {"Email", "test@guy.com"}
-            };
-            int result = dataAccess.Insert("Customer", parameters);
-            */
 
             /*
             //Example of gaining some info that we just entered
@@ -120,7 +105,7 @@ namespace JunkBox.Controllers {
                 {"Email", "update@testguy.com"}
             };
             int update = dataAccess.Update("Customer", items, "CustomerID", custId);
-            
+
             */
 
             /*
@@ -186,29 +171,22 @@ namespace JunkBox.Controllers {
 
         private static bool VerifyHash(string plainText, string hashValue)
         {
-            try
-            {
-                byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
+            byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
 
-                int hashSizeInBits = 512,
-                    hashSizeInBytes = hashSizeInBits / 8;
+            int hashSizeInBits = 512,
+                hashSizeInBytes = hashSizeInBits / 8;
 
-                if (hashWithSaltBytes.Length < hashSizeInBytes)
-                    return false;
-
-                byte[] saltBytes = new byte[hashWithSaltBytes.Length - hashSizeInBytes];
-
-                for (int i = 0; i < saltBytes.Length; i++)
-                    saltBytes[i] = hashWithSaltBytes[hashSizeInBytes + i];
-
-                string expectedHashString = LoginController.ComputeHash(plainText, saltBytes);
-
-                return (hashValue == expectedHashString);
-            }
-            catch(Exception e)
-            {
+            if (hashWithSaltBytes.Length < hashSizeInBytes)
                 return false;
-            }
+
+            byte[] saltBytes = new byte[hashWithSaltBytes.Length - hashSizeInBytes];
+
+            for (int i = 0; i < saltBytes.Length; i++)
+                saltBytes[i] = hashWithSaltBytes[hashSizeInBytes + i];
+
+            string expectedHashString = LoginController.ComputeHash(plainText, saltBytes);
+
+            return (hashValue == expectedHashString);
         }
     }
 }
