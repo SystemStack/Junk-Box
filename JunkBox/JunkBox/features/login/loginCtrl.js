@@ -25,11 +25,11 @@ angular
         console.log($scope.account);
         var validate = function () {
             if ($scope.account.password !== $scope.account.password2) {
+                console.log($scope.account.password === $scope.account.password2);
+                console.log($scope.account.password, $scope.account.password2);
                 $scope.displayToUser("Your passwords must match");
             } else if ($scope.account.password.length < 8) {
                 $scope.displayToUser("Your password must be at least 8 characters");
-            //} else if (x === 5) {//regex for special characters and ish
-
             } else {
                 return true;
             }

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
 using JunkBox.DataAccess;
-using System.Data.Common;
+using System.Security.Cryptography;
 
 namespace JunkBox.Controllers {
     public class LoginController : Controller {
@@ -25,8 +23,7 @@ namespace JunkBox.Controllers {
             List<Dictionary<string, string>> results = dataAccess.Select("SELECT * FROM Customer");
 
             //This is how we can iterate over that list
-            foreach(Dictionary<string, string> row in results)
-            {
+            foreach (Dictionary<string, string> row in results) {
                 //We have a lot of data contained in the dictionary item
                 //string keys = "";
                 //string values = "";
@@ -50,11 +47,7 @@ namespace JunkBox.Controllers {
         // POST: Login/Login/email@site.domain,passW0rd1
         [HttpPost]
         public String Register (String id) {
-            //System.Windows.Forms.MessageBox.Show(id.GetType().ToString());
-
-
-            //dataAccess.OpenConnection();
-
+            dataAccess.OpenConnection();
             //dataAccess.insert("INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');");
 
             //dataAccess.CloseConnection();
@@ -65,10 +58,33 @@ namespace JunkBox.Controllers {
             //return password;
             */
 
-            //We create a Dictionary<string, string> object and pass it into dataAccess.Insert
-            Dictionary<string, string> parameters = new Dictionary<string, string>() {
-                {"QueryID", "3"},
-                {"AddressID", "2"},
+
+            RandomNumberGenerator saltGenerator = RandomNumberGenerator.Create();
+            HashAlgorithm hasher = new SHA512Managed();
+            Byte[] saltArr = new Byte[32];
+            saltGenerator.GetBytes(saltArr);
+            String salt = System.Text.Encoding.Default.GetString(saltArr);
+            Byte[] hashResult = hasher.Hash;
+
+
+            Dictionary<string, string> addressInsertObject = new Dictionary<string, string>() {
+                {"BillingCity", "info"},
+                {"BillingState", "info" },
+                {"BillingZip", "info"},
+                {"BillingAddress", "info"},
+                {"BillingAddress2", "info"},
+                {"ShippingCity", "info"},
+                {"ShippingState", "info" },
+                {"ShippingZip", "info"},
+                {"ShippingAddress", "info"},
+                {"ShippingAddress2", "info"},
+
+            };
+            int addressInsertResult = dataAccess.Insert("Address", addressInsertObject);
+            //int addressID = addressInsertResult.
+            Dictionary<string, string> customerInsertObject = new Dictionary<string, string>() {
+                {"QueryID", "-1"},
+                {"AddressID", addressInsertResult.ToString()},
                 {"FirstName", "InsertTest"},
                 {"LastName", "IHopeThisWorks"},
                 {"Phone", "1112224444"},
@@ -77,7 +93,7 @@ namespace JunkBox.Controllers {
                 {"Email", "test@guy.com"}
             };
 
-            //int result = dataAccess.Insert("Customer", parameters);
+            int customerInsertResult = dataAccess.Insert("Customer", customerInsertObject);
 
 
             /*
