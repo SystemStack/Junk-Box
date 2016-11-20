@@ -7,4 +7,5 @@ gulpfile.js
 obj/
 Views/
 bin/
-*.txt
+JunkBox/.vs/JunkBox/v14/.suo
+*.suo

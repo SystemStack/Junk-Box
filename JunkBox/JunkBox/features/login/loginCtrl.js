@@ -15,7 +15,9 @@ angular
         "city": "",
         "state": "",
         "phone": "",
-        "postalCode": ""
+        "postalCode": "",
+        "firstName": "",
+        "lastName": "",
     };
     $scope.newAccount = function () {
         $scope.switchToNewAccountView = !$scope.switchToNewAccountView;
@@ -36,7 +38,7 @@ angular
         };
 
         if (validate()) {
-            Login.register($scope.login).then(function (data) {
+            Login.register($scope.account).then(function (data) {
                 console.log(data);
             });
         }

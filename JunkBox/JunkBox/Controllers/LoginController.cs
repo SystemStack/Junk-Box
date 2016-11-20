@@ -3,113 +3,100 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using JunkBox.DataAccess;
+
+using System.Data.Common;
+using System.Web.Script.Serialization;
+using JunkBox.Models;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace JunkBox.Controllers {
     public class LoginController : Controller {
 
         private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
-        // POST: Login/Login/email@site.domain,passW0rd1
+        // POST: Login/Login/{data}
         [HttpPost]
-        public String Login (String id) {
-            id = id.Replace("PERIODHERE", ".");
-            String password = id.Split(',')[1];
-            //return password;
-            //System.Windows.Forms.MessageBox.Show(id);
 
-            //Give the Select function a Select Command
-            //Results will be populated inside a list of Key/Value pairs
-            List<Dictionary<string, string>> results = dataAccess.Select("SELECT * FROM Customer");
+        public ActionResult Login (LoginModel id) {
 
-            //This is how we can iterate over that list
-            foreach (Dictionary<string, string> row in results) {
-                //We have a lot of data contained in the dictionary item
-                //string keys = "";
-                //string values = "";
+            List<Dictionary<string, string>> userRecord = dataAccess.Select("SELECT Hash, Salt FROM Customer WHERE Email='" + id.email + "'");
 
-                //We can iterate over every key/value pair
-                //foreach(KeyValuePair<string, string> item in row)
-                //{
-                //    keys += " " + item.Key;
-                //    values += " " + item.Value;
-                //}
-                //System.Windows.Forms.MessageBox.Show("KEYS: " + keys + " VALUES: " + values);
-
-
-                //Or we can just access the specific data we want
-                System.Windows.Forms.MessageBox.Show("FirstName: " + row["FirstName"].ToString());
+            if(userRecord.Count <= 0)
+            {
+                return Json(new { result="Fail" });
             }
 
-            return HttpUtility.UrlDecode(id).ToString();
+            bool verifyHash = LoginController.VerifyHash(id.password, userRecord.First()["Hash"]);
+
+            if (verifyHash)
+            {
+                return Json(new { result="Success" });
+            }
+            else
+            {
+                return Json(new { result="Fail" });
+            }
         }
 
-        // POST: Login/Login/email@site.domain,passW0rd1
+        // POST: Login/Register/{data}
         [HttpPost]
-        public String Register (String id) {
-            dataAccess.OpenConnection();
-            //dataAccess.insert("INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');");
+        public ActionResult Register (RegisterModel id) {
 
-            //dataAccess.CloseConnection();
+            if(dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='" + id.email + "'").Count >= 1)
+            {
+                return Json(new { result="Fail"});
+            }
+
+            Dictionary<string, string> newUserAddress = new Dictionary<string, string>() {
+                {"BillingCity", id.city},
+                {"BillingState", id.state},
+                {"BillingZip", id.postalCode},
+                {"BillingAddress", id.address},
+                {"BillingAddress2", id.address2},
+                {"ShippingCity", id.city},
+                {"ShippingState", id.state},
+                {"ShippingZip", id.postalCode},
+                {"ShippingAddress", id.address},
+                {"ShippingAddress2", id.address2}
+            };
+            int addressResult = dataAccess.Insert("Address", newUserAddress);
+
+            //Get the AddressID of the record we just inserted
+            string addressId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
+
+            byte[] salt = LoginController.ComputeSaltBytes();
+
+            string hashString = LoginController.ComputeHash(id.password, salt);
+            string saltString = Convert.ToBase64String(salt);
+
+
+            Dictionary<string, string> newUserDetails = new Dictionary<string, string>() {
+                {"QueryID", ""},
+                {"AddressID", addressId},
+                {"FirstName", id.firstName},
+                {"LastName", id.lastName},
+                {"Phone", id.phone},
+                {"Hash", hashString},
+                {"Salt", saltString},
+                {"Email", id.email}
+            };
+            int customerResult = dataAccess.Insert("Customer", newUserDetails);
 
             /*
-            id = id.Replace("PERIODHERE", ".");
-            String password = id.Split(',')[1];
-            //return password;
-            */
-
-
-            RandomNumberGenerator saltGenerator = RandomNumberGenerator.Create();
-            HashAlgorithm hasher = new SHA512Managed();
-            Byte[] saltArr = new Byte[32];
-            saltGenerator.GetBytes(saltArr);
-            String salt = System.Text.Encoding.Default.GetString(saltArr);
-            Byte[] hashResult = hasher.Hash;
-
-
-            Dictionary<string, string> addressInsertObject = new Dictionary<string, string>() {
-                {"BillingCity", "info"},
-                {"BillingState", "info" },
-                {"BillingZip", "info"},
-                {"BillingAddress", "info"},
-                {"BillingAddress2", "info"},
-                {"ShippingCity", "info"},
-                {"ShippingState", "info" },
-                {"ShippingZip", "info"},
-                {"ShippingAddress", "info"},
-                {"ShippingAddress2", "info"},
-
-            };
-            int addressInsertResult = dataAccess.Insert("Address", addressInsertObject);
-            //int addressID = addressInsertResult.
-            Dictionary<string, string> customerInsertObject = new Dictionary<string, string>() {
-                {"QueryID", "-1"},
-                {"AddressID", addressInsertResult.ToString()},
-                {"FirstName", "InsertTest"},
-                {"LastName", "IHopeThisWorks"},
-                {"Phone", "1112224444"},
-                {"Hash", "g"},
-                {"Salt", "4"},
-                {"Email", "test@guy.com"}
-            };
-
-            int customerInsertResult = dataAccess.Insert("Customer", customerInsertObject);
-
-
-            /*
-
             //Example of gaining some info that we just entered
             List<Dictionary<string, string>> cust = dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='test@guy.com'");
             string custId = cust.First()["CustomerID"];
             System.Windows.Forms.MessageBox.Show(custId);
+            */
 
             /*
             //Example of delete
             int delete = dataAccess.Delete("Customer", "CustomerID", custId);
             System.Windows.Forms.MessageBox.Show(delete.ToString());
+            */
 
-            
-
+            /*
             //Example of update
             Dictionary<string, string> items = new Dictionary<string, string> {
                 {"FirstName", "UpdatedFirstName"},
@@ -117,19 +104,88 @@ namespace JunkBox.Controllers {
                 {"Email", "update@testguy.com"}
             };
             int update = dataAccess.Update("Customer", items, "CustomerID", custId);
-            
+
             */
 
+            /*
+            // UPDATE address JOIN customer SET BillingCity = 'Oshkosh' WHERE Address.AddressID = Customer.AddressID = 5
             //Example of update With table Join
             Dictionary<string, string> items = new Dictionary<string, string> {
                 {"BillingCity", "Oshkosh"}
             };
             int update = dataAccess.Update("Customer JOIN Address", items, "Address.AddressID", "5");
+            */
 
-            //UPDATE address JOIN customer SET BillingCity='Oshkosh' WHERE Address.AddressID = Customer.AddressID = 5
-
-            return HttpUtility.UrlDecode(id).ToString();
+            return Json(new { result="Success"});
         }
 
+        private static byte[] ComputeSaltBytes()
+        {
+            byte[] saltBytes;
+
+            int minSaltSize = 4;
+            int maxSaltSize = 8;
+
+            Random random = new Random();
+            int saltSize = random.Next(minSaltSize, maxSaltSize);
+
+            saltBytes = new byte[saltSize];
+
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+
+            rng.GetNonZeroBytes(saltBytes);
+
+            return saltBytes;
+        }
+
+        private static string ComputeHash(string plainText, byte[] saltBytes)
+        {
+            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+
+            byte[] plainTextWithSaltBytes = new byte[plainTextBytes.Length + saltBytes.Length];
+
+            for (int i = 0; i < plainTextBytes.Length; i++)
+                plainTextWithSaltBytes[i] = plainTextBytes[i];
+
+            for (int i = 0; i < saltBytes.Length; i++)
+                plainTextWithSaltBytes[plainTextBytes.Length + i] = saltBytes[i];
+
+            HashAlgorithm hash = new SHA512Managed();
+
+            byte[] hashBytes = hash.ComputeHash(plainTextWithSaltBytes);
+
+            byte[] hashWithSaltBytes = new byte[hashBytes.Length +
+                                                saltBytes.Length];
+
+            for (int i = 0; i < hashBytes.Length; i++)
+                hashWithSaltBytes[i] = hashBytes[i];
+
+            for (int i = 0; i < saltBytes.Length; i++)
+                hashWithSaltBytes[hashBytes.Length + i] = saltBytes[i];
+
+            string hashValue = Convert.ToBase64String(hashWithSaltBytes);
+
+            return hashValue;
+        }
+
+        private static bool VerifyHash(string plainText, string hashValue)
+        {
+            byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
+
+            int hashSizeInBits = 512,
+                hashSizeInBytes = hashSizeInBits / 8;
+
+            if (hashWithSaltBytes.Length < hashSizeInBytes)
+                return false;
+
+            byte[] saltBytes = new byte[hashWithSaltBytes.Length - hashSizeInBytes];
+
+            for (int i = 0; i < saltBytes.Length; i++)
+                saltBytes[i] = hashWithSaltBytes[hashSizeInBytes + i];
+
+            string expectedHashString = LoginController.ComputeHash(plainText, saltBytes);
+
+            return (hashValue == expectedHashString);
+        }
     }
 }
