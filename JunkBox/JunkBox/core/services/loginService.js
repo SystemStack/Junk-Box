@@ -4,8 +4,8 @@ angular
     return {
         login: function (user) {
             var deferred = $q.defer();
-            email = encodeURIComponent(user.email).replace(/\./g, "PERIODHERE");
-            $http.post('/Login/Login/' + email + "," + user.password)
+            //email = encodeURIComponent(user.email).replace(/\./g, "PERIODHERE");
+            $http.post('/Login/Login/', {id: user})
                 .success(function (data, status, headers, config) {
                    console.log(data);
                    deferred.resolve(data);
@@ -17,7 +17,7 @@ angular
         },
         register: function (user) {
             var deferred = $q.defer();
-            $http.post('/Login/Register/' + user)
+            $http.post('/Login/Register/' , { id: user })
                  .success(function (data) {
                      console.log(data);
                      deferred.resolve(data);
