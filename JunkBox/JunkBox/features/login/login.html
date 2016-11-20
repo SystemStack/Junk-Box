@@ -32,6 +32,16 @@
                 <input ng-model="account.password2" type="password">
             </md-input-container>
         </div>
+        <div layout="row">
+            <md-input-container flex="50">
+                <label>First Name</label>
+                <input ng-model="account.firstName" />
+            </md-input-container>
+            <md-input-container flex="grow">
+                <label>Last Name</label>
+                <input ng-model="account.lastName" />
+            </md-input-container>
+        </div>
         <md-input-container flex>
             <label>Address</label>
             <input required

@@ -79,8 +79,8 @@ namespace JunkBox.Controllers {
             Dictionary<string, string> newUserDetails = new Dictionary<string, string>() {
                 {"QueryID", ""},
                 {"AddressID", addressId},
-                {"FirstName", ""},
-                {"LastName", ""},
+                {"FirstName", id.firstName},
+                {"LastName", id.lastName},
                 {"Phone", id.phone},
                 {"Hash", ""},
                 {"Salt", ""},

@@ -15,7 +15,9 @@ angular
         "city": "",
         "state": "",
         "phone": "",
-        "postalCode": ""
+        "postalCode": "",
+        "firstName": "",
+        "lastName": ""
         
     };
     $scope.newAccount = function () {

@@ -16,6 +16,7 @@ namespace JunkBox.Models
         public string phone { get; set; }
         public string postalCode { get; set; }
         public string state { get; set; }
-
+        public string firstName { get; set; }
+        public string lastName { get; set; }
     }
 }
