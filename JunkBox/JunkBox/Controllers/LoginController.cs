@@ -73,10 +73,12 @@ namespace JunkBox.Controllers {
             };
             int addressResult = dataAccess.Insert("Address", newUserAddress);
 
+            //Get the AddressID of the record we just inserted
+            string addressId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
 
             Dictionary<string, string> newUserDetails = new Dictionary<string, string>() {
                 {"QueryID", ""},
-                {"AddressID", ""},
+                {"AddressID", addressId},
                 {"FirstName", ""},
                 {"LastName", ""},
                 {"Phone", id.phone},
