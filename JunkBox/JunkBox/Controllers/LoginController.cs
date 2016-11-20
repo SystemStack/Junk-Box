@@ -16,40 +16,21 @@ namespace JunkBox.Controllers {
 
         // POST: Login/Login/email@site.domain,passW0rd1
         [HttpPost]
-        public String Login (String id) {
-            id = id.Replace("PERIODHERE", ".");
-            String password = id.Split(',')[1];
-            //return password;
-            //System.Windows.Forms.MessageBox.Show(id);
+        public ActionResult Login (LoginModel id) {
 
-            //Give the Select function a Select Command
-            //Results will be populated inside a list of Key/Value pairs
-            List<Dictionary<string, string>> results = dataAccess.Select("SELECT * FROM Customer");
+            List<Dictionary<string, string>> userRecord = dataAccess.Select("SELECT Hash, Salt FROM Customer WHERE Email='" + id.email + "'");
 
-            //This is how we can iterate over that list
-            foreach(Dictionary<string, string> row in results)
+            if(userRecord.Count <= 0)
             {
-                //We have a lot of data contained in the dictionary item
-                //string keys = "";
-                //string values = "";
-
-                //We can iterate over every key/value pair
-                //foreach(KeyValuePair<string, string> item in row)
-                //{
-                //    keys += " " + item.Key;
-                //    values += " " + item.Value;
-                //}
-                //System.Windows.Forms.MessageBox.Show("KEYS: " + keys + " VALUES: " + values);
-
-
-                //Or we can just access the specific data we want
-                System.Windows.Forms.MessageBox.Show("FirstName: " + row["FirstName"].ToString());
+                return Json(new { result="Not Registered" });
             }
 
-            return HttpUtility.UrlDecode(id).ToString();
+            string userSalt = userRecord.First()["Salt"];
+
+            return Json(new { salt=userSalt });
         }
 
-        // POST: Login/Login/email@site.domain,passW0rd1
+        // POST: Login/Register/{data}
         [HttpPost]
         public ActionResult Register (RegisterModel id) {
 
