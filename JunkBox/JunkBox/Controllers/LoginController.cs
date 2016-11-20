@@ -9,6 +9,7 @@ using System.Web.Script.Serialization;
 using JunkBox.Models;
 using System.Security.Cryptography;
 using System.Text;
+using System.Linq;
 
 namespace JunkBox.Controllers {
     public class LoginController : Controller {
