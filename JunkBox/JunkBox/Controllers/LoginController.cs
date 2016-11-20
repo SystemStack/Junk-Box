@@ -62,12 +62,12 @@ namespace JunkBox.Controllers {
             Dictionary<string, string> newUserAddress = new Dictionary<string, string>() {
                 {"BillingCity", id.city},
                 {"BillingState", id.state},
-                {"BillingZip", ""},
+                {"BillingZip", id.postalCode},
                 {"BillingAddress", id.address},
                 {"BillingAddress2", id.address2},
                 {"ShippingCity", id.city},
                 {"ShippingState", id.state},
-                {"ShippingZip", ""},
+                {"ShippingZip", id.postalCode},
                 {"ShippingAddress", id.address},
                 {"ShippingAddress2", id.address2}
             };
@@ -80,8 +80,8 @@ namespace JunkBox.Controllers {
                 {"FirstName", ""},
                 {"LastName", ""},
                 {"Phone", id.phone},
-                {"Hash", "g"},
-                {"Salt", "4"},
+                {"Hash", ""},
+                {"Salt", ""},
                 {"Email", id.email}
             };
             int customerResult = dataAccess.Insert("Customer", newUserDetails);

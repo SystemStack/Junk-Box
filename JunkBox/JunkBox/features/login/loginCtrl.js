@@ -16,6 +16,7 @@ angular
         "state": "",
         "phone": "",
         "postalCode": ""
+        
     };
     $scope.newAccount = function () {
         $scope.switchToNewAccountView = !$scope.switchToNewAccountView;
