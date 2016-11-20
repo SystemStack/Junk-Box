@@ -186,22 +186,29 @@ namespace JunkBox.Controllers {
 
         private static bool VerifyHash(string plainText, string hashValue)
         {
-            byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
+            try
+            {
+                byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
 
-            int hashSizeInBits = 512, 
-                hashSizeInBytes = hashSizeInBits / 8;
+                int hashSizeInBits = 512,
+                    hashSizeInBytes = hashSizeInBits / 8;
 
-            if (hashWithSaltBytes.Length < hashSizeInBytes)
+                if (hashWithSaltBytes.Length < hashSizeInBytes)
+                    return false;
+
+                byte[] saltBytes = new byte[hashWithSaltBytes.Length - hashSizeInBytes];
+
+                for (int i = 0; i < saltBytes.Length; i++)
+                    saltBytes[i] = hashWithSaltBytes[hashSizeInBytes + i];
+
+                string expectedHashString = LoginController.ComputeHash(plainText, saltBytes);
+
+                return (hashValue == expectedHashString);
+            }
+            catch(Exception e)
+            {
                 return false;
-
-            byte[] saltBytes = new byte[hashWithSaltBytes.Length - hashSizeInBytes];
-
-            for (int i = 0; i < saltBytes.Length; i++)
-                saltBytes[i] = hashWithSaltBytes[hashSizeInBytes + i];
-
-            string expectedHashString = LoginController.ComputeHash(plainText, saltBytes);
-
-            return (hashValue == expectedHashString);
+            }
         }
     }
 }
