@@ -1,0 +1,34 @@
+{
+  "name": "bower.json",
+  "homepage": "https://github.com/SystemStack/SoftwareEngineeringGroup.git",
+  "description": "Junk Box",
+  "main": "index.html",
+  "moduleType": [],
+  "keywords": [
+    "Junk Box"
+  ],
+  "authors": [
+    "Levi Broadnax",
+    "Matthew Levine",
+    "Michael Johnson",
+    "Walter Woods"
+  ],
+  "license": "ALL RIGHTS RESERVED",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "bower-angular#^1.5.x",
+    "angular-animate": "^1.5.x",
+    "angular-aria": "^1.5.x",
+    "angular-resource": "^1.5.x",
+    "angular-sanitize": "^1.5.x",
+    "angular-material": "1.1.x",
+    "angular-ui-router": "^0.3.x"
+  }
+}
