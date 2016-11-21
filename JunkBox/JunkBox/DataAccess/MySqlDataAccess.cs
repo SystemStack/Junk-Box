@@ -43,7 +43,8 @@ namespace JunkBox.DataAccess {
 
         public void CloseConnection()
         {
-            if (connection != null) {
+            if (connection != null)
+            {
                 connection.Close();
             }
         }
