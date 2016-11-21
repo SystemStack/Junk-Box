@@ -5,30 +5,29 @@ using System.Web.Mvc;
 using JunkBox.DataAccess;
 using System.Security.Cryptography;
 
+using JunkBox.Models;
+using System.Linq;
+
 namespace JunkBox.Controllers {
     public class HomeController : Controller {
 
         private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
-        // POST: Login/Login/email@site.domain,passW0rd1
+        // POST: Home/.....
         [HttpPost]
-        public String GetRecentPurchases (String id) {
-            id = id.Replace("PERIODHERE", ".");
+        public ActionResult GetRecentPurchases (GetRecentPurchaseModel id) {
 
-            List<Dictionary<string, string>> results = dataAccess.Select("SELECT * FROM Customer WHERE Email = '" + id + "'");
-
-            foreach (Dictionary<string, string> row in results) {
-                string keys = "";
-                string values = "";
-                foreach (KeyValuePair<string, string> item in row) {
-                    keys += " " + item.Key;
-                    values += " " + item.Value;
-                }
-                System.Windows.Forms.MessageBox.Show("KEYS: " + keys + " VALUES: " + values);
-                System.Windows.Forms.MessageBox.Show("FirstName: " + row["FirstName"].ToString());
+            List<Dictionary<string, string>> results = dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='" + id.email + "'");
+            
+            if(results.Count <= 0)
+            {
+                return Json(new { result="Fail"});
             }
-            dataAccess.CloseConnection();
-            return HttpUtility.UrlDecode(id).ToString();
+            string customerId = results.First()["CustomerID"];
+
+            List<Dictionary<string, string>> purchaseResults = dataAccess.Select("SELECT * FROM CustomerOrder WHERE CustomerID='" + customerId + "'");
+
+            return Json(new { result=purchaseResults });
         }
     }
 }
