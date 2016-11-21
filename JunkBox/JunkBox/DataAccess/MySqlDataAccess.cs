@@ -43,13 +43,8 @@ namespace JunkBox.DataAccess {
 
         public void CloseConnection()
         {
-            System.Windows.Forms.MessageBox.Show("Getting here");
-            if (connection != null) {
+            if (connection != null)
                 connection.Close();
-            } else {
-                System.Windows.Forms.MessageBox.Show("Not Closing");
-            }
-
         }
 
         public DbDataReader Query(string query)
