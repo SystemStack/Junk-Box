@@ -13,7 +13,7 @@ namespace JunkBox.Controllers
     {
         private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
-        //Prefrences/ValidateAddress/{data}
+        //POST: Prefrences/ValidateAddress/{data}
         [HttpPost]
         public ActionResult UpdateAddress(PrefrenceAddressModel data)
         {
