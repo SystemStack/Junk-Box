@@ -38,14 +38,14 @@ angular.module("junkBox",
         });
       $urlRouterProvider.otherwise("/home");
   }).run(function ($rootScope, $http) {
-    if (!sessionStorage.Email) {
+    if (!sessionStorage.email) {
         delete sessionStorage;
         window.location.assign("features/login/login.html");
     }
 }).controller("MainCtrl", function ($scope, $mdToast, $rootScope) {
       $scope.checkSessionStorage = function (){
-          if(sessionStorage.Email){
-                  $rootScope.Email = sessionStorage.Email;
+          if(sessionStorage.email){
+                $rootScope.email = sessionStorage.email;
           } else {
             $scope.displayToUser("Please log in");
             delete sessionStorage;
