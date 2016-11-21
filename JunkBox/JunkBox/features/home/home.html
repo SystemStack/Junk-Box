@@ -1,0 +1,36 @@
+<md-card>
+    <h2 layout="row" layout-align="center center" class="md-headline">
+        Welcome back to Junk Box!
+    </h2>
+    <md-grid-list
+        ng-if="PreviousPurchases.result.length > 2"
+        md-cols="2"
+        md-row-height="2:1"
+        md-gutter="12px" md-gutter-gt-sm="8px" >
+
+        <md-grid-tile height="100%" width="100%" ng-if="PreviousPurchases.result[0]">
+          <img ng-src="{{PreviousPurchases.result[0].ImageURL}}" style="opacity : .70" height="100%" width="100%">
+          <md-grid-tile-footer>
+            <h3>Yesterdays Purchase</h3>
+          </md-grid-tile-footer>
+        </md-grid-tile>
+        <md-grid-tile height="100%" width="100%" ng-if="PreviousPurchases.result[1]">
+          <img ng-src="{{PreviousPurchases.result[1].ImageURL}}" style="opacity : .70" height="100%" width="100%">
+          <md-grid-tile-footer>
+            <h3>Previous Purchase</h3>
+          </md-grid-tile-footer>
+        </md-grid-tile>
+        <md-grid-tile height="100%" width="100%" ng-if="PreviousPurchases.result[2]">
+          <img ng-src="{{PreviousPurchases.result[2].ImageURL}}" style="opacity : .70" height="100%" width="100%">
+          <md-grid-tile-footer>
+            <h3>Previous Purchase</h3>
+          </md-grid-tile-footer>
+        </md-grid-tile>
+        <md-grid-tile height="100%" width="100%"ng-if="PreviousPurchases.result[3]">
+          <img ng-src="{{PreviousPurchases.result[3].ImageURL}}" style="opacity : .70" height="100%" width="100%">
+          <md-grid-tile-footer>
+            <h3>Previous Purchase</h3>
+          </md-grid-tile-footer>
+        </md-grid-tile>
+  </md-grid-list>
+</md-card>

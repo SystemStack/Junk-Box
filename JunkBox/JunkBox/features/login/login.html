@@ -1,0 +1,117 @@
+<html ng-app="junkBoxLogin" ng-controller="loginCtrl">
+<head>
+    <link rel="stylesheet" href="../../bower_components/angular-material/angular-material.css">
+    <title>Junk Box</title>
+</head>
+<body>
+    <md-content class="md-primary" layout="row" layout-align="center center">
+        <md-card class="md-whiteframe-z4" flex-offset="10" flex="80" ng-if="!switchToNewAccountView">
+            <section layout="row" layout-align="center center">
+                <h1 class="md-display-4">JunKBoX</h1>
+            </section>
+            <section layout="row" layout-align="center center">
+                <md-input-container>
+                    <label>Email</label>
+                    <input ng-model="credentials.email" type="email" ng-disabled="isClicked">
+                </md-input-container>
+            </section>
+            <section layout="row" layout-align="center center">
+                <md-input-container>
+                    <label>Password</label>
+                    <input ng-model="credentials.password" type="password" ng-disabled="isClicked">
+                </md-input-container>
+            </section>
+            <section layout="row" layout-align="center center">
+                <md-button ng-click="newAccount()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">New account?</md-button>
+                <md-button ng-click="logIn()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">Login</md-button>
+            </section>
+        </md-card>
+        <md-card class="md-whiteframe-z4" flex-offset="10" flex="80" ng-if="switchToNewAccountView">
+            <section layout="row" layout-align="center center">
+                <h1 class="md-display-4">JunKBoX</h1>
+            </section>
+            <md-input-container>
+                <label>Email Account</label>
+                <input ng-model="account.email" type="email">
+            </md-input-container>
+            <div layout="row">
+                <md-input-container flex="50">
+                    <label>New Password</label>
+                    <input ng-model="account.password" type="password">
+                </md-input-container>
+                <md-input-container flex="grow">
+                    <label>Verify Password</label>
+                    <input ng-model="account.password2" type="password">
+                </md-input-container>
+            </div>
+            <div layout="row">
+                <md-input-container flex="50">
+                    <label>First Name</label>
+                    <input ng-model="account.firstName" />
+                </md-input-container>
+                <md-input-container flex="grow">
+                    <label>Last Name</label>
+                    <input ng-model="account.lastName" />
+                </md-input-container>
+            </div>
+            <md-input-container flex>
+                <label>Address</label>
+                <input required
+                       ng-model="account.address"
+                       placeholder="Address">
+            </md-input-container>
+            <div layout="row">
+                <md-input-container flex>
+                    <input ng-model="account.address2"
+                           placeholder="Address 2">
+                </md-input-container>
+            </div>
+            <div layout="row">
+                <md-input-container flex>
+                    <label>City</label>
+                    <input required
+                           ng-model="account.city">
+                </md-input-container>
+                <md-input-container flex>
+                    <label>State</label>
+                    <md-select ng-model="account.state">
+                        <md-option required
+                                   ng-repeat="state in states"
+                                   value="{{state}}">
+                            {{state}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+            <div layout="row">
+                <md-input-container flex="50">
+                    <label>Phone</label>
+                    <input name="phone"
+                           ng-model="account.phone"/>
+                </md-input-container>
+                <md-input-container flex>
+                    <label>Postal Code</label>
+                    <input name="postalCode"
+                           ng-model="account.postalCode"
+                           placeholder="12345"
+                           md-maxlength="5"
+                           required/>
+                </md-input-container>
+            </div>
+            <section layout="row" layout-align="center center">
+                <md-button ng-click="newAccount()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">Back to login?</md-button>
+                <md-button ng-click="register()" style="margin-bottom:10px" class="md-raised md-primary" ng-disabled="isClicked">Register</md-button>
+            </section>
+        </md-card>
+    </md-content>
+    <script src="../../bower_components/angular/angular.js"></script>
+    <script src="../../bower_components/angular-animate/angular-animate.js"></script>
+    <script src="../../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../../bower_components/angular-resource/angular-resource.js"></script>
+    <script src="../../bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="../../bower_components/angular-material/angular-material.js"></script>
+    <script src="loginApp.js"></script>
+    <script src="loginService.js"></script>
+    <script src="loginCtrl.js"></script>
+</body>
+</html>

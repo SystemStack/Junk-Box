@@ -4,3 +4,13 @@ bower_components/
 node_modules/
 dist/
 gulpfile.js
+obj/
+Views/
+bin/
+JunkBox/.vs/JunkBox/v14/.suo
+*.suo
+JunkBox/.vs/config/applicationhost.config
+JunkBox/JunkBox/JunkBox2.csproj.user
+JunkBox/JunkBox/JunkBox2.csproj
+JunkBox/JunkBox.Tests/JunkBox.Tests.csproj
+JunkBox/JunkBox.Tests/JunkBox.Tests.csproj
