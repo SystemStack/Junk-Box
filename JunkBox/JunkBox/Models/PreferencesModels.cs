@@ -11,6 +11,7 @@ namespace JunkBox.Models
         public string streetName { get; set; }
         public string streetName2 { get; set; }
         public string city { get; set; }
+        public string state { get; set; }
         public string postalCode { get; set; }
     }
 
@@ -26,4 +27,8 @@ namespace JunkBox.Models
         public bool action { get; set; }
     }
 
+    public class PreferenceGetAddressModel
+    {
+        public string email { get; set; }
+    }
 }

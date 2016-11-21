@@ -13,6 +13,17 @@ angular
          });
       return deferred.promise;
     },
+    getAddress: function (user) {
+        var deferred = $q.defer();
+        console.log(user);
+        $http.post('/Preferences/GetAddress/', { data: user })
+         .success(function (data, status, headers, config) {
+             deferred.resolve(data);
+         }).error(function (error) {
+             deferred.reject(error);
+         });
+        return deferred.promise;
+    },
     haltPurchases: function(haltPurchases) {
       var deferred = $q.defer();
         $http.post('/Preferences/HaltPurchases/', {data: haltPurchases})
