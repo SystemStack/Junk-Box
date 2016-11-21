@@ -2,7 +2,7 @@ angular
 .module('junkBox.controllers.queriesCtrl', [])
 .controller('queriesCtrl', function($scope, Queries, $rootScope) {
   $scope.query = {
-    email: $rootScope.Email,
+    email: $rootScope.email,
     category: "All Categories",
     price : 2.51,
     frequencyOptions: {
@@ -42,7 +42,7 @@ angular
 
   $scope.getQuerySettings = function () {
       var userData = {
-          email: $rootScope.Email
+          email: $rootScope.email
       }
 
       Queries.getSettings(userData).then(function (data) {
