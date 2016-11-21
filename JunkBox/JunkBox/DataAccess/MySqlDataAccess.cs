@@ -43,7 +43,6 @@ namespace JunkBox.DataAccess {
 
         public void CloseConnection()
         {
-            System.Windows.Forms.MessageBox.Show("Getting here");
             if (connection != null) {
                 connection.Close();
             } else {

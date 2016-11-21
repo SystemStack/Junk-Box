@@ -289,14 +289,15 @@
     <Content Include="core\junkBoxAPI.js" />
     <Content Include="core\services.js" />
     <Content Include="core\services\homeService.js" />
-    <Content Include="core\services\loginService.js" />
     <Content Include="core\services\preferencesService.js" />
     <Content Include="core\services\queriesService.js" />
     <Content Include="favicon.ico" />
     <Content Include="features\home\home.html" />
     <Content Include="features\home\homeCtrl.js" />
     <Content Include="features\login\login.html" />
+    <Content Include="features\login\loginApp.js" />
     <Content Include="features\login\loginCtrl.js" />
+    <Content Include="features\login\loginService.js" />
     <Content Include="features\preferences\preferences.html" />
     <Content Include="features\preferences\preferencesCtrl.js" />
     <Content Include="features\queries\queries.html" />
