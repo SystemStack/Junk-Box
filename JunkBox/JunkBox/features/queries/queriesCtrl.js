@@ -1,7 +1,8 @@
 angular
 .module('junkBox.controllers.queriesCtrl', [])
-.controller('queriesCtrl', function($scope, Queries) {
+.controller('queriesCtrl', function($scope, Queries, $rootScope) {
   $scope.query = {
+    email: $rootScope.Email,
     category: "All Categories",
     price : 2.51,
     frequencyOptions: {
@@ -39,6 +40,20 @@ angular
             "Toys and Hobbies", "Travel",
             "Video Games and Consoles", "Everything Else"].sort();
 
+  $scope.getQuerySettings = function () {
+      var userData = {
+          email: $rootScope.Email
+      }
+
+      Queries.getSettings(userData).then(function (data) {
+          console.log(data);
+          var userSettings = data["result"];
+          $scope.query.category = userSettings["Category"];
+          $scope.query.price = userSettings["PriceLimit"];
+          //$scope.query.frequencyOptions = ??? Not sure how to handle this one.
+      });
+  }();
+
   $scope.send = function() {
     var verifyValidData = function(e) {
       console.log(e);
@@ -53,7 +68,9 @@ angular
       return false;
     };
     if(verifyValidData($scope.query)) {
-      Queries.send($scope.query);
+        Queries.send($scope.query).then(function (data) {
+            console.log("UPDATE QUERY RESULT: " + data);
+        });
       console.log($scope.query);
       $scope.submittedRecord = true;
     }
