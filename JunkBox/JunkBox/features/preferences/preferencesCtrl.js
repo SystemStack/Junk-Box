@@ -55,6 +55,8 @@ angular
 
     $scope.changePassword = function () {
         var passwordData = {
+            email: $rootScope.Email,
+            oldPassword: $scope.currentPassword,
             newPassword: $scope.newPassword
         };
       if(!$scope.newPassword || !$scope.newPassword2 || !$scope.currentPassword ){

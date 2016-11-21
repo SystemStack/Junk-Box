@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 using JunkBox.Models;
 using JunkBox.DataAccess;
+using JunkBox.Common;
 
 namespace JunkBox.Controllers
 {
@@ -56,7 +57,39 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult ChangePassword(PreferenceChangePasswordModel data)
         {
-            return Json(new { result = data.newPassword });
+            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT Hash, CustomerID FROM Customer WHERE Email='" + data.email + "'");
+            if(customerData.Count <= 0)
+            {
+                return Json(new { result="Fail"});
+            }
+
+            string customerHash = customerData.First()["Hash"];
+            string customerId = customerData.First()["CustomerID"];
+
+            bool verifyPassword = Password.VerifyHash(data.oldPassword, customerHash);
+
+            if(!verifyPassword)
+            {
+                return Json(new { result="Fail"});
+            }
+
+            byte[] salt = Password.ComputeSaltBytes();
+
+            string hashString = Password.ComputeHash(data.newPassword, salt);
+            string saltString = Convert.ToBase64String(salt);
+
+            Dictionary<string, string> updateParams = new Dictionary<string, string>(){
+                {"Hash", hashString},
+                {"Salt", saltString}
+            };
+            int result = dataAccess.Update("Customer", updateParams, "CustomerID", customerId);
+
+            if(result == 0)
+            {
+                return Json(new { result="Fail"});
+            }
+
+            return Json(new { result="Success" });
         }
 
         //POST: Preferences/HaltPurchases/{data}

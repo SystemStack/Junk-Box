@@ -4,11 +4,9 @@ using System.Web;
 using System.Web.Mvc;
 using JunkBox.DataAccess;
 
-using System.Data.Common;
-using System.Web.Script.Serialization;
 using JunkBox.Models;
-using System.Security.Cryptography;
-using System.Text;
+using JunkBox.Common;
+
 using System.Linq;
 
 namespace JunkBox.Controllers {
@@ -28,7 +26,7 @@ namespace JunkBox.Controllers {
                 return Json(new { result="Fail" });
             }
 
-            bool verifyHash = VerifyHash(id.password, userRecord.First()["Hash"]);
+            bool verifyHash = Password.VerifyHash(id.password, userRecord.First()["Hash"]);
 
             if (verifyHash)
             {
@@ -66,9 +64,9 @@ namespace JunkBox.Controllers {
             //Get the AddressID of the record we just inserted
             string addressId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
 
-            byte[] salt = ComputeSaltBytes();
+            byte[] salt = Password.ComputeSaltBytes();
 
-            string hashString = ComputeHash(id.password, salt);
+            string hashString = Password.ComputeHash(id.password, salt);
             string saltString = Convert.ToBase64String(salt);
 
 
@@ -118,82 +116,6 @@ namespace JunkBox.Controllers {
             */
 
             return Json(new { result="Success"});
-        }
-
-        private static byte[] ComputeSaltBytes()
-        {
-            byte[] saltBytes;
-
-            int minSaltSize = 4;
-            int maxSaltSize = 8;
-
-            Random random = new Random();
-            int saltSize = random.Next(minSaltSize, maxSaltSize);
-
-            saltBytes = new byte[saltSize];
-
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-
-            rng.GetNonZeroBytes(saltBytes);
-
-            return saltBytes;
-        }
-
-        private static string ComputeHash(string plainText, byte[] saltBytes)
-        {
-            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-
-            byte[] plainTextWithSaltBytes = new byte[plainTextBytes.Length + saltBytes.Length];
-
-            for (int i = 0; i < plainTextBytes.Length; i++)
-                plainTextWithSaltBytes[i] = plainTextBytes[i];
-
-            for (int i = 0; i < saltBytes.Length; i++)
-                plainTextWithSaltBytes[plainTextBytes.Length + i] = saltBytes[i];
-
-            HashAlgorithm hash = new SHA512Managed();
-
-            byte[] hashBytes = hash.ComputeHash(plainTextWithSaltBytes);
-
-            byte[] hashWithSaltBytes = new byte[hashBytes.Length +
-                                                saltBytes.Length];
-
-            for (int i = 0; i < hashBytes.Length; i++)
-                hashWithSaltBytes[i] = hashBytes[i];
-
-            for (int i = 0; i < saltBytes.Length; i++)
-                hashWithSaltBytes[hashBytes.Length + i] = saltBytes[i];
-
-            string hashValue = Convert.ToBase64String(hashWithSaltBytes);
-
-            return hashValue;
-        }
-
-        private static bool VerifyHash(string plainText, string hashValue)
-        {
-            try
-            {
-                byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
-
-                int hashSizeInBits = 512,
-                    hashSizeInBytes = hashSizeInBits / 8;
-
-                if (hashWithSaltBytes.Length < hashSizeInBytes)
-                    return false;
-
-                byte[] saltBytes = new byte[hashWithSaltBytes.Length - hashSizeInBytes];
-
-                for (int i = 0; i < saltBytes.Length; i++)
-                    saltBytes[i] = hashWithSaltBytes[hashSizeInBytes + i];
-
-                string expectedHashString = LoginController.ComputeHash(plainText, saltBytes);
-
-                return (hashValue == expectedHashString);
-            }
-            catch(FormatException e)
-            {
-                return false;
-            }
         }
     }
 }
