@@ -35,11 +35,13 @@ namespace JunkBox.Controllers
                 {"BillingAddress2", data.streetName2},
                 {"BillingCity", data.city},
                 {"BillingZip", data.postalCode},
+                {"BillingState", data.state},
 
                 {"ShippingAddress", data.streetName},
                 {"ShippingAddress2", data.streetName2},
                 {"ShippingCity", data.city},
                 {"ShippingZip", data.postalCode},
+                {"ShippingState", data.state}
             };
             int result = dataAccess.Update("Address", addressUpdates, "AddressID", addressId);
 
@@ -97,6 +99,26 @@ namespace JunkBox.Controllers
         public ActionResult HaltPurchases(PreferenceHaltPurchaseModel data)
         {
             return Json(new { result=data.action});
+        }
+
+        //POST: Preferences/GetAddress/{data}
+        [HttpPost]
+        public ActionResult GetAddress(PreferenceGetAddressModel data)
+        {
+            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT CustomerID, AddressID FROM Customer WHERE Email='" + data.email + "'");
+            if(customerData.Count <= 0)
+            {
+                return Json(new { result="Fail" });
+            }
+
+            string addressId = customerData.First()["AddressID"];
+            List<Dictionary<string, string>> addressData = dataAccess.Select("SELECT * FROM Address WHERE AddressID='" + addressId + "'");
+            if(addressData.Count <= 0)
+            {
+                return Json(new { result="Fail" });
+            }
+
+            return Json(new { result=addressData.First() });
         }
     }
 }

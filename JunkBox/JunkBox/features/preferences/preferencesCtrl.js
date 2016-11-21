@@ -17,6 +17,21 @@ angular
                      "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
                      "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
 
+    $scope.getAddressData = function () {
+        var userData = {
+            email: $rootScope.Email
+        }
+        Preferences.getAddress(userData).then(function (data) {
+            console.log(data);
+            //console.log("WILL THIS WORK???" + data["result"]["AddressID"]); <-- answer is yes it will!
+            $scope.address.streetName = data["result"]["BillingAddress"];
+            $scope.address.streetName2 = data["result"]["BillingAddress2"];
+            $scope.address.city = data["result"]["BillingCity"];
+            $scope.address.state = data["result"]["BillingState"];
+            $scope.address.postalCode = data["result"]["BillingZip"];
+        });
+    }();
+
     $scope.validateAddress = function() {
       if (!Queries.validateAddress(e.address)) {
         $scope.displayToUser("We could not validate your address");
