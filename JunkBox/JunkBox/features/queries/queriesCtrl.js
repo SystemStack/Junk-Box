@@ -69,7 +69,7 @@ angular
     };
     if(verifyValidData($scope.query)) {
         Queries.send($scope.query).then(function (data) {
-            console.log("UPDATE QUERY RESULT: " + data);
+            console.log(data);
         });
       console.log($scope.query);
       $scope.submittedRecord = true;
