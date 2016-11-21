@@ -70,7 +70,7 @@ namespace JunkBox.Controllers {
             Dictionary<string, string> newUserQuery = new Dictionary<string, string>() {
                 {"Frequency", "NEVER"},
                 {"PriceLimit", "1.00"},
-                {"Category", "Default"}
+                {"Category", "All Categories"}
             };
             int queryResult = dataAccess.Insert("Query", newUserQuery);
 
