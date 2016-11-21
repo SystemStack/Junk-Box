@@ -5,10 +5,9 @@ angular
     $rootScope.loggedIn = "false";
 
     $scope.credentials = {
-        "Email": "broadl21@uwosh.edu",
-        "Password": "Text"
+        "email": "broadl21@uwosh.edu",
+        "password": "password"
     };
-
     $scope.account = {
         "email": "",
         "password": "password",
@@ -52,7 +51,7 @@ angular
         $scope.isClicked = true;
         Login.login($scope.credentials).then(function (data) {
             if (data.result === "Success") {
-                sessionStorage.Email = $scope.credentials.Email;
+                sessionStorage.email = $scope.credentials.email;
                 window.location.assign("../../index.html");
             } else {
                 $mdToast.show($mdToast.simple()
