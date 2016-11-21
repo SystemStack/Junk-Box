@@ -3,6 +3,5 @@ angular
   [
     "junkBox.controllers.homeCtrl",
     "junkBox.controllers.queriesCtrl",
-    "junkBox.controllers.preferencesCtrl",
-    "junkBox.controllers.loginCtrl"
+    "junkBox.controllers.preferencesCtrl"
   ]);

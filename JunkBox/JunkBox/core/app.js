@@ -37,10 +37,24 @@ angular.module("junkBox",
             controller: "preferencesCtrl"
         });
       $urlRouterProvider.otherwise("/home");
-  })
-  .controller("MainCtrl", function ($scope, $mdToast) {
+  }).run(function ($rootScope, $http) {
+    if (!sessionStorage.Email) {
+        delete sessionStorage;
+        window.location.assign("features/login/login.html");
+    }
+}).controller("MainCtrl", function ($scope, $mdToast, $rootScope) {
+      $scope.checkSessionStorage = function (){
+          if(sessionStorage.Email){
+                  $rootScope.Email = sessionStorage.Email;
+          } else {
+            $scope.displayToUser("Please log in");
+            delete sessionStorage;
+            window.location.assign("features/login/login.html");
+          }
+      }();
+
       $scope.goHome = function () {
-          $urlRouterProvider.otherwise("/home");
+          $urlRouterProvider.otherwise("/login");
       };
 
       $scope.displayToUser = function (text, milliseconds) {

@@ -1,9 +1,10 @@
 angular
 .module('junkBox.controllers.homeCtrl', [])
-.controller('homeCtrl', function($scope, Home) {
+.controller('homeCtrl', function($scope, Home, $rootScope) {
     var user = {
         email: "test@test.com"
     };
+    console.log($rootScope);
 
     $scope.getRecentPurchases = function() {
         Home.getRecentPurchases(user).then(function(data){
