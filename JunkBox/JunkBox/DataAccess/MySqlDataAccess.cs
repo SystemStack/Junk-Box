@@ -44,8 +44,8 @@ namespace JunkBox.DataAccess {
         public void CloseConnection()
         {
             if (connection != null) {
-
                 connection.Close();
+            }
         }
 
         public DbDataReader Query(string query)
