@@ -5,7 +5,7 @@ using System.Web;
 
 namespace JunkBox.Models
 {
-    public class PrefrenceAddressModel
+    public class PreferenceAddressModel
     {
         public string email { get; set; }
         public string streetName { get; set; }
@@ -13,4 +13,15 @@ namespace JunkBox.Models
         public string city { get; set; }
         public string postalCode { get; set; }
     }
+
+    public class PreferenceChangePasswordModel
+    {
+        public string newPassword { get; set; }
+    }
+
+    public class PreferenceHaltPurchaseModel
+    {
+        public bool action { get; set; }
+    }
+
 }
