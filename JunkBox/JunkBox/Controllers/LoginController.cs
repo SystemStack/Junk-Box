@@ -28,7 +28,7 @@ namespace JunkBox.Controllers {
                 return Json(new { result="Fail" });
             }
 
-            bool verifyHash = LoginController.VerifyHash(id.password, userRecord.First()["Hash"]);
+            bool verifyHash = VerifyHash(id.password, userRecord.First()["Hash"]);
 
             if (verifyHash)
             {
@@ -66,9 +66,9 @@ namespace JunkBox.Controllers {
             //Get the AddressID of the record we just inserted
             string addressId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
 
-            byte[] salt = LoginController.ComputeSaltBytes();
+            byte[] salt = ComputeSaltBytes();
 
-            string hashString = LoginController.ComputeHash(id.password, salt);
+            string hashString = ComputeHash(id.password, salt);
             string saltString = Convert.ToBase64String(salt);
 
 
@@ -190,7 +190,7 @@ namespace JunkBox.Controllers {
 
                 return (hashValue == expectedHashString);
             }
-            catch(Exception e)
+            catch(FormatException e)
             {
                 return false;
             }
