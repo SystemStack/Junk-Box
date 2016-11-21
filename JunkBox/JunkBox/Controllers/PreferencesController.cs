@@ -98,7 +98,7 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult HaltPurchases(PreferenceHaltPurchaseModel data)
         {
-            return Json(new { result=data.action});
+            return Json(new { result=data.action });
         }
 
         //POST: Preferences/GetAddress/{data}
