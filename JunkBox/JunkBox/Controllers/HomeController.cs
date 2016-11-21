@@ -13,9 +13,9 @@ namespace JunkBox.Controllers {
 
         private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
-        // POST: Home/.....
+        // POST: Home/GetRecentPurchases/{data}
         [HttpPost]
-        public ActionResult GetRecentPurchases (GetRecentPurchaseModel id) {
+        public ActionResult GetRecentPurchases (HomeGetRecentPurchaseModel id) {
 
             List<Dictionary<string, string>> results = dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='" + id.email + "'");
             

@@ -2,10 +2,10 @@ angular
 .module('junkBox.services.preferencesService',[])
 .factory('Preferences', function($q, $http) {
   return{
-    validateAddress: function(address) {
+    updateAddress: function(address) {
       var deferred = $q.defer();
       console.log(address);
-      $http.post('validateAddress.cs', address)
+        $http.post('/Preferences/UpdateAddress/', { data: address} )
          .success(function(data, status, headers, config) {
           deferred.resolve(data);
          }).error(function(error) {

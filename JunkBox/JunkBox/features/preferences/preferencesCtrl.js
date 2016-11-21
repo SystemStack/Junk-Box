@@ -1,8 +1,9 @@
 angular
 .module('junkBox.controllers.preferencesCtrl', [])
 .controller('preferencesCtrl',
-  function($scope, Preferences) {
-    $scope.address = {
+  function($rootScope, $scope, Preferences) {
+      $scope.address = {
+      email: $rootScope.Email,
       streetName : "918 Wisconsin Street",
       streetName2: "",
       city: "Oshkosh",
@@ -20,6 +21,11 @@ angular
       if (!Queries.validateAddress(e.address)) {
         $scope.displayToUser("We could not validate your address");
       }
+    };
+    $scope.updateUserInformation = function () {
+        Preferences.updateAddress($scope.address).then(function (data) {
+            console.log(data);
+        });
     };
     $scope.haltAccount = function(e) {
       if(e === false) {
