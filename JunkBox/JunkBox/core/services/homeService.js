@@ -4,8 +4,8 @@ angular
     return{
       getRecentPurchases: function(user) {
           var deferred = $q.defer();
-            email = encodeURIComponent(user.email).replace(/\./g, "PERIODHERE");
-            $http.post('/Home/GetRecentPurchases/' + email)
+            //email = encodeURIComponent(user.email).replace(/\./g, "PERIODHERE");
+          $http.post('/Home/GetRecentPurchases/', {id: user})
                 .success(function (data, status, headers, config) {
                      console.log(data);
                      deferred.resolve(data);
