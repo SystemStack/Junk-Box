@@ -5,7 +5,13 @@ using System.Web;
 
 namespace JunkBox.Models
 {
-    public class RegisterModel
+    public class LoginLoginModel
+    {
+        public string email { get; set; }
+        public string password { get; set; }
+    }
+
+    public class LoginRegisterModel
     {
         public string email { get; set; }
         public string address { get; set; }

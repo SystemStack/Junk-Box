@@ -2,10 +2,10 @@ angular
 .module('junkBox.services.preferencesService',[])
 .factory('Preferences', function($q, $http) {
   return{
-    validateAddress: function(address) {
+    updateAddress: function(address) {
       var deferred = $q.defer();
       console.log(address);
-      $http.post('validateAddress.cs', address)
+        $http.post('/Preferences/UpdateAddress/', { data: address} )
          .success(function(data, status, headers, config) {
           deferred.resolve(data);
          }).error(function(error) {
@@ -15,7 +15,7 @@ angular
     },
     haltPurchases: function(haltPurchases) {
       var deferred = $q.defer();
-      $http.post('haltPurchases.cs', haltPurchases)
+        $http.post('/Preferences/HaltPurchases/', {data: haltPurchases})
          .success(function(data, status, headers, config) {
           deferred.resolve(data);
          }).error(function(error) {
@@ -25,7 +25,7 @@ angular
     },
     changePassword: function(newPassword){
       var deferred = $q.defer();
-      $http.post('changePassword.cs', newPassword)
+        $http.post('/Preferences/ChangePassword/', {data: newPassword})
          .success(function(data, status, headers, config) {
           deferred.resolve(data);
          }).error(function(error) {

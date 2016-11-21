@@ -5,7 +5,7 @@ using System.Web;
 
 namespace JunkBox.Models
 {
-    public class GetRecentPurchaseModel
+    public class HomeGetRecentPurchaseModel
     {
         public string email { get; set; }
     }

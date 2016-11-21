@@ -1,8 +1,9 @@
 angular
 .module('junkBox.controllers.preferencesCtrl', [])
 .controller('preferencesCtrl',
-  function($scope, Preferences) {
-    $scope.address = {
+  function($rootScope, $scope, Preferences) {
+      $scope.address = {
+      email: $rootScope.Email,
       streetName : "918 Wisconsin Street",
       streetName2: "",
       city: "Oshkosh",
@@ -21,16 +22,29 @@ angular
         $scope.displayToUser("We could not validate your address");
       }
     };
+    $scope.updateUserInformation = function () {
+        Preferences.updateAddress($scope.address).then(function (data) {
+            console.log(data);
+        });
+    };
     $scope.haltAccount = function(e) {
-      if(e === false) {
-        Preferences.haltPurchases(false).then(function(){
-          $scope.displayToUser('Purchases are continuing');
+        if (e === false) {
+            var haltData = {
+                action: false
+            };
+        Preferences.haltPurchases(haltData).then(function(data){
+            $scope.displayToUser('Purchases are continuing');
+            console.log(data);
         },function(){
           $scope.displayToUser("Update failed, try again");
         });
-      } else if (e === true) {
-        Preferences.haltPurchases(true).then(function(){
-          $scope.displayToUser('Purchases have been halted');
+        } else if (e === true) {
+            var haltData = {
+                action: true
+            };
+        Preferences.haltPurchases(haltData).then(function(data){
+            $scope.displayToUser('Purchases have been halted');
+            console.log(data);
         },function(){
           $scope.displayToUser("Update failed, try again");
         });
@@ -39,7 +53,12 @@ angular
       }
     };
 
-    $scope.changePassword = function (){
+    $scope.changePassword = function () {
+        var passwordData = {
+            email: $rootScope.Email,
+            oldPassword: $scope.currentPassword,
+            newPassword: $scope.newPassword
+        };
       if(!$scope.newPassword || !$scope.newPassword2 || !$scope.currentPassword ){
         $scope.displayToUser("Please fill out all fields");
       } else if($scope.newPassword !== $scope.newPassword2){
@@ -47,8 +66,9 @@ angular
       } else if ($scope.currentPassword === $scope.newPassword){
         $scope.displayToUser("You cannot change your password to your current password");
       } else {
-        Preferences.changePassword($scope.newPassword).then(function(){
-          $scope.displayToUser("Password successfully changed");
+        Preferences.changePassword(passwordData).then(function(data){
+            $scope.displayToUser("Password successfully changed");
+            console.log(data);
         },function(){
           $scope.displayToUser("Password change failed");
         });
