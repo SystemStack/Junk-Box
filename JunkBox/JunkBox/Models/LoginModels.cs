@@ -24,7 +24,5 @@ namespace JunkBox.Models
         public string state { get; set; }
         public string firstName { get; set; }
         public string lastName { get; set; }
-        //public string hash { get; set; }
-        //public string salt { get; set; }
     }
 }

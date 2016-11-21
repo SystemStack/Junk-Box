@@ -42,11 +42,13 @@ namespace JunkBox.Controllers {
         [HttpPost]
         public ActionResult Register (LoginRegisterModel id) {
 
+            //Check if we already have a user registered with the same email address
             if(dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='" + id.email + "'").Count >= 1)
             {
                 return Json(new { result="Fail"});
             }
 
+            //Insert user's address into Address table
             Dictionary<string, string> newUserAddress = new Dictionary<string, string>() {
                 {"BillingCity", id.city},
                 {"BillingState", id.state},
@@ -64,14 +66,27 @@ namespace JunkBox.Controllers {
             //Get the AddressID of the record we just inserted
             string addressId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
 
-            byte[] salt = Password.ComputeSaltBytes();
+            //Insert User's Query preferences into Query table
+            Dictionary<string, string> newUserQuery = new Dictionary<string, string>() {
+                {"Frequency", "NEVER"},
+                {"PriceLimit", "1.00"},
+                {"Category", "Default"}
+            };
+            int queryResult = dataAccess.Insert("Query", newUserQuery);
 
+            //Get the QueryID of the record we just inserted
+            string queryId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
+
+
+            //Generate Password's Salt and Hash
+            byte[] salt = Password.ComputeSaltBytes();
             string hashString = Password.ComputeHash(id.password, salt);
             string saltString = Convert.ToBase64String(salt);
 
 
+            //Insert user into Customer table
             Dictionary<string, string> newUserDetails = new Dictionary<string, string>() {
-                {"QueryID", ""},
+                {"QueryID", queryId},
                 {"AddressID", addressId},
                 {"FirstName", id.firstName},
                 {"LastName", id.lastName},
