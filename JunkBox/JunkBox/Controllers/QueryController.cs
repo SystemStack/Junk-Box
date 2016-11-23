@@ -63,7 +63,7 @@ namespace JunkBox.Controllers
 
             if(updateResult <= 0)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Fail" });
             }
 
             return Json(new { result="Success" });
