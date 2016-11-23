@@ -3,7 +3,8 @@
 .controller('ebayCtrl', function ($scope, Ebay, $rootScope) {
     $scope.stuff = {
         email: $rootScope.Email,
-        html: ""
+        html: "",
+        timestamp: ""
     };
     
 
@@ -13,6 +14,17 @@
             $scope._cb_findItemsByKeywords(success);
         }, function (failure) {
             console.log(failure);
+        });
+    };
+
+    $scope.getTimestamp = function () {
+        Ebay.getSomething().then(function (data) {
+            console.log("SUCCESS!");
+            console.log(data);
+            $scope.stuff.timestamp = data["response"];
+        }, function (reject) {
+            console.log("REJECTED!");
+            console.log(reject);
         });
     }();
 
