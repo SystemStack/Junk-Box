@@ -190,6 +190,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Common\Ebay.cs" />
     <Compile Include="Common\Password.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -795,10 +796,13 @@
     <Content Include="core\img\hose.jpg" />
     <Content Include="core\junkBoxAPI.js" />
     <Content Include="core\services.js" />
+    <Content Include="core\services\ebayService.js" />
     <Content Include="core\services\homeService.js" />
     <Content Include="core\services\preferencesService.js" />
     <Content Include="core\services\queriesService.js" />
     <Content Include="favicon.ico" />
+    <Content Include="features\ebay\ebay.html" />
+    <Content Include="features\ebay\ebayCtrl.js" />
     <Content Include="features\home\home.html" />
     <Content Include="features\home\homeCtrl.js" />
     <Content Include="features\login\login.html" />
