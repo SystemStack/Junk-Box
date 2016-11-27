@@ -1,13 +1,50 @@
 ﻿using JunkBox.com.ebay.developer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Configuration;
 
 namespace JunkBox.Common
 {
     public class Ebay
     {
+        private static string appId = ConfigurationManager.AppSettings["AppID"];
+
+        public static string GetEbayResult(string URL, Dictionary<string, string> urlParameters)
+        {
+            StringBuilder urlParams = new StringBuilder("?SECURITY-APPNAME=" + appId);
+
+            foreach(KeyValuePair<string, string> entry in urlParameters)
+            {
+                if (entry.Value != "")
+                    urlParams.Append("&" + entry.Key + "=" + entry.Value);
+                else
+                    urlParams.Append("&" + entry.Key);
+            }
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(URL);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // List data response.
+            HttpResponseMessage response = client.GetAsync(urlParams.ToString()).Result;  // Blocking call!
+            if (response.IsSuccessStatusCode)
+            {
+                
+                // Parse the response body. Blocking!
+                var dataObjects = response.Content.ReadAsStringAsync().Result;
+                return dataObjects;
+            }
+            else
+            {
+                return response.StatusCode + " (" + response.ReasonPhrase + ")";
+            }
+        }
+
         public static string GetTimestamp()
         {
             //App ID (Client ID)	WalterWo-JunkBox-SBX-645ed6013-c241386a
@@ -49,6 +86,7 @@ namespace JunkBox.Common
             GeteBayOfficialTimeResponseType response = service.GeteBayOfficialTime(request);
             //Console.WriteLine("The time at eBay headquarters in San Jose, California, USA, is:");
             //Console.WriteLine(response.Timestamp);
+
             return response.Timestamp.ToString();
         }
     }

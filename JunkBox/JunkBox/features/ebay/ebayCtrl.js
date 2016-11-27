@@ -17,6 +17,16 @@
         });
     };
 
+    $scope.executeGetTest = function () {
+        console.log("EXECUTE GET TEST RESULT!");
+        Ebay.getTest().then(function (success) {
+            console.log(success);
+            $scope._cb_findItemsByKeywords(success);
+        }, function (failure) {
+            console.log(failure);
+        });
+    }();
+
     $scope.getTimestamp = function () {
         Ebay.getSomething().then(function (data) {
             console.log("SUCCESS!");
