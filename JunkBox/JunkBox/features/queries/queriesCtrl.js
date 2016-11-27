@@ -85,12 +85,15 @@ angular
               $scope.query.categoryId = $scope.categories[userSettings["Category"]];
               console.log($scope.categories[$scope.query.category]);
               $scope.query.price = userSettings["PriceLimit"];
+
               $scope.frequencyOptions.forEach(function (element) {
+
                   if (userSettings["Frequency"].toUpperCase() === element["label"].toUpperCase()) {
                       $scope.query.frequencyOptions.label = element.label;
                       $scope.query.frequencyOptions.value = element.value;
                   }
               });
+
           });
 
       });
