@@ -66,22 +66,6 @@ angular
           email: $rootScope.email
       }
 
-      Queries.getSettings(userData).then(function (data) {
-          console.log(data);
-          var userSettings = data["result"];
-          $scope.query.category = userSettings["Category"];
-          $scope.query.price = userSettings["PriceLimit"];
-          //$scope.query.frequencyOptions = ??? Not sure how to handle this one.
-          $scope.frequencyOptions.forEach(function (element) {
-              //console.log(userSettings["Frequency"] + " *** " + element["label"]);
-              if(userSettings["Frequency"].toUpperCase() === element["label"].toUpperCase()){
-                  $scope.query.frequencyOptions.label = element.label;
-                  $scope.query.frequencyOptions.value = element.value;
-              }
-          });
-          //console.log($scope.query.frequencyOptions);
-      });
-
       Ebay.getAllCategories().then(function (success) {
           console.log(success);
           var newList = {};
@@ -92,8 +76,37 @@ angular
           $scope.categories = newList;
       }, function (failure) {
           console.log(failure);
+      }).finally(function () {
+
+          Queries.getSettings(userData).then(function (data) {
+              console.log(data);
+              var userSettings = data["result"];
+              $scope.query.category = userSettings["Category"];
+              $scope.query.categoryId = $scope.categories[userSettings["Category"]];
+              console.log($scope.categories[$scope.query.category]);
+              $scope.query.price = userSettings["PriceLimit"];
+              $scope.frequencyOptions.forEach(function (element) {
+                  if (userSettings["Frequency"].toUpperCase() === element["label"].toUpperCase()) {
+                      $scope.query.frequencyOptions.label = element.label;
+                      $scope.query.frequencyOptions.value = element.value;
+                  }
+              });
+          });
+
       });
+
+      
+
+      
   }();
+
+  function queriesGetSettings() {
+
+  }
+
+  function QueriesGetSettingsSuccess() {
+
+  }
 
   $scope.send = function() {
     var verifyValidData = function(e) {
