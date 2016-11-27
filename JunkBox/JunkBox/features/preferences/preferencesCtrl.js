@@ -3,7 +3,7 @@ angular
 .controller('preferencesCtrl',
   function($rootScope, $scope, Preferences) {
       $scope.address = {
-      email: $rootScope.Email,
+      email: $rootScope.email,
       streetName : "918 Wisconsin Street",
       streetName2: "",
       city: "Oshkosh",
@@ -19,7 +19,7 @@ angular
 
     $scope.getAddressData = function () {
         var userData = {
-            email: $rootScope.Email
+            email: $rootScope.email
         }
         Preferences.getAddress(userData).then(function (data) {
             console.log(data);
@@ -70,7 +70,7 @@ angular
 
     $scope.changePassword = function () {
         var passwordData = {
-            email: $rootScope.Email,
+            email: $rootScope.email,
             oldPassword: $scope.currentPassword,
             newPassword: $scope.newPassword
         };
