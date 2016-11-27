@@ -1,6 +1,6 @@
 angular
 .module('junkBox.controllers.queriesCtrl', [])
-.controller('queriesCtrl', function($scope, Queries, $rootScope) {
+.controller('queriesCtrl', function($scope, Queries, $rootScope, Ebay) {
   $scope.query = {
     email: $rootScope.email,
     category: "All Categories",
@@ -51,6 +51,20 @@ angular
           $scope.query.category = userSettings["Category"];
           $scope.query.price = userSettings["PriceLimit"];
           //$scope.query.frequencyOptions = ??? Not sure how to handle this one.
+      });
+
+      Ebay.getAllCategories().then(function (success) {
+          console.log(success);
+          var newList = [];
+
+          //console.log(success.CategoryArray.Category);
+          success.CategoryArray.Category.forEach(function (element) {
+              newList.push(element["CategoryName"]);
+          });
+
+          $scope.categories = newList;
+      }, function (failure) {
+          console.log(failure);
       });
   }();
 

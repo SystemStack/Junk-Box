@@ -11,18 +11,30 @@ namespace JunkBox.Common
 {
     public class Ebay
     {
-        private static string appId = ConfigurationManager.AppSettings["AppID"];
+        //private static string appId = ConfigurationManager.AppSettings["AppID"];
 
         public static IDictionary<string, object> GetEbayResult(string URL, Dictionary<string, string> urlParameters)
         {
-            StringBuilder urlParams = new StringBuilder("?SECURITY-APPNAME=" + appId);
+            StringBuilder urlParams = new StringBuilder();
 
+            int count = 0;
             foreach(KeyValuePair<string, string> entry in urlParameters)
             {
-                if (entry.Value != "")
-                    urlParams.Append("&" + entry.Key + "=" + entry.Value);
+                if (count == 0)
+                {
+                    if (entry.Value != "")
+                        urlParams.Append("?" + entry.Key + "=" + entry.Value);
+                    else
+                        urlParams.Append("?" + entry.Key);
+                }
                 else
-                    urlParams.Append("&" + entry.Key);
+                {
+                    if (entry.Value != "")
+                        urlParams.Append("&" + entry.Key + "=" + entry.Value);
+                    else
+                        urlParams.Append("&" + entry.Key);
+                }
+                count++;
             }
 
             HttpClient client = new HttpClient();

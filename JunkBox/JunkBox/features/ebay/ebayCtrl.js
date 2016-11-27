@@ -17,6 +17,15 @@
         });
     }();
 
+    $scope.getCategoriesTest = function () {
+        console.log("Attemtping to get categories from Ebay:");
+        Ebay.getAllCategories().then(function (success) {
+            console.log(success);
+        }, function (failure) {
+            console.log(failure);
+        });
+    }();
+
     $scope.getTimestamp = function () {
         Ebay.getSomething().then(function (data) {
             console.log("SUCCESS!");

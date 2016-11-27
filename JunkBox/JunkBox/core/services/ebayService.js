@@ -6,10 +6,8 @@
             var deferred = $q.defer();
             $http.post('/Ebay/GetTest/')
                   .success(function (data, status, headers, config) {
-                      console.log(data);
                       deferred.resolve(data);
                   }).error(function (error) {
-                      console.log(error);
                       deferred.reject(error);
                   });
             return deferred.promise;
@@ -18,10 +16,18 @@
             var deferred = $q.defer();
             $http.post('/Ebay/GetSomething/', { data: info })
                   .success(function (data, status, headers, config) {
-                      console.log(data);
                       deferred.resolve(data);
                   }).error(function (error) {
-                      console.log(error);
+                      deferred.reject(error);
+                  });
+            return deferred.promise;
+        },
+        getAllCategories: function (info) {
+            var deferred = $q.defer();
+            $http.post('/Ebay/GetAllCategories/')
+                  .success(function (data, status, headers, config) {
+                      deferred.resolve(data);
+                  }).error(function (error) {
                       deferred.reject(error);
                   });
             return deferred.promise;
