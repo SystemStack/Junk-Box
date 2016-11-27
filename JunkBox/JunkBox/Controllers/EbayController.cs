@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Configuration;
+using System.Linq;
+
+using JunkBox.DataAccess;
 using JunkBox.Models;
 using JunkBox.Common;
-using System.Web.Script.Serialization;
-using System.Configuration;
 
 namespace JunkBox.Controllers
 {
     public class EbayController : Controller
     {
+        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
         private static string appId = ConfigurationManager.AppSettings["AppID"];
 
         //POST: Ebay/GetSomething/{data}
@@ -41,7 +44,9 @@ namespace JunkBox.Controllers
                 { "RESPONSE-DATA-FORMAT", "JSON"},
                 { "REST-PAYLOAD", ""},
                 { "keywords", "harry%20potter"},
-                { "paginationInput.entriesPerPage", "3"}
+                { "paginationInput.entriesPerPage", "3"},
+                { "itemFilter(0).name", "MaxPrice"},
+                { "itemFilter(0).value", "5.00"}
             };
 
             /*
@@ -68,6 +73,48 @@ namespace JunkBox.Controllers
                 "itemFilter(5).value=1";
             */
 
+            return Json(Ebay.GetEbayResult(URL, urlParameters));
+        }
+
+        //POST: Ebay/GetViablePurchases/{data}
+        [HttpPost]
+        public ActionResult GetViablePurchases(EbayGetViablePurchasesModel data)
+        {
+            /*
+                http://svcs.ebay.com/services/search/FindingService/v1?
+                OPERATION-NAME=findItemsByCategory&
+                SERVICE-VERSION=1.0.0&
+                SECURITY-APPNAME=YourAppID&
+                RESPONSE-DATA-FORMAT=JSON&
+                REST-PAYLOAD&
+                categoryId=10181&
+                paginationInput.entriesPerPage=2
+
+                itemFilter(1).name=ListingType&
+                itemFilter(1).value=AuctionWithBIN&
+             */
+
+            Dictionary<string, string> customerInfo = dataAccess.Select("SELECT CustomerID, QueryID FROM Customer WHERE Email='" + data.email + "'").First();
+
+            Dictionary<string, string> queryPref = dataAccess.Select("SELECT * FROM Query WHERE QueryID='" + customerInfo["QueryID"] + "'").First();
+
+            string URL = "http://svcs.ebay.com/services/search/FindingService/v1";
+
+            Dictionary<string, string> urlParameters = new Dictionary<string, string>() {
+                { "OPERATION-NAME", "findItemsByCategory"},
+                { "SERVICE-VERSION", "1.0.0"},
+                { "SECURITY-APPNAME", appId},
+                { "GLOBAL-ID", "EBAY-US"},
+                { "RESPONSE-DATA-FORMAT", "JSON"},
+                { "REST-PAYLOAD", ""},
+                { "categoryId", queryPref["CategoryID"]},
+                { "paginationInput.entriesPerPage", "4"},
+                { "itemFilter(0).name", "MaxPrice"},
+                { "itemFilter(0).value", queryPref["PriceLimit"]},
+                { "itemFilter(1).name", "ListingType"},
+                { "itemFilter(1).value", "AuctionWithBIN"}
+
+            };
             return Json(Ebay.GetEbayResult(URL, urlParameters));
         }
 

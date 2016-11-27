@@ -31,6 +31,17 @@
                       deferred.reject(error);
                   });
             return deferred.promise;
+        },
+        getViablePurchases: function (info) {
+            var deferred = $q.defer();
+            console.log(info);
+            $http.post('/Ebay/GetViablePurchases/', { data: info })
+                  .success(function (data, status, headers, config) {
+                      deferred.resolve(data);
+                  }).error(function (error) {
+                      deferred.reject(error);
+                  });
+            return deferred.promise;
         }
             //PRODUCTION
             //AppID: WalterWo-JunkBox-PRD-e45f6444c-265c3eca

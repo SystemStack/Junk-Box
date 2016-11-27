@@ -57,7 +57,8 @@ namespace JunkBox.Controllers
             Dictionary<string, string> queryUpdate = new Dictionary<string, string>() {
                 {"Category", data.category},
                 {"PriceLimit", data.price},
-                {"Frequency", data.frequencyOptions.label}
+                {"Frequency", data.frequencyOptions.label},
+                {"CategoryID", data.categoryId}
             };
             int updateResult = dataAccess.Update("Query", queryUpdate, "QueryID", queryId);
 

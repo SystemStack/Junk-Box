@@ -11,8 +11,6 @@ namespace JunkBox.Common
 {
     public class Ebay
     {
-        //private static string appId = ConfigurationManager.AppSettings["AppID"];
-
         public static IDictionary<string, object> GetEbayResult(string URL, Dictionary<string, string> urlParameters)
         {
             StringBuilder urlParams = new StringBuilder();

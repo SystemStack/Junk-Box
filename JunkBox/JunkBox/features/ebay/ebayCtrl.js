@@ -2,7 +2,7 @@
 .module('junkBox.controllers.ebayCtrl', [])
 .controller('ebayCtrl', function ($scope, Ebay, $rootScope) {
     $scope.stuff = {
-        email: $rootScope.Email,
+        email: $rootScope.email,
         html: "",
         timestamp: ""
     };
@@ -15,7 +15,7 @@
         }, function (failure) {
             console.log(failure);
         });
-    }();
+    };
 
     $scope.getCategoriesTest = function () {
         console.log("Attemtping to get categories from Ebay:");
@@ -24,28 +24,36 @@
         }, function (failure) {
             console.log(failure);
         });
-    }();
+    };
 
     $scope.getTimestamp = function () {
         Ebay.getSomething().then(function (data) {
-            console.log("SUCCESS!");
             console.log(data);
             $scope.stuff.timestamp = data["result"];
             console.log($scope.stuff.timestamp);
         }, function (reject) {
-            console.log("REJECTED!");
             console.log(reject);
+        });
+    }();
+
+    $scope.getViablePurchases = function () {
+
+        Ebay.getViablePurchases($scope.stuff).then(function (success) {
+            console.log(success);
+            $scope._cb_findItemsByKeywords(success);
+        }, function (failure) {
+            console.log(failure);
         });
     }();
 
     //Fucking hell, they had this whole script on one fucking line.
     $scope._cb_findItemsByKeywords = function (root) {
         var items = root &&
-                    root.findItemsByKeywordsResponse &&
-                    root.findItemsByKeywordsResponse[0] &&
-                    root.findItemsByKeywordsResponse[0].searchResult &&
-                    root.findItemsByKeywordsResponse[0].searchResult[0] &&
-                    root.findItemsByKeywordsResponse[0].searchResult[0].item ||
+                    root.findItemsByCategoryResponse &&
+                    root.findItemsByCategoryResponse[0] &&
+                    root.findItemsByCategoryResponse[0].searchResult &&
+                    root.findItemsByCategoryResponse[0].searchResult[0] &&
+                    root.findItemsByCategoryResponse[0].searchResult[0].item ||
                     [];
         var html = []; html.push("<table width='100%' border='0' cellspacing='0' cellpadding='3'><tbody>");
         for (var i = 0; i < items.length; ++i) {

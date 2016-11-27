@@ -34,8 +34,8 @@
 
   <div layout="row">
     <md-input-container flex>
-      <md-select ng-model="query.category" placeholder="Select a Category">
-        <md-option ng-value="c" ng-repeat="c in categories">{{c}}</md-option>
+      <md-select ng-model="query.category" ng-change="updateCategory();" placeholder="Select a Category">
+        <md-option ng-value="key" ng-repeat="(key, value) in categories">{{key}}</md-option>
         <md-tooltip>If your category has zero results, we will choose from a random category</md-tooltip>
       </md-select>
     </md-input-container>

@@ -12,6 +12,12 @@ namespace JunkBox.Models
         public string email { get; set; }
     }
 
+    public class EbayGetViablePurchasesModel
+    {
+        public string email { get; set; }
+    }
+
+
 
 
     /*
