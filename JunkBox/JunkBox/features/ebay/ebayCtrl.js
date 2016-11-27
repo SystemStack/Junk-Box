@@ -6,16 +6,6 @@
         html: "",
         timestamp: ""
     };
-    
-
-    $scope.executeStuff = function () {
-        Ebay.getEbayDemo().then(function (success) {
-            console.log(success);
-            $scope._cb_findItemsByKeywords(success);
-        }, function (failure) {
-            console.log(failure);
-        });
-    };
 
     $scope.executeGetTest = function () {
         console.log("EXECUTE GET TEST RESULT!");
@@ -31,7 +21,8 @@
         Ebay.getSomething().then(function (data) {
             console.log("SUCCESS!");
             console.log(data);
-            $scope.stuff.timestamp = data["response"];
+            $scope.stuff.timestamp = data["result"];
+            console.log($scope.stuff.timestamp);
         }, function (reject) {
             console.log("REJECTED!");
             console.log(reject);
@@ -100,7 +91,6 @@
             }
         }
         html.push("</tbody></table>");
-        //document.getElementById("results").innerHTML = html.join("");
         $scope.stuff.html = html;
         console.log(html);
     }

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Configuration;
+using System.Web.Script.Serialization;
 
 namespace JunkBox.Common
 {
@@ -12,7 +13,7 @@ namespace JunkBox.Common
     {
         private static string appId = ConfigurationManager.AppSettings["AppID"];
 
-        public static string GetEbayResult(string URL, Dictionary<string, string> urlParameters)
+        public static IDictionary<string, object> GetEbayResult(string URL, Dictionary<string, string> urlParameters)
         {
             StringBuilder urlParams = new StringBuilder("?SECURITY-APPNAME=" + appId);
 
@@ -37,11 +38,15 @@ namespace JunkBox.Common
                 
                 // Parse the response body. Blocking!
                 var dataObjects = response.Content.ReadAsStringAsync().Result;
-                return dataObjects;
+                var json_serializer = new JavaScriptSerializer();
+                var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(dataObjects);
+                return routes_list;
             }
             else
             {
-                return response.StatusCode + " (" + response.ReasonPhrase + ")";
+                return new Dictionary<string, object>() {
+                    { response.StatusCode.ToString() , "(" + response.ReasonPhrase + ")" }
+                };
             }
         }
 

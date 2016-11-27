@@ -34,21 +34,15 @@ namespace JunkBox.Controllers
             Dictionary<string, string> urlParameters = new Dictionary<string, string>() {
                 { "OPERATION-NAME", "findItemsByKeywords"},
                 { "SERVICE-VERSION", "1.0.0"},
-                //{ "SECURITY-APPNAME", appId},
+                //{ "SECURITY-APPNAME", appId}, //Auto-included in GetEbayResult()
                 { "GLOBAL-ID", "EBAY-US"},
                 { "RESPONSE-DATA-FORMAT", "JSON"},
                 { "REST-PAYLOAD", ""},
                 { "keywords", "harry%20potter"},
-                { "paginationInput.entriesPerPage", "10"}
+                { "paginationInput.entriesPerPage", "3"}
             };
 
-            string response = Ebay.GetEbayResult(URL, urlParameters);
-
-            var json_serializer = new JavaScriptSerializer();
-            var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(response);
-
-            //return Json(new { result = routes_list });
-            return Json(routes_list);
+            return Json(Ebay.GetEbayResult(URL, urlParameters));
         }
     }
 }
