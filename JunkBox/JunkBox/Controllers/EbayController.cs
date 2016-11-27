@@ -12,7 +12,9 @@ namespace JunkBox.Controllers
     public class EbayController : Controller
     {
         private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+
         private static string appId = ConfigurationManager.AppSettings["AppID"];
+        private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"];
 
         //POST: Ebay/GetSomething/{data}
         [HttpPost]
@@ -26,6 +28,7 @@ namespace JunkBox.Controllers
         public ActionResult GetTest()
         {
             string URL = "http://svcs.ebay.com/services/search/FindingService/v1";
+            
             /*
             string urlParameters = "?OPERATION-NAME=findItemsByKeywords" +
                                     "&SERVICE-VERSION=1.0.0" + 
@@ -92,6 +95,7 @@ namespace JunkBox.Controllers
 
                 itemFilter(1).name=ListingType&
                 itemFilter(1).value=AuctionWithBIN&
+                //https://api.sandbox.ebay.com/wsapi ???
              */
 
             Dictionary<string, string> customerInfo = dataAccess.Select("SELECT CustomerID, QueryID FROM Customer WHERE Email='" + data.email + "'").First();
@@ -99,11 +103,14 @@ namespace JunkBox.Controllers
             Dictionary<string, string> queryPref = dataAccess.Select("SELECT * FROM Query WHERE QueryID='" + customerInfo["QueryID"] + "'").First();
 
             string URL = "http://svcs.ebay.com/services/search/FindingService/v1";
+            //string URL = "https://api.sandbox.ebay.com/services/search/FindingService/v1";
+
 
             Dictionary<string, string> urlParameters = new Dictionary<string, string>() {
                 { "OPERATION-NAME", "findItemsByCategory"},
                 { "SERVICE-VERSION", "1.0.0"},
                 { "SECURITY-APPNAME", appId},
+                //{ "SECURITY-APPNAME", appIdSandbox},
                 { "GLOBAL-ID", "EBAY-US"},
                 { "RESPONSE-DATA-FORMAT", "JSON"},
                 { "REST-PAYLOAD", ""},

@@ -108,7 +108,7 @@
             }
         }
         html.push("</tbody></table>");
-        $scope.stuff.html = html;
+        $scope.stuff.html = html.join("");
         console.log(html);
     }
 

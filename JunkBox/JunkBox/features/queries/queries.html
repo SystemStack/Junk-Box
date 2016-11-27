@@ -20,15 +20,12 @@
       </md-input-container>
   </div>
   <div layout="row">
-    <md-radio-group ng-model="selected"
+    <md-radio-group ng-model="query.frequencyOptions"
                     layout="row"
                     flex
                     required
                     layout-align="space-around center">
-      <md-radio-button ng-repeat="o in frequencyOptions"
-                       ng-value="o.value">
-          {{o.label}}
-      </md-radio-button>
+      <md-radio-button ng-repeat="o in frequencyOptions" ng-value="o">{{o.label}}</md-radio-button>
     </md-radio-group>
   </div>
 
