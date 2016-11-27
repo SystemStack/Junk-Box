@@ -36,11 +36,22 @@
         });
     }();
 
+    /*
     $scope.getViablePurchases = function () {
 
         Ebay.getViablePurchases($scope.stuff).then(function (success) {
             console.log(success);
             $scope._cb_findItemsByKeywords(success);
+        }, function (failure) {
+            console.log(failure);
+        });
+    }();*/
+
+    $scope.browseApiTest = function () {
+
+        Ebay.ebayBrowseApiTest($scope.stuff).then(function (success) {
+            console.log(success);
+            $scope._cb_findItemsBrowseApi(success);
         }, function (failure) {
             console.log(failure);
         });
@@ -112,4 +123,62 @@
         console.log(html);
     }
 
+    $scope._cb_findItemsBrowseApi = function (root) {
+        var items = root &&
+                    root.itemSummaries;
+
+        var html = []; html.push("<table width='100%' border='0' cellspacing='0' cellpadding='3'><tbody>");
+        for (var i = 0; i < items.length; ++i) {
+            var item = items[i];
+
+            var shippingInfo = item.shippingOptions &&
+                item.shippingOptions[0] ||
+                {};
+
+            var sellingStatus = item.buyingOptions &&
+                item.buyingOptions[0] ||
+                {};
+
+            var listingInfo = item.listingInfo &&
+                item.listingInfo[0] ||
+                {};
+
+            var title = item.title;
+
+            var subtitle = item.subtitle ||
+                '';
+
+            var pic = item.image.imageUrl;
+
+            var viewitem = item.itemGroupHref;
+
+            var currentPrice = item.price.value;
+
+            var displayPrice = item.price.currency + ' ' + currentPrice;
+
+            var buyItNowAvailable = listingInfo.buyItNowAvailable &&
+                listingInfo.buyItNowAvailable[0] === 'true';
+
+            var freeShipping = shippingInfo.shippingType &&
+                shippingInfo.shippingType[0] === 'Free';
+
+            if (null !== title && null !== viewitem) {
+                html.push("<tr><td class='image-container'><img src='" + pic + "'border = '0'></td>");
+                html.push('<td class="data-container"><a class="item-link" href="' + viewitem + '"target="_blank">');
+                html.push('<p class="title">' + title + '</p>');
+                html.push('<p class="subtitle">' + subtitle + '</p>');
+                html.push('<p class="price">' + displayPrice + '</p>');
+                if (buyItNowAvailable) {
+                    html.push('<p class="bin">Buy It Now</p>');
+                }
+                if (freeShipping) {
+                    html.push('<p class="fs">Free shipping</p>');
+                }
+                html.push('</a></td></tr>');
+            }
+        }
+        html.push("</tbody></table>");
+        $scope.stuff.html = html.join("");
+        console.log(html);
+    }
 });

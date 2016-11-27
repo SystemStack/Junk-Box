@@ -6,9 +6,99 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Configuration;
 using System.Web.Script.Serialization;
+using System.Web;
 
 namespace JunkBox.Common
 {
+    public class EbayBrowseAPI
+    {
+        private static string authToken = ConfigurationManager.AppSettings["AuthToken"];
+        private static string baseUrl = "https://api.sandbox.ebay.com";
+        /*
+         *  ITEM                   
+         *      GET /item/{item_id}	            Retrieves the details of the specified item.	view
+         *
+         *  ITEM_FEED         
+         *      GET /item_feed	                Returns the items in the specified feed file.	view
+         *
+         *  ITEM_GROUP       
+         *      GET /item_group/{item_group_id}	Retrieves the specified group of items.	view
+         *
+         *  ITEM_SUMMARY 
+         *      GET /item_summary/search        Searches for eBay items by keyword. Optionally, you can apply filters, sort the list, and control the number of items returned on each page of data.
+         */
+
+
+        public static IDictionary<string, object> ItemSummarySearch(string categoryId, string maxPrice)
+        {
+            /*
+             * GET https://api.ebay.com/buy/browse/v1/item_summary/search?
+             *      category_ids=string&
+             *      filter=FilterField&     &filter=price[..200] which means price.value is <= 200
+             *      limit=string&           //priceCurrency	filter=priceCurrency:USD //priceCurrency must be used if price is used
+             *      offset=string&
+             *      q=string&
+             *      sort=SortField
+             */
+
+            string apiUrl = baseUrl + "/buy/browse/v1/item_summary/search";
+            Dictionary<string, List<object>> urlParameters = new Dictionary<string, List<object>>() {
+                { "category_ids", new List<object>() { categoryId } },
+                { "filter",     new List<object>() { "price:[.." + maxPrice + "]",
+                                                     "priceCurrency:USD" } },
+                { "limit",      new List<object>() { "10" } },
+                { "offset",     new List<object>() { "10" } },
+                
+                //{"q",           new List<object>() { "" } }
+                //{"sort", ""}
+            };
+
+            return GetWebRequest(apiUrl, BuildQueryString(urlParameters));
+        }
+
+        private static string BuildQueryString(IDictionary<string, List<object>> parameters)
+        {
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            foreach(KeyValuePair<string, List<object>> entry in parameters)
+            {
+               foreach(object value in entry.Value)
+               {
+                    query.Add(entry.Key, (string)value);
+               }
+            }
+            return "?" + query.ToString();
+        }
+
+        private static IDictionary<string, object> GetWebRequest(string URL, string query)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(URL);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+
+            // List data response.
+            HttpResponseMessage response = client.GetAsync(query).Result;  // Blocking call!
+            if (response.IsSuccessStatusCode)
+            {
+
+                // Parse the response body. Blocking!
+                var dataObjects = response.Content.ReadAsStringAsync().Result;
+                var json_serializer = new JavaScriptSerializer();
+                var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(dataObjects);
+                return routes_list;
+            }
+            else
+            {
+                return new Dictionary<string, object>() {
+                    { response.StatusCode.ToString(), "(" + response.ReasonPhrase + ")" }
+                };
+            }
+        }
+    }
+
+
     public class Ebay
     {
         public static IDictionary<string, object> GetEbayResult(string URL, Dictionary<string, string> urlParameters)
@@ -48,6 +138,7 @@ namespace JunkBox.Common
                 
                 // Parse the response body. Blocking!
                 var dataObjects = response.Content.ReadAsStringAsync().Result;
+                //System.Windows.Forms.MessageBox.Show(dataObjects.ToString());
                 var json_serializer = new JavaScriptSerializer();
                 var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(dataObjects);
                 return routes_list;
@@ -55,7 +146,7 @@ namespace JunkBox.Common
             else
             {
                 return new Dictionary<string, object>() {
-                    { response.StatusCode.ToString() , "(" + response.ReasonPhrase + ")" }
+                    { response.StatusCode.ToString(), "(" + response.ReasonPhrase + ")" }
                 };
             }
         }

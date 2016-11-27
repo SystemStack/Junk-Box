@@ -83,34 +83,18 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult GetViablePurchases(EbayGetViablePurchasesModel data)
         {
-            /*
-                http://svcs.ebay.com/services/search/FindingService/v1?
-                OPERATION-NAME=findItemsByCategory&
-                SERVICE-VERSION=1.0.0&
-                SECURITY-APPNAME=YourAppID&
-                RESPONSE-DATA-FORMAT=JSON&
-                REST-PAYLOAD&
-                categoryId=10181&
-                paginationInput.entriesPerPage=2
-
-                itemFilter(1).name=ListingType&
-                itemFilter(1).value=AuctionWithBIN&
-                //https://api.sandbox.ebay.com/wsapi ???
-             */
-
+            //Get customer info
             Dictionary<string, string> customerInfo = dataAccess.Select("SELECT CustomerID, QueryID FROM Customer WHERE Email='" + data.email + "'").First();
 
+            //Get customer query prefrences 
             Dictionary<string, string> queryPref = dataAccess.Select("SELECT * FROM Query WHERE QueryID='" + customerInfo["QueryID"] + "'").First();
 
+            //Build data required for Ebay API call
             string URL = "http://svcs.ebay.com/services/search/FindingService/v1";
-            //string URL = "https://api.sandbox.ebay.com/services/search/FindingService/v1";
-
-
             Dictionary<string, string> urlParameters = new Dictionary<string, string>() {
                 { "OPERATION-NAME", "findItemsByCategory"},
                 { "SERVICE-VERSION", "1.0.0"},
                 { "SECURITY-APPNAME", appId},
-                //{ "SECURITY-APPNAME", appIdSandbox},
                 { "GLOBAL-ID", "EBAY-US"},
                 { "RESPONSE-DATA-FORMAT", "JSON"},
                 { "REST-PAYLOAD", ""},
@@ -122,7 +106,7 @@ namespace JunkBox.Controllers
                 { "itemFilter(1).value", "AuctionWithBIN"}
 
             };
-            return Json(Ebay.GetEbayResult(URL, urlParameters));
+            return Json(Ebay.GetEbayResult(URL, urlParameters)); //Aaaaaand done.
         }
 
         //POST: Ebay/GetAllCategories/
@@ -151,6 +135,20 @@ namespace JunkBox.Controllers
             };
 
             return Json(Ebay.GetEbayResult(URL, urlParameters));
+        }
+
+        //POST: Ebay/BrowseAPITest/
+        [HttpPost]
+        public ActionResult BrowseAPITest(EbayBrowseAPIModel data)
+        {
+            //Get customer info
+            Dictionary<string, string> customerInfo = dataAccess.Select("SELECT CustomerID, QueryID FROM Customer WHERE Email='" + data.email + "'").First();
+
+            //Get customer query prefrences 
+            Dictionary<string, string> queryPref = dataAccess.Select("SELECT * FROM Query WHERE QueryID='" + customerInfo["QueryID"] + "'").First();
+
+
+            return Json(EbayBrowseAPI.ItemSummarySearch(queryPref["CategoryID"], queryPref["PriceLimit"]));
         }
     }
 }
