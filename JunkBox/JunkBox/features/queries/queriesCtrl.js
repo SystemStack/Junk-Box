@@ -1,9 +1,10 @@
 angular
 .module('junkBox.controllers.queriesCtrl', [])
-.controller('queriesCtrl', function($scope, Queries, $rootScope) {
+.controller('queriesCtrl', function($scope, Queries, $rootScope, Ebay) {
   $scope.query = {
     email: $rootScope.email,
     category: "All Categories",
+    categoryId: "-1",
     price : 2.51,
     frequencyOptions: {
       value: -1,
@@ -21,38 +22,94 @@ angular
     label: "Monthly"
   }];
 
-  $scope.categories = ["All Categories", "Antiques",
-            "Art", "Baby",
-            "Books", "Business and Industrial",
-            "Cameras and Photo", "Cell Phones and Accessories",
-            "Clothing, Shoes and Accessories", "Coins and Paper Money",
-            "Collectibles", "Computers/Tablets and Networking",
-            "Consumer Electronics", "Crafts",
-            "Dolls and Bears", "DVDs and Movies",
-            "eBay Motors", "Entertainment Memorabilia",
-            "Gift Cards and Coupons", "Health and Beauty",
-            "Home and Garden", "Jewelry and Watches",
-            "Music", "Musical Instruments and Gear",
-            "Pet Supplies", "Pottery and Glass",
-            "Real Estate", "Specialty Services",
-            "Sporting Goods", "Sports Mem, Cards and Fan Shop",
-            "Stamps", "Tickets and Experiences",
-            "Toys and Hobbies", "Travel",
-            "Video Games and Consoles", "Everything Else"].sort();
+  $scope.categories = {
+      "All Categories" : "-1",
+      "Antiques" : "-1", 
+      "Art" : "-1",  
+      "Baby" : "-1", 
+      "Books" : "-1",  
+      "Business and Industrial": "-1", 
+      "Cameras and Photo": "-1", 
+      "Cell Phones and Accessories": "-1", 
+      "Clothing, Shoes and Accessories": "-1",  
+      "Coins and Paper Money": "-1", 
+      "Collectibles": "-1", 
+      "Computers/Tablets and Networking": "-1", 
+      "Consumer Electronics": "-1",  
+      "Crafts": "-1", 
+      "Dolls and Bears": "-1",  
+      "DVDs and Movies": "-1", 
+      "eBay Motors": "-1",  
+      "Entertainment Memorabilia": "-1", 
+      "Gift Cards and Coupons": "-1",  
+      "Health and Beauty": "-1", 
+      "Home and Garden": "-1", 
+      "Jewelry and Watches": "-1", 
+      "Music": "-1", 
+      "Musical Instruments and Gear": "-1", 
+      "Pet Supplies": "-1", 
+      "Pottery and Glass": "-1", 
+      "Real Estate": "-1",  
+      "Specialty Services": "-1", 
+      "Sporting Goods": "-1", 
+      "Sports Mem, Cards and Fan Shop": "-1", 
+      "Stamps": "-1", 
+      "Tickets and Experiences": "-1", 
+      "Toys and Hobbies": "-1", 
+      "Travel": "-1", 
+      "Video Games and Consoles": "-1", 
+      "Everything Else": "-1"
+  };
 
   $scope.getQuerySettings = function () {
       var userData = {
           email: $rootScope.email
       }
 
-      Queries.getSettings(userData).then(function (data) {
-          console.log(data);
-          var userSettings = data["result"];
-          $scope.query.category = userSettings["Category"];
-          $scope.query.price = userSettings["PriceLimit"];
-          //$scope.query.frequencyOptions = ??? Not sure how to handle this one.
+      Ebay.getAllCategories().then(function (success) {
+          console.log(success);
+          var newList = {};
+
+          success.CategoryArray.Category.forEach(function (element) {
+              newList[element["CategoryName"]] = element["CategoryID"];
+          });
+          $scope.categories = newList;
+      }, function (failure) {
+          console.log(failure);
+      }).finally(function () {
+
+          Queries.getSettings(userData).then(function (data) {
+              console.log(data);
+              var userSettings = data["result"];
+              $scope.query.category = userSettings["Category"];
+              $scope.query.categoryId = $scope.categories[userSettings["Category"]];
+              console.log($scope.categories[$scope.query.category]);
+              $scope.query.price = userSettings["PriceLimit"];
+
+              $scope.frequencyOptions.forEach(function (element) {
+
+                  if (userSettings["Frequency"].toUpperCase() === element["label"].toUpperCase()) {
+                      $scope.query.frequencyOptions.label = element.label;
+                      $scope.query.frequencyOptions.value = element.value;
+                  }
+              });
+
+          });
+
       });
+
+      
+
+      
   }();
+
+  function queriesGetSettings() {
+
+  }
+
+  function QueriesGetSettingsSuccess() {
+
+  }
 
   $scope.send = function() {
     var verifyValidData = function(e) {
@@ -74,6 +131,12 @@ angular
       console.log($scope.query);
       $scope.submittedRecord = true;
     }
+  };
+
+  $scope.updateCategory = function () {
+      console.log($scope.query.category);
+      $scope.query.categoryId = $scope.categories[$scope.query.category];
+      console.log($scope.query.categoryId);
   };
 
 });
