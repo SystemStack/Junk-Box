@@ -12,6 +12,56 @@ using JunkBox.Models;
 namespace JunkBox.Common
 {
 
+    public class EbayAccessToken
+    {
+        private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"]; //Our 'Client ID'
+        private static string certIdSandbox = ConfigurationManager.AppSettings["CertIDSandBox"];//Our 'Client Secret'
+        public static IDictionary<string, object> RequestApplicationAccessToken()
+        {
+            /*
+             * The Authorization header requires a Base64-encoded value that is comprised of the client ID and client secret values.
+             * To generate this value, combine your application's client ID and client secret values by separating them with a colon, and Base64 encode those combined values. In other words, Base64 encode the following: <client_id>:<client_secret>.
+             * POST https://api.sandbox.ebay.com/identity/v1/oauth2/token
+             
+                HTTP headers:
+                    Content-Type = application/x-www-form-urlencoded
+                    Authorization = Basic <B64-encoded-oauth-credentials>
+
+                HTTP method: POST
+
+                URL: https://api.sandbox.ebay.com/identity/v1/oauth2/token
+
+                Request body (wrapped for readability):
+                    grant_type=client_credentials&
+                    redirect_uri=<redirect_URI>&
+                    scope=https://api.ebay.com/oauth/api_scope
+             */
+
+            var plainTextBytes = Encoding.UTF8.GetBytes(appIdSandbox + ":" + certIdSandbox);
+            string authHeader = Convert.ToBase64String(plainTextBytes);
+            string urlApi = "https://api.sandbox.ebay.com/identity/v1/oauth2/token";
+
+            RequestBody payload = new RequestBody();
+            payload.grant_type = "client_credentials";
+            payload.redirect_uri = "";
+            payload.scope = "https://api.sandbox.ebay.com/oauth/api_scope";
+
+
+            var json_serializer = new JavaScriptSerializer();
+            string postBody = json_serializer.Serialize(payload);
+
+
+            return Web.PostTokenRequest(urlApi, authHeader, postBody);
+        }
+
+        private class RequestBody
+        {
+            public string grant_type { get; set; }
+            public string redirect_uri { get; set; }
+            public string scope { get; set; }
+        }
+    }
+
     public class EbayOrderAPI
     {
         private static string authToken = ConfigurationManager.AppSettings["AuthToken"];
@@ -58,7 +108,7 @@ namespace JunkBox.Common
                 }
               }
             */
-            
+
             EbayUpdateGuestSessionPaymentInfoModel payload = new EbayUpdateGuestSessionPaymentInfoModel();
 
             EbayCreditCardModel creditCard = new EbayCreditCardModel();
@@ -86,7 +136,7 @@ namespace JunkBox.Common
 
             var json_serializer = new JavaScriptSerializer();
             string postBody = json_serializer.Serialize(payload);
-            System.Windows.Forms.MessageBox.Show(postBody);
+            //System.Windows.Forms.MessageBox.Show(postBody);
 
             return Web.PostWebRequest(apiUrl, postBody);
         }

@@ -81,5 +81,33 @@ namespace JunkBox.Common
                 };
             }
         }
+
+        public static IDictionary<string, object> PostTokenRequest(string URL, string authorization, string postBody)
+        {
+            HttpClient client = new HttpClient();
+            //client.BaseAddress = new Uri(URL);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authorization);
+
+            // List data response.
+            HttpResponseMessage response = client.PostAsync(URL, new StringContent(postBody, Encoding.UTF8, "application/json")).Result;
+            if (response.IsSuccessStatusCode)
+            {
+
+                // Parse the response body. Blocking!
+                var dataObjects = response.Content.ReadAsStringAsync().Result;
+                var json_serializer = new JavaScriptSerializer();
+                var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(dataObjects);
+                return routes_list;
+            }
+            else
+            {
+                return new Dictionary<string, object>() {
+                    { response.StatusCode.ToString(), "(" + response.ReasonPhrase + ")" }
+                };
+            }
+        }
     }
 }

@@ -98,6 +98,7 @@ namespace JunkBox.Controllers
         //POST: Ebay/OrderApiPlaceGuestOrder/{data}
         public ActionResult OrderApiPlaceGuestOrder(EbayOrderApiPlaceGuestOrderModel data)
         {
+            /*
             //Get customer info
             Dictionary<string, string> customerInfo = dataAccess.Select("SELECT * FROM Customer WHERE Email='" + data.email + "'").First();
 
@@ -143,6 +144,10 @@ namespace JunkBox.Controllers
             //JsonResult result = Json(response);
             JsonResult result = Json(placeOrderResponse);
             return result;
+            */
+
+            //Testing out Authorization
+            return Json(EbayAccessToken.RequestApplicationAccessToken());
         }
     }
 }
