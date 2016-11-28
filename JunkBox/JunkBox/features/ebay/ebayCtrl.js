@@ -7,6 +7,8 @@
         timestamp: ""
     };
 
+    $scope.ebayResponse = {};
+
     $scope.executeGetTest = function () {
         console.log("EXECUTE GET TEST RESULT!");
         Ebay.getTest().then(function (success) {
@@ -26,6 +28,7 @@
         });
     };
 
+    /*
     $scope.getTimestamp = function () {
         Ebay.getSomething().then(function (data) {
             console.log(data);
@@ -34,7 +37,7 @@
         }, function (reject) {
             console.log(reject);
         });
-    }();
+    }();*/
 
     /*
     $scope.getViablePurchases = function () {
@@ -51,11 +54,16 @@
 
         Ebay.ebayBrowseApiTest($scope.stuff).then(function (success) {
             console.log(success);
-            $scope._cb_findItemsBrowseApi(success);
+            //$scope._cb_findItemsBrowseApi(success);
+            $scope.ebayResponse = success;
         }, function (failure) {
             console.log(failure);
         });
     }();
+
+    $scope.forceBuy = function (itemId) {
+        console.log(itemId);
+    };
 
     //Fucking hell, they had this whole script on one fucking line.
     $scope._cb_findItemsByKeywords = function (root) {
@@ -174,7 +182,9 @@
                 if (freeShipping) {
                     html.push('<p class="fs">Free shipping</p>');
                 }
-                html.push('</a></td></tr>');
+                html.push('</a>');
+                html.push('<p><md-button ng-click="forceBuy("'+ item.itemId +'")">Force Buy Item</md-button></p>');
+                html.push('</td></tr>');
             }
         }
         html.push("</tbody></table>");

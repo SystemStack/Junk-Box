@@ -10,6 +10,153 @@ using System.Web;
 
 namespace JunkBox.Common
 {
+
+    public class EbayOrderAPI
+    {
+        /*
+         * Initiate a guest checkout session
+            POST https://api.ebay.com/buy/order/v1/guest/checkout_session/initiate
+			
+            {
+                "contactEmail" : "fsmith1234@gmail.com",
+                "contactFirstName":"Frank",
+                "contactLastName":"Smith",
+                "shippingAddress" : {
+                    "recipient" : "Frank Smith",
+                    "phoneNumber" : "617 817 7449 ",
+                    "addressLine1" : "3737 Casa Verde St",
+                    "city" : "San Jose",
+                    "stateOrProvince" : "CA",
+                    "postalCode" : "95134",
+                    "country" : "US"
+                },
+                "lineItemInputs" : [ {
+                    "quantity" : 1,
+                    "itemId" : "v1|190006102824|0"
+                }
+                ]
+            }
+
+            
+        It generates a response:
+        {
+  "checkoutSessionId": "5016712327",
+  "expirationDate": {
+    "value": "2036-08-11T23:03:18.501Z"
+  },
+  "lineItems": [
+    {
+      "itemId": "v1|190006102824|0",
+      "title": "display phones",
+      "shortDescription": "New",
+      "imageUrl": "http://i.ebayimg.qa.ebay.com/00/s/NzY4WDEwMjQ=/z/0ZkAAOSw3dFWHCF8/$_1.JPG?set_id=880000500F",
+      "seller": {
+        "username": "oneStopShop"
+      },
+      "quantity": 1,
+      "lineItemId": "5195728827",
+      "baseUnitPrice": {
+        "value": 20,
+        "currency": "USD"
+      },
+      "shippingOptions": [
+        {
+          "selected": true,
+          "shippingOptionId": "5274330495",
+          "shippingServiceName": "USPS Parcel Select Ground",
+          "shippingCarrierName": "USPS",
+          "minEstimatedDeliveryDate": {
+            "value": "2016-08-15T07:00:00.000Z"
+          },
+          "maxEstimatedDeliveryDate": {
+            "value": "2016-08-23T07:00:00.000Z"
+          },
+          "baseDeliveryCost": {
+            "value": 0,
+            "currency": "USD"
+          }
+        },
+        {
+          "selected": false,
+          "shippingOptionId": "5274330507",
+          "shippingServiceName": "USPS Retail Ground",
+          "shippingCarrierName": "USPS",
+          "minEstimatedDeliveryDate": {
+            "value": "2016-08-15T07:00:00.000Z"
+          },
+          "maxEstimatedDeliveryDate": {
+            "value": "2016-08-23T07:00:00.000Z"
+          },
+          "baseDeliveryCost": {
+            "value": 1,
+            "currency": "USD"
+          }
+        }
+      ],
+      "netPrice": {
+        "value": 20,
+        "currency": "USD"
+      }
+    }
+  ],
+  "shippingAddress": {
+    "addressLine1": "3737 Casa Verde St",
+    "city": "San Jose",
+    "stateOrProvince": "CA",
+    "postalCode": "95134",
+    "country": "US",
+    "recipient": "Frank Smith",
+    "phoneNumber": "617 817 7449 "
+  },
+  "pricingSummary": {
+    "priceSubtotal": {
+      "value": 20,
+      "currency": "USD"
+    },
+    "baseDeliveryCost": {
+      "value": 0,
+      "currency": "USD"
+    },
+    "tax": {
+      "value": 0,
+      "currency": "USD"
+    },
+    "adjustment": {
+      "value": 0,
+      "currency": "USD"
+    },
+    "total": {
+      "value": 20,
+      "currency": "USD"
+    }
+  },
+  "acceptedPaymentMethods": [
+    {
+      "paymentMethodMessages": [
+        {
+          "legalMessage": "PayPal processes payments for eBay. A PayPal account isn't required."
+        }
+      ]
+    }
+  ]
+}
+
+        Place the order:
+        POST https://api.ebay.com/buy/order/v1/guest_checkout_session/{checkoutSessionId}/place_order
+
+        it gives a response:
+        {
+  "purchaseOrderId": "5833850019",
+  "purchaseOrderHref": "buy/order/v1/purchase_order/5833850019"
+}
+
+        get info about the purchase order (ebay member only? no guest?)
+        GET https://api.ebay.com/buy/order/v1/purchase_order/98262585
+
+         
+         */
+    }
+
     public class EbayBrowseAPI
     {
         private static string authToken = ConfigurationManager.AppSettings["AuthToken"];
