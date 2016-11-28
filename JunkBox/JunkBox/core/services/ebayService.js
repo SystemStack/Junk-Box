@@ -33,6 +33,17 @@
                       deferred.reject(error);
                   });
             return deferred.promise;
+        },
+        ebayOrderApiPlaceGuestOrder: function (info) {
+            var deferred = $q.defer();
+            console.log(info);
+            $http.post('/Ebay/OrderApiPlaceGuestOrder/', { data: info })
+                  .success(function (data, status, headers, config) {
+                      deferred.resolve(data);
+                  }).error(function (error) {
+                      deferred.reject(error);
+                  });
+            return deferred.promise;
         }
     };
 });

@@ -17,6 +17,81 @@ namespace JunkBox.Common
         private static string authToken = ConfigurationManager.AppSettings["AuthToken"];
         private static string baseUrl = "https://api.sandbox.ebay.com";
 
+
+        public static IDictionary<string, object> PlaceGuestOrder(string checkoutSessionId)
+        {
+            //POST https://api.sandbox.ebay.com/buy/order/v1/guest_checkout_session/{guest_checkoutsession_id}/place_order
+
+            string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/place_order";
+
+            return Web.PostWebRequest(apiUrl, "");
+        }
+
+
+        public static IDictionary<string, object> UpdateGuestSessionPaymentInfo(string checkoutSessionId, Dictionary<string, string> customerInfo, Dictionary<string, string> addressInfo)
+        {
+
+            /*
+             * POST: https://api.sandbox.ebay.com/buy/order/v1/guest_checkout_session/{guest_checkoutsession_id}/update_payment_info
+             * 
+             *{ /* UpdatePaymentInformation 
+                "creditCard":
+                { /* CreditCard 
+                    "accountHolderName": string,
+                    "billingAddress":
+                    { /* BillingAddress 
+                        "addressLine1": string,
+                        "addressLine2": string,
+                        "city": string,
+                        "country": string,
+                        "county": string,
+                        "firstName": string,
+                        "lastName": string,
+                        "postalCode": string,
+                        "stateOrProvince": string
+                    },
+                    "brand": string,
+                    "cardNumber": string,
+                    "cvvNumber": string,
+                    "expireMonth": integer,
+                    "expireYear": integer
+                }
+              }
+            */
+            
+            EbayUpdateGuestSessionPaymentInfoModel payload = new EbayUpdateGuestSessionPaymentInfoModel();
+
+            EbayCreditCardModel creditCard = new EbayCreditCardModel();
+            creditCard.accountHolderName = "Frank Smith";
+            creditCard.brand = "MASTERCARD";
+            creditCard.cardNumber = "5100000001598174";
+            creditCard.cvvNumber = "012";
+            creditCard.expireMonth = 10;
+            creditCard.expireYear = 2019;
+
+            EbayBillingAddressModel billingAddress = new EbayBillingAddressModel();
+            billingAddress.firstName = "Frank";
+            billingAddress.lastName = "Smith";
+            billingAddress.addressLine1 = "3737 Any St";
+            billingAddress.addressLine2 = "";
+            billingAddress.city = "San Jose";
+            billingAddress.stateOrProvince = "CA";
+            billingAddress.postalCode = "95134";
+            billingAddress.country = "US";
+
+            creditCard.billingAddress = billingAddress;
+            payload.creditCard = creditCard;
+
+            string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/update_payment_info";
+
+            var json_serializer = new JavaScriptSerializer();
+            string postBody = json_serializer.Serialize(payload);
+            System.Windows.Forms.MessageBox.Show(postBody);
+
+            return Web.PostWebRequest(apiUrl, postBody);
+        }
+
+
         public static IDictionary<string, object> InitiateGuestCheckoutSession(string itemId, Dictionary<string, string> customerInfo, Dictionary<string, string> addressInfo)
         {
 

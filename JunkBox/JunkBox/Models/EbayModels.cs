@@ -24,6 +24,13 @@ namespace JunkBox.Models
         public string imageUrl { get; set; }
     }
 
+    public class EbayOrderApiPlaceGuestOrderModel
+    {
+        public string email { get; set; }
+        public string orderId { get; set; }
+        public string imageUrl { get; set; }
+    }
+
     public class EbayBillingAddressModel
     {
         public string addressLine1 { get; set; }
@@ -74,6 +81,11 @@ namespace JunkBox.Models
         public EbayCreditCardModel creditCard { get; set; }
         public EbayLineItemModel[] lineItemInputs { get; set; }
         public EbayShippingAddressModel shippingAddress { get; set; }
+    }
+
+    public class EbayUpdateGuestSessionPaymentInfoModel
+    {
+        public EbayCreditCardModel creditCard { get; set; }
     }
 }
  
