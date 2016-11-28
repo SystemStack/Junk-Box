@@ -1,16 +1,12 @@
-﻿<md-card flex>
-    <div layout="row"
-         layout-align="center">
-        <h2 class="md-headline">Ebay Stuff</h2>
-    </div>
-    <div layout="row" ng-bind-html="stuff.html">
-        
-    </div>
-    <div layout="row">
-        <md-input-container flex>
-            <input ng-model="stuff.timestamp"
-                   placeholder="Time from Ebay">
-        </md-input-container>
-    </div>
-
+﻿<md-card>
+    <h2 layout="row" layout-align="center center" class="md-headline">
+        Ebay Stuff
+    </h2>
+    <table>
+        <tr ng-repeat="item in ebayResponse.itemSummaries">
+            <td><img ng-src="{{ item.image.imageUrl }}"/></td>
+            <td>{{ item.title }}</td>
+            <td><md-button ng-click="forceBuy(item.itemId, item.image.imageUrl)" class="md-raised md-primary" style="color:white">Force Buy</md-button></td>
+        </tr>
+    </table>
 </md-card>
