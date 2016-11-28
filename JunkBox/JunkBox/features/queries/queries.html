@@ -20,22 +20,19 @@
       </md-input-container>
   </div>
   <div layout="row">
-    <md-radio-group ng-model="selected"
+    <md-radio-group ng-model="query.frequencyOptions"
                     layout="row"
                     flex
                     required
                     layout-align="space-around center">
-      <md-radio-button ng-repeat="o in frequencyOptions"
-                       ng-value="o.value">
-          {{o.label}}
-      </md-radio-button>
+      <md-radio-button ng-repeat="o in frequencyOptions" ng-value="o">{{o.label}}</md-radio-button>
     </md-radio-group>
   </div>
 
   <div layout="row">
     <md-input-container flex>
-      <md-select ng-model="query.category" placeholder="Select a Category">
-        <md-option ng-value="c" ng-repeat="c in categories">{{c}}</md-option>
+      <md-select ng-model="query.category" ng-change="updateCategory();" placeholder="Select a Category">
+        <md-option ng-value="key" ng-repeat="(key, value) in categories">{{key}}</md-option>
         <md-tooltip>If your category has zero results, we will choose from a random category</md-tooltip>
       </md-select>
     </md-input-container>
