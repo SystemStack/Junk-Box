@@ -92,7 +92,7 @@ namespace JunkBox.Common
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authorization);
 
             // List data response.
-            HttpResponseMessage response = client.PostAsync(URL, new StringContent(postBody, Encoding.UTF8, "application/json")).Result;
+            HttpResponseMessage response = client.PostAsync(URL, new StringContent(postBody, Encoding.UTF8, "application/x-www-form-urlencoded")).Result;
             if (response.IsSuccessStatusCode)
             {
 
