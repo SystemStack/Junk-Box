@@ -22,15 +22,5 @@ namespace JunkBox.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://api.ebay.com/wsapi")]
-        public string JunkBox_com_ebay_developer_eBayAPIInterfaceService {
-            get {
-                return ((string)(this["JunkBox_com_ebay_developer_eBayAPIInterfaceService"]));
-            }
-        }
     }
 }

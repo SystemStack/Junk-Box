@@ -7,11 +7,6 @@ using System.Runtime.Serialization;
 
 namespace JunkBox.Models
 {
-    public class EbayGetSomethingModel
-    {
-        public string email { get; set; }
-    }
-
     public class EbayGetViablePurchasesModel
     {
         public string email { get; set; }
