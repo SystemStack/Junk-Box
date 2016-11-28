@@ -25,7 +25,7 @@ namespace JunkBox.Controllers {
             }
             string customerId = results.First()["CustomerID"];
 
-            List<Dictionary<string, string>> purchaseResults = dataAccess.Select("SELECT * FROM CustomerOrder WHERE CustomerID='" + customerId + "'");
+            List<Dictionary<string, string>> purchaseResults = dataAccess.Select("SELECT * FROM CustomerOrder WHERE CustomerID='" + customerId + "' ORDER BY TimeStamp DESC");
 
             return Json(new { result=purchaseResults });
         }

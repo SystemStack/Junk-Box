@@ -35,6 +35,11 @@ angular.module("junkBox",
             url: "/preferences",
             templateUrl: "/features/preferences/preferences.html",
             controller: "preferencesCtrl"
+        })
+        .state("ebay", {
+            url: "/ebay",
+            templateUrl: "/features/ebay/ebay.html",
+            controller: "ebayCtrl"
         });
       $urlRouterProvider.otherwise("/home");
   }).run(function ($rootScope, $http) {
