@@ -4,7 +4,9 @@
     $scope.stuff = {
         email: $rootScope.email,
         html: "",
-        timestamp: ""
+        timestamp: "",
+        orderId: "",
+        imageUrl: ""
     };
 
     $scope.ebayResponse = {};
@@ -61,8 +63,15 @@
         });
     }();
 
-    $scope.forceBuy = function (itemId) {
+    $scope.forceBuy = function (itemId, imgUrl) {
         console.log(itemId);
+        $scope.stuff.orderId = itemId;
+        $scope.stuff.imageUrl = imgUrl;
+        Ebay.ebayOrderApiInitiateGuestCheckoutSession($scope.stuff).then(function (success) {
+            console.log(success);
+        }, function (failure) {
+            console.log(failure);
+        });
     };
 
     //Fucking hell, they had this whole script on one fucking line.

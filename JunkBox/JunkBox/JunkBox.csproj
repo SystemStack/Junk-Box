@@ -193,6 +193,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Common\Ebay.cs" />
     <Compile Include="Common\Password.cs" />
+    <Compile Include="Common\Web.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\EbayController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

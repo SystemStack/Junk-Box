@@ -8,153 +8,73 @@ using System.Configuration;
 using System.Web.Script.Serialization;
 using System.Web;
 
+using JunkBox.Models;
+
 namespace JunkBox.Common
 {
 
     public class EbayOrderAPI
     {
-        /*
-         * Initiate a guest checkout session
-            POST https://api.ebay.com/buy/order/v1/guest/checkout_session/initiate
-			
-            {
-                "contactEmail" : "fsmith1234@gmail.com",
-                "contactFirstName":"Frank",
-                "contactLastName":"Smith",
-                "shippingAddress" : {
-                    "recipient" : "Frank Smith",
-                    "phoneNumber" : "617 817 7449 ",
-                    "addressLine1" : "3737 Casa Verde St",
-                    "city" : "San Jose",
-                    "stateOrProvince" : "CA",
-                    "postalCode" : "95134",
-                    "country" : "US"
-                },
-                "lineItemInputs" : [ {
-                    "quantity" : 1,
-                    "itemId" : "v1|190006102824|0"
+        private static string authToken = ConfigurationManager.AppSettings["AuthToken"];
+        private static string baseUrl = "https://api.sandbox.ebay.com";
+
+        public static IDictionary<string, object> InitiateGuestCheckoutSession(string itemId, Dictionary<string, string> customerInfo, Dictionary<string, string> addressInfo)
+        {
+
+            /*
+             * Initiate a guest checkout session
+                POST https://api.sandbox.ebay.com/buy/order/v1/guest_checkout_session/initiate
+
+                {
+                    "contactEmail" : "fsmith1234@gmail.com",
+                    "contactFirstName":"Frank",
+                    "contactLastName":"Smith",
+                    "shippingAddress" : {
+                        "recipient" : "Frank Smith",
+                        "phoneNumber" : "617 817 7449 ",
+                        "addressLine1" : "3737 Casa Verde St",
+                        "city" : "San Jose",
+                        "stateOrProvince" : "CA",
+                        "postalCode" : "95134",
+                        "country" : "US"
+                    },
+                    "lineItemInputs" : [ {
+                        "quantity" : 1,
+                        "itemId" : "v1|190006102824|0"
+                    }
+                    ]
                 }
-                ]
-            }
+            */
+            EbayGuestCheckoutSessionRequestModel payload = new EbayGuestCheckoutSessionRequestModel();
+            payload.contactEmail = customerInfo["Email"];
+            payload.contactFirstName = customerInfo["FirstName"];
+            payload.contactLastName = customerInfo["LastName"];
 
-            
-        It generates a response:
-        {
-  "checkoutSessionId": "5016712327",
-  "expirationDate": {
-    "value": "2036-08-11T23:03:18.501Z"
-  },
-  "lineItems": [
-    {
-      "itemId": "v1|190006102824|0",
-      "title": "display phones",
-      "shortDescription": "New",
-      "imageUrl": "http://i.ebayimg.qa.ebay.com/00/s/NzY4WDEwMjQ=/z/0ZkAAOSw3dFWHCF8/$_1.JPG?set_id=880000500F",
-      "seller": {
-        "username": "oneStopShop"
-      },
-      "quantity": 1,
-      "lineItemId": "5195728827",
-      "baseUnitPrice": {
-        "value": 20,
-        "currency": "USD"
-      },
-      "shippingOptions": [
-        {
-          "selected": true,
-          "shippingOptionId": "5274330495",
-          "shippingServiceName": "USPS Parcel Select Ground",
-          "shippingCarrierName": "USPS",
-          "minEstimatedDeliveryDate": {
-            "value": "2016-08-15T07:00:00.000Z"
-          },
-          "maxEstimatedDeliveryDate": {
-            "value": "2016-08-23T07:00:00.000Z"
-          },
-          "baseDeliveryCost": {
-            "value": 0,
-            "currency": "USD"
-          }
-        },
-        {
-          "selected": false,
-          "shippingOptionId": "5274330507",
-          "shippingServiceName": "USPS Retail Ground",
-          "shippingCarrierName": "USPS",
-          "minEstimatedDeliveryDate": {
-            "value": "2016-08-15T07:00:00.000Z"
-          },
-          "maxEstimatedDeliveryDate": {
-            "value": "2016-08-23T07:00:00.000Z"
-          },
-          "baseDeliveryCost": {
-            "value": 1,
-            "currency": "USD"
-          }
+            EbayShippingAddressModel shipping = new EbayShippingAddressModel();
+            shipping.recipient = customerInfo["FirstName"] + " " + customerInfo["LastName"];
+            shipping.phoneNumber = customerInfo["Phone"];
+            shipping.addressLine1 = addressInfo["ShippingAddress"];
+            shipping.addressLine2 = addressInfo["ShippingAddress2"];
+            shipping.city = addressInfo["ShippingCity"];
+            shipping.stateOrProvince = addressInfo["ShippingState"];
+            shipping.postalCode = addressInfo["ShippingZip"];
+            shipping.country = "US";
+
+            payload.shippingAddress = shipping;
+
+            EbayLineItemModel[] lineItems = new EbayLineItemModel[] {
+                new EbayLineItemModel { quantity = 1, itemId = itemId }
+            };
+
+            payload.lineItemInputs = lineItems;
+
+            string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/initiate";
+
+            var json_serializer = new JavaScriptSerializer();
+            string postBody = json_serializer.Serialize(payload);
+
+            return Web.PostWebRequest(apiUrl, postBody);
         }
-      ],
-      "netPrice": {
-        "value": 20,
-        "currency": "USD"
-      }
-    }
-  ],
-  "shippingAddress": {
-    "addressLine1": "3737 Casa Verde St",
-    "city": "San Jose",
-    "stateOrProvince": "CA",
-    "postalCode": "95134",
-    "country": "US",
-    "recipient": "Frank Smith",
-    "phoneNumber": "617 817 7449 "
-  },
-  "pricingSummary": {
-    "priceSubtotal": {
-      "value": 20,
-      "currency": "USD"
-    },
-    "baseDeliveryCost": {
-      "value": 0,
-      "currency": "USD"
-    },
-    "tax": {
-      "value": 0,
-      "currency": "USD"
-    },
-    "adjustment": {
-      "value": 0,
-      "currency": "USD"
-    },
-    "total": {
-      "value": 20,
-      "currency": "USD"
-    }
-  },
-  "acceptedPaymentMethods": [
-    {
-      "paymentMethodMessages": [
-        {
-          "legalMessage": "PayPal processes payments for eBay. A PayPal account isn't required."
-        }
-      ]
-    }
-  ]
-}
-
-        Place the order:
-        POST https://api.ebay.com/buy/order/v1/guest_checkout_session/{checkoutSessionId}/place_order
-
-        it gives a response:
-        {
-  "purchaseOrderId": "5833850019",
-  "purchaseOrderHref": "buy/order/v1/purchase_order/5833850019"
-}
-
-        get info about the purchase order (ebay member only? no guest?)
-        GET https://api.ebay.com/buy/order/v1/purchase_order/98262585
-
-         
-         */
     }
 
     public class EbayBrowseAPI
@@ -190,62 +110,22 @@ namespace JunkBox.Common
 
             string apiUrl = baseUrl + "/buy/browse/v1/item_summary/search";
             Dictionary<string, List<object>> urlParameters = new Dictionary<string, List<object>>() {
-                { "category_ids", new List<object>() { categoryId } },
-                { "filter",     new List<object>() { "price:[.." + maxPrice + "]",
-                                                     "priceCurrency:USD" } },
-                { "limit",      new List<object>() { "10" } },
-                { "offset",     new List<object>() { "10" } },
+                { "category_ids",   new List<object>() { categoryId } },
+                { "filter",         new List<object>() { "price:[.." + maxPrice + "]",
+                                                         "priceCurrency:USD" } },
+                { "limit",          new List<object>() { "10" } },
+                { "offset",         new List<object>() { "10" } },
                 
-                //{"q",           new List<object>() { "" } }
-                //{"sort", ""}
+                //{"q",             new List<object>() { "" } }
+                //{"sort",          new List<object>() { "" } }
             };
 
-            return GetWebRequest(apiUrl, BuildQueryString(urlParameters));
-        }
-
-        private static string BuildQueryString(IDictionary<string, List<object>> parameters)
-        {
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            foreach(KeyValuePair<string, List<object>> entry in parameters)
-            {
-               foreach(object value in entry.Value)
-               {
-                    query.Add(entry.Key, (string)value);
-               }
-            }
-            return "?" + query.ToString();
-        }
-
-        private static IDictionary<string, object> GetWebRequest(string URL, string query)
-        {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
-
-            // Add an Accept header for JSON format.
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
-
-            // List data response.
-            HttpResponseMessage response = client.GetAsync(query).Result;  // Blocking call!
-            if (response.IsSuccessStatusCode)
-            {
-
-                // Parse the response body. Blocking!
-                var dataObjects = response.Content.ReadAsStringAsync().Result;
-                var json_serializer = new JavaScriptSerializer();
-                var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(dataObjects);
-                return routes_list;
-            }
-            else
-            {
-                return new Dictionary<string, object>() {
-                    { response.StatusCode.ToString(), "(" + response.ReasonPhrase + ")" }
-                };
-            }
+            return Web.GetWebRequest(apiUrl, Web.BuildQueryString(urlParameters));
         }
     }
 
 
+    //Soon to be Depreciated
     public class Ebay
     {
         public static IDictionary<string, object> GetEbayResult(string URL, Dictionary<string, string> urlParameters)
@@ -298,6 +178,7 @@ namespace JunkBox.Common
             }
         }
 
+        /*   DEPRECIATED
         public static string GetTimestamp()
         {
             //App ID (Client ID)	WalterWo-JunkBox-SBX-645ed6013-c241386a
@@ -341,6 +222,6 @@ namespace JunkBox.Common
             //Console.WriteLine(response.Timestamp);
 
             return response.Timestamp.ToString();
-        }
+        }*/
     }
 }

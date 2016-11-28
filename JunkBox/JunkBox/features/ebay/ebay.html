@@ -6,7 +6,7 @@
         <tr ng-repeat="item in ebayResponse.itemSummaries">
             <td><img ng-src="{{ item.image.imageUrl }}"/></td>
             <td>{{ item.title }}</td>
-            <td><md-button ng-click="forceBuy(item.itemId)" class="md-raised md-primary" style="color:white">Force Buy</md-button></td>
+            <td><md-button ng-click="forceBuy(item.itemId, item.image.imageUrl)" class="md-raised md-primary" style="color:white">Force Buy</md-button></td>
         </tr>
     </table>
 </md-card>

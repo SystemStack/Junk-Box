@@ -16,12 +16,14 @@ namespace JunkBox.Controllers
         private static string appId = ConfigurationManager.AppSettings["AppID"];
         private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"];
 
+
+        /*
         //POST: Ebay/GetSomething/{data}
         [HttpPost]
         public ActionResult GetSomething(EbayGetSomethingModel data)
         {
             return Json(new { result=Ebay.GetTimestamp() });
-        }
+        }*/
 
         //POST: Ebay/GetTest/
         [HttpPost]
@@ -137,7 +139,7 @@ namespace JunkBox.Controllers
             return Json(Ebay.GetEbayResult(URL, urlParameters));
         }
 
-        //POST: Ebay/BrowseAPITest/
+        //POST: Ebay/BrowseAPITest/{data}
         [HttpPost]
         public ActionResult BrowseAPITest(EbayBrowseAPIModel data)
         {
@@ -149,6 +151,42 @@ namespace JunkBox.Controllers
 
 
             return Json(EbayBrowseAPI.ItemSummarySearch(queryPref["CategoryID"], queryPref["PriceLimit"]));
+        }
+
+        //POST: Ebay/OrderApiInitiateGuestCheckoutSession/{data}
+        public ActionResult OrderApiInitiateGuestCheckoutSession(EbayOrderApiInitiateGuestCheckoutSessionModel data)
+        {
+            //Get customer info
+            Dictionary<string, string> customerInfo = dataAccess.Select("SELECT * FROM Customer WHERE Email='" + data.email + "'").First();
+
+            //Get customer address 
+            Dictionary<string, string> addressInfo = dataAccess.Select("SELECT * FROM Address WHERE AddressID='" + customerInfo["AddressID"] + "'").First();
+
+            IDictionary<string, object> response = EbayOrderAPI.InitiateGuestCheckoutSession(data.orderId, customerInfo, addressInfo);
+
+            string checkoutSessionId = response["checkoutSessionId"].ToString();
+            string expirationDate = response["expirationDate"].ToString();
+
+            IDictionary<string, object> pricingSummary = (IDictionary<string,object>)response["pricingSummary"];
+            IDictionary<string, object> total = (IDictionary<string, object>)pricingSummary["total"];
+
+            string totalPrice = total["value"].ToString();
+
+            //Need to insert... CustomerID, AddressID, PurchasePrice, CheckoutSessionID, ExpirationDate, ImageURL
+
+            Dictionary<string, string> parameters = new Dictionary<string, string>() {
+                { "CustomerID", customerInfo["CustomerID"]},
+                { "AddressID", customerInfo["AddressID"]},
+                { "PurchasePrice", totalPrice},
+                { "CheckoutSessionID", checkoutSessionId},
+                { "ExpirationDate", expirationDate},
+                { "ImageURL", data.imageUrl}
+            };
+            int insertResult = dataAccess.Insert("CustomerOrder", parameters);
+
+            JsonResult result = Json(response);
+
+            return result;
         }
     }
 }
