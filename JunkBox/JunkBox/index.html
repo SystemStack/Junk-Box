@@ -1,7 +1,7 @@
 <html ng-app="junkBox">
 <head>
     <link rel="stylesheet" href="bower_components/angular-material/angular-material.css">
-    <title>Junk Box</title>
+    <title>JunKBoX</title>
 </head>
 <body ng-controller="MainCtrl" layout="column" layout-fill>
     <section layout="row" flex md-theme="default">
@@ -13,7 +13,7 @@
                     md-is-locked-open="true">
             <md-toolbar layout="row">
                 <div class="md-display-2" flex layout="column" style='color:white'>
-                    <a layout="row" layout-align="start center" flex>Junk Box</a>
+                    <a layout="row" layout-align="start center" flex>JunKBoX</a>
                 </div>
             </md-toolbar>
             <md-content flex style="overflow: hidden;">
@@ -45,7 +45,11 @@
         </md-sidenav>
         <md-content flex>
             <md-toolbar>
-                <div class="md-toolbar-tools"></div>
+                <div class="md-toolbar-tools" layout-align="end center" ng-click="logout($event)">
+                    <md-button class="md-warn md-raised">Logout
+
+                    </md-button>
+                </div>
             </md-toolbar>
             <div ui-view md-theme="default"></div>
             <div layout="row" ng-if="submittedRecord" layout-align="space-around">

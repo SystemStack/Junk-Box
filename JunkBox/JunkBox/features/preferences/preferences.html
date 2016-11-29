@@ -79,20 +79,3 @@
   </md-button>
   </div>
 </md-card>
-<md-card layout-align="space-around center">
-  <div layout="row">
-    <h2 class="md-headline" layout="row" layout-align="center center">Do you wish to halt all purchases?</h2>
-  </div>
-  <div layout="row" style="padding: 20px">
-  <md-radio-group layout="row" flex layout-align="space-between center" ng-model="haltPurchases">
-      <md-radio-button ng-click="haltAccount(true)"
-                       ng-value="true">
-          Halt Purchases
-      </md-radio-button>
-      <md-radio-button ng-click="haltAccount(false)"
-                       ng-value="false">
-          Continue Purchases
-      </md-radio-button>
-    </md-radio-group>
-  </div>
-</md-card>
