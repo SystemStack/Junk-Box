@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 using JunkBox.Models;
@@ -98,7 +97,7 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult HaltPurchases(PreferenceHaltPurchaseModel data)
         {
-            return Json(new { result=data.action});
+            return Json(new { result=data.action });
         }
 
         //POST: Preferences/GetAddress/{data}

@@ -3,5 +3,6 @@ angular
   [
     "junkBox.services.homeService",
     "junkBox.services.queriesService",
-    "junkBox.services.preferencesService"
+    "junkBox.services.preferencesService",
+    "junkBox.services.ebayService"
   ]);

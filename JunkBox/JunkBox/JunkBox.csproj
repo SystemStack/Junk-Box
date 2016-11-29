@@ -64,6 +64,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -190,8 +191,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Common\Ebay.cs" />
     <Compile Include="Common\Password.cs" />
+    <Compile Include="Common\Web.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\EbayController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -203,6 +207,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\EbayModels.cs" />
     <Compile Include="Models\HomeModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoginModels.cs" />
@@ -210,6 +215,11 @@
     <Compile Include="Models\PreferencesModels.cs" />
     <Compile Include="Models\QueryModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -795,10 +805,13 @@
     <Content Include="core\img\hose.jpg" />
     <Content Include="core\junkBoxAPI.js" />
     <Content Include="core\services.js" />
+    <Content Include="core\services\ebayService.js" />
     <Content Include="core\services\homeService.js" />
     <Content Include="core\services\preferencesService.js" />
     <Content Include="core\services\queriesService.js" />
     <Content Include="favicon.ico" />
+    <Content Include="features\ebay\ebay.html" />
+    <Content Include="features\ebay\ebayCtrl.js" />
     <Content Include="features\home\home.html" />
     <Content Include="features\home\homeCtrl.js" />
     <Content Include="features\login\login.html" />
@@ -826,6 +839,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Views\Ebay\" />
     <Folder Include="Views\Login\" />
     <Folder Include="Views\Preferences\" />
     <Folder Include="Views\Query\" />
@@ -931,6 +945,13 @@
     <Content Include="bower_components\angular\package.json" />
     <Content Include="bower_components\angular\README.md" />
     <None Include="Project_Readme.html" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
