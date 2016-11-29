@@ -8,14 +8,182 @@ using System.Web.Script.Serialization;
 using System.Web;
 
 using JunkBox.Models;
+using JunkBox.DataAccess;
+using System.Linq;
 
 namespace JunkBox.Common
 {
+
+    public class EbayAccessToken
+    {
+        private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"]; //Our 'Client ID'
+        private static string certIdSandbox = ConfigurationManager.AppSettings["CertIDSandBox"];//Our 'Client Secret'
+
+        public static IDictionary<string, object> RequestApplicationAccessToken()
+        {
+            /*
+             * The Authorization header requires a Base64-encoded value that is comprised of the client ID and client secret values.
+             * To generate this value, combine your application's client ID and client secret values by separating them with a colon, and Base64 encode those combined values. In other words, Base64 encode the following: <client_id>:<client_secret>.
+             * POST https://api.sandbox.ebay.com/identity/v1/oauth2/token
+             
+                HTTP headers:
+                    Content-Type = application/x-www-form-urlencoded
+                    Authorization = Basic <B64-encoded-oauth-credentials>
+
+                HTTP method: POST
+
+                URL: https://api.sandbox.ebay.com/identity/v1/oauth2/token
+
+                Request body (wrapped for readability):
+                    grant_type=client_credentials&
+                    redirect_uri=<redirect_URI>&
+                    scope=https://api.ebay.com/oauth/api_scope
+
+
+            EXAMPLE RESPONSE:
+            access_token : "v^1.1#i^1#p^1#I^3#r^0#f^0#t^H4sIAAAAAAAAAOVXa2wUVRTutt01DVQEBAzVspkqRMjM3pndzu5O2DXbB2WhtMVdeVQFZ2futNPOzkzuvWu7hthSFY0hQUMiqbWxYIyiARUfCAk/SEzESOIrJIqRHxJBMGICNYox4p3tUrbVAMJqSJw/k3vOued+5zvn3Afo91Qs3LR00y+VrptKR/pBf6nLxU8BFR73opvLSue6S0CBgWuk/87+8oGy7xdjOW3Y0r0Q25aJobc3bZhYygkjTAaZkiVjHUumnIZYIoqUiK1olgQOSDayiKVYBuONN0QYEYZlOSQIKX9QDSpKkErNiz6TVoRRw0EQBhoMK1owHAJ+qsc4A+MmJrJJIowAeJHleVYIJfmwJPglP+B4MdzOeFdBhHXLpCYcYKI5uFJuLirAenmoMsYQEeqEicZjSxKtsXhDY0tysa/AVzTPQ4LIJIMnjuotFXpXyUYGXn4ZnLOWEhlFgRgzvujYChOdSrGLYK4B/hjVfpASlECtWKvwYkBQikLlEgulZXJ5HI5EV1ktZypBk+gkeyVGKRupLqiQ/KiFuog3eJ3fyoxs6JoOUYRprIutjbW1MdHVskEgWm2xyzJmd53Vyybq1rBioBaqIuD9rCIEeH9IlPPrjDnLszxpoXrLVHWHM+xtsUgdpKDhZGr4AmqoUavZimIacQAV2An8RQoDYruT07EkZkin6aQVpikP3tzwygkYn00I0lMZAsc9TFbkGIowsm3rKjNZmSvFfPX04gjTSYgt+Xw9PT1cj5+zUIdPAID3rVnRnFA6YVpmHFun13P2+pUnsHouFAXSmViXSNamWHppqVIAZgcTFUQhGBLyvE+EFZ0s/YugIGbfxIYoVoOEIa9qoUBtOBAIyqlAsBgNEs3XqM/BAVNylk3LqBsS25AVyCq0zjJpiHRV8tdqgj+kQVYVwxobCGsam6pV6XoahADCVEoJh/5HfXK1lV5v6FSZpJVWnHIvVqkvtTCB6tWW+t+GllAsG7ZZhq5k/6PYnF6/yvj8SG2TEcnWZbJ0nICGQX/XFa6Sy+T6Yu1bxUrkP2uZawtdl8mNFTQfoFctkQc8uL646G3mhopLsdKcswlzSLaJhTgKzTYg5hDEVgbR2xfX6hzJSasbmnSHI8gyDIhW8dfFAnb6+Mbigc4v3/i4jakP2dbHKKHc+CyZRu+I1udA/wsntW/isyFakvv4AdcBMODaR18eIAhYfhG421N2X3nZVAbrBNI0mWrK6uV0WeOw3mHSWzGCXDfM2rKOSj2uFcc3r+0reLCMPAhuG3+yVJTxUwreL+D2Sxo3P21OJS/yvBDiw4LfD9pBzSVtOT+7/NZdo/V79ls1O3ZO6frh/WHu+dnDTdNB5biRy+UuKR9wlQy6PHvf+rxq1sGZnx1bNn/Bm6/Wtw2t3Hv2/O+etzvOH5m/YR2cOxRvUA6ONp0FelV1z4mhd4aHKiqZ6sOHZj928t2W5nldu/rKtvQ1pn+eNfrclxtH5j1bfXpHyH3EbZxcu/OnFy5Mnbm3ZsvGmajZPQ0ZNSsPLDg2zRx6/S6y9bvknD0zvjk+dbR6e+u5quGFpwbPDO5u3BQ5MXfryw+tO93Vvj8ZeLHKPNOHvA98EhHqPtipvPfUmqqmp2c88aOob3/jteWvLHvy0OqKxiUzTtzy6Vd/PKwkjn68PH7m1G8e1HmHcGHD4NcfPdPz69CH0498+0XHo48kRvdvG7mn5tj985XD2kvatqO7z587u28sjX8CD66ymUoOAAA="
+            expires_in : 7200
+            refresh_token : "N/A"
+            token_type : "Application Access Token"
+             */
+
+            var plainTextBytes = Encoding.UTF8.GetBytes(appIdSandbox + ":" + certIdSandbox);
+            string authHeader = Convert.ToBase64String(plainTextBytes);
+            string urlApi = "https://api.sandbox.ebay.com/identity/v1/oauth2/token";
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["grant_type"] = "client_credentials";
+            query["redirect_uri"] = "";
+            query["scope"] = "https://api.ebay.com/oauth/api_scope";
+
+
+            return Web.PostTokenRequest(urlApi, authHeader, query.ToString());
+        }
+
+        private static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+
+        public static bool IsAccessTokenValid()
+        {
+            Dictionary<string, string> accessToken = dataAccess.Select("SELECT * FROM AccessToken WHERE UseType='ApplicationAccessToken'").First();
+
+            DateTime creationTime = DateTime.Parse(accessToken["DateCreated"]);
+            DateTime currentTime = DateTime.Now;
+
+            double timeDifference = (currentTime - creationTime).TotalSeconds;
+            double expireLength = Double.Parse(accessToken["ExpiresIn"]);
+
+            if (timeDifference <= expireLength)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static string GetAccessToken()
+        {
+            Dictionary<string, string> accessToken = dataAccess.Select("SELECT AccessToken FROM AccessToken WHERE UseType='ApplicationAccessToken'").First();
+
+            return accessToken["AccessToken"];
+        }
+
+        public static int UpdateAccessToken()
+        {
+            DateTime updateTime = DateTime.Now;
+            IDictionary<string, object> tokenResponse = RequestApplicationAccessToken();
+
+            Dictionary<string, string> updateParameters = new Dictionary<string, string>() {
+                {"AccessToken", tokenResponse["access_token"].ToString() },
+                {"ExpiresIn", tokenResponse["expires_in"].ToString() },
+                {"RefreshToken", tokenResponse["refresh_token"].ToString() },
+                { "DateCreated", updateTime.ToString("yyyy-MM-dd HH:mm:ss") }
+            };
+
+            return dataAccess.Update("AccessToken", updateParameters, "UseType", "ApplicationAccessToken");
+        }
+    }
 
     public class EbayOrderAPI
     {
         private static string authToken = ConfigurationManager.AppSettings["AuthToken"];
         private static string baseUrl = "https://api.sandbox.ebay.com";
+
+
+        public static IDictionary<string, object> PlaceGuestOrder(string checkoutSessionId)
+        {
+            //POST https://api.sandbox.ebay.com/buy/order/v1/guest_checkout_session/{guest_checkoutsession_id}/place_order
+
+            string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/place_order";
+
+            return Web.PostWebRequest(apiUrl, "");
+        }
+
+
+        public static IDictionary<string, object> UpdateGuestSessionPaymentInfo(string checkoutSessionId, Dictionary<string, string> customerInfo, Dictionary<string, string> addressInfo)
+        {
+
+            /*
+             * POST: https://api.sandbox.ebay.com/buy/order/v1/guest_checkout_session/{guest_checkoutsession_id}/update_payment_info
+             * 
+             *{ /* UpdatePaymentInformation 
+                "creditCard":
+                { /* CreditCard 
+                    "accountHolderName": string,
+                    "billingAddress":
+                    { /* BillingAddress 
+                        "addressLine1": string,
+                        "addressLine2": string,
+                        "city": string,
+                        "country": string,
+                        "county": string,
+                        "firstName": string,
+                        "lastName": string,
+                        "postalCode": string,
+                        "stateOrProvince": string
+                    },
+                    "brand": string,
+                    "cardNumber": string,
+                    "cvvNumber": string,
+                    "expireMonth": integer,
+                    "expireYear": integer
+                }
+              }
+            */
+
+            EbayUpdateGuestSessionPaymentInfoModel payload = new EbayUpdateGuestSessionPaymentInfoModel();
+
+            EbayCreditCardModel creditCard = new EbayCreditCardModel();
+            creditCard.accountHolderName = "Frank Smith";
+            creditCard.brand = "MASTERCARD";
+            creditCard.cardNumber = "5100000001598174";
+            creditCard.cvvNumber = "012";
+            creditCard.expireMonth = 10;
+            creditCard.expireYear = 2019;
+
+            EbayBillingAddressModel billingAddress = new EbayBillingAddressModel();
+            billingAddress.firstName = "Frank";
+            billingAddress.lastName = "Smith";
+            billingAddress.addressLine1 = "3737 Any St";
+            billingAddress.addressLine2 = "";
+            billingAddress.city = "San Jose";
+            billingAddress.stateOrProvince = "CA";
+            billingAddress.postalCode = "95134";
+            billingAddress.country = "US";
+
+            creditCard.billingAddress = billingAddress;
+            payload.creditCard = creditCard;
+
+            string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/update_payment_info";
+
+            var json_serializer = new JavaScriptSerializer();
+            string postBody = json_serializer.Serialize(payload);
+            //System.Windows.Forms.MessageBox.Show(postBody);
+
+            return Web.PostWebRequest(apiUrl, postBody);
+        }
+
 
         public static IDictionary<string, object> InitiateGuestCheckoutSession(string itemId, Dictionary<string, string> customerInfo, Dictionary<string, string> addressInfo)
         {
