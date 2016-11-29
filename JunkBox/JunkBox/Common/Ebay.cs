@@ -8,6 +8,8 @@ using System.Web.Script.Serialization;
 using System.Web;
 
 using JunkBox.Models;
+using JunkBox.DataAccess;
+using System.Linq;
 
 namespace JunkBox.Common
 {
@@ -16,6 +18,7 @@ namespace JunkBox.Common
     {
         private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"]; //Our 'Client ID'
         private static string certIdSandbox = ConfigurationManager.AppSettings["CertIDSandBox"];//Our 'Client Secret'
+
         public static IDictionary<string, object> RequestApplicationAccessToken()
         {
             /*
@@ -55,6 +58,50 @@ namespace JunkBox.Common
 
 
             return Web.PostTokenRequest(urlApi, authHeader, query.ToString());
+        }
+
+        private static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+
+        public static bool IsAccessTokenValid()
+        {
+            Dictionary<string, string> accessToken = dataAccess.Select("SELECT * FROM AccessToken WHERE UseType='ApplicationAccessToken'").First();
+
+            DateTime creationTime = DateTime.Parse(accessToken["DateCreated"]);
+            DateTime currentTime = DateTime.Now;
+
+            double timeDifference = (currentTime - creationTime).TotalSeconds;
+            double expireLength = Double.Parse(accessToken["ExpiresIn"]);
+
+            if (timeDifference <= expireLength)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static string GetAccessToken()
+        {
+            Dictionary<string, string> accessToken = dataAccess.Select("SELECT AccessToken FROM AccessToken WHERE UseType='ApplicationAccessToken'").First();
+
+            return accessToken["AccessToken"];
+        }
+
+        public static int UpdateAccessToken()
+        {
+            DateTime updateTime = DateTime.Now;
+            IDictionary<string, object> tokenResponse = RequestApplicationAccessToken();
+
+            Dictionary<string, string> updateParameters = new Dictionary<string, string>() {
+                {"AccessToken", tokenResponse["access_token"].ToString() },
+                {"ExpiresIn", tokenResponse["expires_in"].ToString() },
+                {"RefreshToken", tokenResponse["refresh_token"].ToString() },
+                { "DateCreated", updateTime.ToString("yyyy-MM-dd HH:mm:ss") }
+            };
+
+            return dataAccess.Update("AccessToken", updateParameters, "UseType", "ApplicationAccessToken");
         }
     }
 

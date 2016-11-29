@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -11,7 +10,6 @@ namespace JunkBox.Common
 {
     public class Web
     {
-        private static string authToken = ConfigurationManager.AppSettings["AuthToken"];
 
         public static string BuildQueryString(IDictionary<string, List<object>> parameters)
         {
@@ -28,12 +26,18 @@ namespace JunkBox.Common
 
         public static IDictionary<string, object> GetWebRequest(string URL, string query)
         {
+            if(!EbayAccessToken.IsAccessTokenValid())
+            {
+                EbayAccessToken.UpdateAccessToken();
+            }
+            string accessToken = EbayAccessToken.GetAccessToken();
+
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(URL);
 
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             // List data response.
             HttpResponseMessage response = client.GetAsync(query).Result;  // Blocking call!
@@ -56,12 +60,17 @@ namespace JunkBox.Common
 
         public static IDictionary<string, object> PostWebRequest(string URL, string postBody)
         {
+            if (!EbayAccessToken.IsAccessTokenValid())
+            {
+                EbayAccessToken.UpdateAccessToken();
+            }
+            string accessToken = EbayAccessToken.GetAccessToken();
+
             HttpClient client = new HttpClient();
-            //client.BaseAddress = new Uri(URL);
 
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             // List data response.
             HttpResponseMessage response = client.PostAsync(URL, new StringContent(postBody, Encoding.UTF8, "application/json")).Result;
