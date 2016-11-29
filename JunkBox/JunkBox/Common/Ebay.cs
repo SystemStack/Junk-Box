@@ -23,7 +23,8 @@ namespace JunkBox.Common
         {
             /*
              * The Authorization header requires a Base64-encoded value that is comprised of the client ID and client secret values.
-             * To generate this value, combine your application's client ID and client secret values by separating them with a colon, and Base64 encode those combined values. In other words, Base64 encode the following: <client_id>:<client_secret>.
+             * To generate this value, combine your application's client ID and client secret values by separating them with a colon, 
+             * and Base64 encode those combined values. In other words, Base64 encode the following: <client_id>:<client_secret>.
              * POST https://api.sandbox.ebay.com/identity/v1/oauth2/token
              
                 HTTP headers:
@@ -40,11 +41,11 @@ namespace JunkBox.Common
                     scope=https://api.ebay.com/oauth/api_scope
 
 
-            EXAMPLE RESPONSE:
-            access_token : "v^1.1#i^1#p^1#I^3#r^0#f^0#t^H4sIAAAAAAAAAOVXa2wUVRTutt01DVQEBAzVspkqRMjM3pndzu5O2DXbB2WhtMVdeVQFZ2futNPOzkzuvWu7hthSFY0hQUMiqbWxYIyiARUfCAk/SEzESOIrJIqRHxJBMGICNYox4p3tUrbVAMJqSJw/k3vOued+5zvn3Afo91Qs3LR00y+VrptKR/pBf6nLxU8BFR73opvLSue6S0CBgWuk/87+8oGy7xdjOW3Y0r0Q25aJobc3bZhYygkjTAaZkiVjHUumnIZYIoqUiK1olgQOSDayiKVYBuONN0QYEYZlOSQIKX9QDSpKkErNiz6TVoRRw0EQBhoMK1owHAJ+qsc4A+MmJrJJIowAeJHleVYIJfmwJPglP+B4MdzOeFdBhHXLpCYcYKI5uFJuLirAenmoMsYQEeqEicZjSxKtsXhDY0tysa/AVzTPQ4LIJIMnjuotFXpXyUYGXn4ZnLOWEhlFgRgzvujYChOdSrGLYK4B/hjVfpASlECtWKvwYkBQikLlEgulZXJ5HI5EV1ktZypBk+gkeyVGKRupLqiQ/KiFuog3eJ3fyoxs6JoOUYRprIutjbW1MdHVskEgWm2xyzJmd53Vyybq1rBioBaqIuD9rCIEeH9IlPPrjDnLszxpoXrLVHWHM+xtsUgdpKDhZGr4AmqoUavZimIacQAV2An8RQoDYruT07EkZkin6aQVpikP3tzwygkYn00I0lMZAsc9TFbkGIowsm3rKjNZmSvFfPX04gjTSYgt+Xw9PT1cj5+zUIdPAID3rVnRnFA6YVpmHFun13P2+pUnsHouFAXSmViXSNamWHppqVIAZgcTFUQhGBLyvE+EFZ0s/YugIGbfxIYoVoOEIa9qoUBtOBAIyqlAsBgNEs3XqM/BAVNylk3LqBsS25AVyCq0zjJpiHRV8tdqgj+kQVYVwxobCGsam6pV6XoahADCVEoJh/5HfXK1lV5v6FSZpJVWnHIvVqkvtTCB6tWW+t+GllAsG7ZZhq5k/6PYnF6/yvj8SG2TEcnWZbJ0nICGQX/XFa6Sy+T6Yu1bxUrkP2uZawtdl8mNFTQfoFctkQc8uL646G3mhopLsdKcswlzSLaJhTgKzTYg5hDEVgbR2xfX6hzJSasbmnSHI8gyDIhW8dfFAnb6+Mbigc4v3/i4jakP2dbHKKHc+CyZRu+I1udA/wsntW/isyFakvv4AdcBMODaR18eIAhYfhG421N2X3nZVAbrBNI0mWrK6uV0WeOw3mHSWzGCXDfM2rKOSj2uFcc3r+0reLCMPAhuG3+yVJTxUwreL+D2Sxo3P21OJS/yvBDiw4LfD9pBzSVtOT+7/NZdo/V79ls1O3ZO6frh/WHu+dnDTdNB5biRy+UuKR9wlQy6PHvf+rxq1sGZnx1bNn/Bm6/Wtw2t3Hv2/O+etzvOH5m/YR2cOxRvUA6ONp0FelV1z4mhd4aHKiqZ6sOHZj928t2W5nldu/rKtvQ1pn+eNfrclxtH5j1bfXpHyH3EbZxcu/OnFy5Mnbm3ZsvGmajZPQ0ZNSsPLDg2zRx6/S6y9bvknD0zvjk+dbR6e+u5quGFpwbPDO5u3BQ5MXfryw+tO93Vvj8ZeLHKPNOHvA98EhHqPtipvPfUmqqmp2c88aOob3/jteWvLHvy0OqKxiUzTtzy6Vd/PKwkjn68PH7m1G8e1HmHcGHD4NcfPdPz69CH0498+0XHo48kRvdvG7mn5tj985XD2kvatqO7z587u28sjX8CD66ymUoOAAA="
-            expires_in : 7200
-            refresh_token : "N/A"
-            token_type : "Application Access Token"
+                EXAMPLE RESPONSE:
+                    access_token : "[long ass sequence of characters]"
+                    expires_in : 7200
+                    refresh_token : "N/A"
+                    token_type : "Application Access Token"
              */
 
             var plainTextBytes = Encoding.UTF8.GetBytes(appIdSandbox + ":" + certIdSandbox);
@@ -54,8 +55,7 @@ namespace JunkBox.Common
             var query = HttpUtility.ParseQueryString(string.Empty);
             query["grant_type"] = "client_credentials";
             query["redirect_uri"] = "";
-            query["scope"] = "https://api.ebay.com/oauth/api_scope";
-
+            query["scope"] = "https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/buy.guest.order";
 
             return Web.PostTokenRequest(urlApi, authHeader, query.ToString());
         }
@@ -95,10 +95,10 @@ namespace JunkBox.Common
             IDictionary<string, object> tokenResponse = RequestApplicationAccessToken();
 
             Dictionary<string, string> updateParameters = new Dictionary<string, string>() {
-                {"AccessToken", tokenResponse["access_token"].ToString() },
-                {"ExpiresIn", tokenResponse["expires_in"].ToString() },
-                {"RefreshToken", tokenResponse["refresh_token"].ToString() },
-                { "DateCreated", updateTime.ToString("yyyy-MM-dd HH:mm:ss") }
+                { "AccessToken",  tokenResponse["access_token"].ToString() },
+                { "ExpiresIn",    tokenResponse["expires_in"].ToString() },
+                { "RefreshToken", tokenResponse["refresh_token"].ToString() },
+                { "DateCreated",  updateTime.ToString("yyyy-MM-dd HH:mm:ss") }
             };
 
             return dataAccess.Update("AccessToken", updateParameters, "UseType", "ApplicationAccessToken");
