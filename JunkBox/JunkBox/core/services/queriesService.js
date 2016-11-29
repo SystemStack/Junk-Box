@@ -13,6 +13,16 @@ angular
       });
       return deferred.promise;
     },
+    haltPurchases: function (haltPurchases) {
+        var deferred = $q.defer();
+        $http.post('/Preferences/HaltPurchases/', {data: haltPurchases})
+         .success(function(data, status, headers, config) {
+             deferred.resolve(data);
+         }).error(function(error) {
+             deferred.reject(error);
+         });
+        return deferred.promise;
+    },
     getSettings: function (user) {
         var deferred = $q.defer();
         $http
