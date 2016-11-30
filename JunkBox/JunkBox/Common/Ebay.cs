@@ -64,13 +64,13 @@ namespace JunkBox.Common
 
         public static bool IsAccessTokenValid()
         {
-            Dictionary<string, string> accessToken = dataAccess.Select("SELECT * FROM AccessToken WHERE UseType='ApplicationAccessToken'").First();
+            AccessTokenModel accessToken = AccessTokenTable.GetAccessToken();
 
-            DateTime creationTime = DateTime.Parse(accessToken["DateCreated"]);
+            DateTime creationTime = accessToken.DateCreated;
             DateTime currentTime = DateTime.Now;
 
             double timeDifference = (currentTime - creationTime).TotalSeconds;
-            double expireLength = Double.Parse(accessToken["ExpiresIn"]);
+            double expireLength = (double)accessToken.ExpiresIn;
 
             if (timeDifference <= expireLength)
             {
@@ -80,28 +80,41 @@ namespace JunkBox.Common
             {
                 return false;
             }
+
         }
 
         public static string GetAccessToken()
         {
-            Dictionary<string, string> accessToken = dataAccess.Select("SELECT AccessToken FROM AccessToken WHERE UseType='ApplicationAccessToken'").First();
+            AccessTokenModel accessToken = AccessTokenTable.GetAccessToken();
 
-            return accessToken["AccessToken"];
+            return accessToken.AccessToken;
         }
 
         public static int UpdateAccessToken()
         {
+            
             DateTime updateTime = DateTime.Now;
             IDictionary<string, object> tokenResponse = RequestApplicationAccessToken();
 
-            Dictionary<string, string> updateParameters = new Dictionary<string, string>() {
-                { "AccessToken",  tokenResponse["access_token"].ToString() },
-                { "ExpiresIn",    tokenResponse["expires_in"].ToString() },
-                { "RefreshToken", tokenResponse["refresh_token"].ToString() },
-                { "DateCreated",  updateTime.ToString("yyyy-MM-dd HH:mm:ss") }
+            AccessTokenModel accessToken = new AccessTokenModel() {
+                AccessToken = tokenResponse["access_token"].ToString(),
+                ExpiresIn = (int)tokenResponse["expires_in"],
+                RefreshToken = tokenResponse["refresh_token"].ToString(),
+                DateCreated = updateTime,
+                UseType = "ApplicationAccessToken",
+                TokenType = (string)tokenResponse["token_type"]
             };
 
-            return dataAccess.Update("AccessToken", updateParameters, "UseType", "ApplicationAccessToken");
+            NonQueryResultModel tokenResult = AccessTokenTable.UpdateAccessToken(accessToken);
+
+            if (tokenResult.Success)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 

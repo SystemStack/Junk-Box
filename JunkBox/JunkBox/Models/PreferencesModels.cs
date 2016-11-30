@@ -12,7 +12,7 @@ namespace JunkBox.Models
         public string streetName2 { get; set; }
         public string city { get; set; }
         public string state { get; set; }
-        public string postalCode { get; set; }
+        public int postalCode { get; set; }
     }
 
     public class PreferenceChangePasswordModel
