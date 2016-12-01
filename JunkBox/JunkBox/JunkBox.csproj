@@ -206,6 +206,7 @@
     <Compile Include="DataAccess\CustomerOrderTable.cs" />
     <Compile Include="DataAccess\CustomerTable.cs" />
     <Compile Include="DataAccess\IDataAccess.cs" />
+    <Compile Include="DataAccess\IDataTable.cs" />
     <Compile Include="DataAccess\MySqlDataAccess.cs" />
     <Compile Include="DataAccess\QueryTable.cs" />
     <Compile Include="Global.asax.cs">

@@ -9,7 +9,8 @@ namespace JunkBox.Controllers
 {
     public class QueryController : Controller
     {
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        //private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static QueryTable queryTable = QueryTable.Instance();
 
         //POST: Query/GetSettings/{data}
         [HttpPost]
@@ -25,7 +26,10 @@ namespace JunkBox.Controllers
                 return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            QueryDataModel queryData = QueryTable.GetQueryData(customerUuid);
+            //QueryDataModel queryData = QueryTable.GetQueryData(customerUuid);
+            QueryDataModel queryData = queryTable.GetQueryData(customerUuid);
+
+            QueryTable qt = QueryTable.Instance();
 
             return Json(new { result=queryData });
         }
@@ -45,7 +49,8 @@ namespace JunkBox.Controllers
                 Frequency = data.frequencyOptions.label,
                 PriceLimit = data.price
             };
-            NonQueryResultModel updateResult = QueryTable.UpdateQueryData(queryData, customerUuid);
+            //NonQueryResultModel updateResult = QueryTable.UpdateQueryData(queryData, customerUuid);
+            NonQueryResultModel updateResult = queryTable.UpdateQueryData(queryData, customerUuid);
 
             if(updateResult.Success)
             {

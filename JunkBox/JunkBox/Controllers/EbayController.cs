@@ -13,7 +13,9 @@ namespace JunkBox.Controllers
 {
     public class EbayController : Controller
     {
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        //private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+
+        private static QueryTable queryTable = QueryTable.Instance();
 
         private static string appId = ConfigurationManager.AppSettings["AppID"];
         private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"];
@@ -61,7 +63,8 @@ namespace JunkBox.Controllers
                 return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            QueryDataModel queryPref = QueryTable.GetQueryData(customerUuid);
+            //QueryDataModel queryPref = QueryTable.GetQueryData(customerUuid);
+            QueryDataModel queryPref = queryTable.GetQueryData(customerUuid);
 
             return Json(EbayBrowseAPI.ItemSummarySearch(queryPref.CategoryID, queryPref.PriceLimit));
         }

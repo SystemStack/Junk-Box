@@ -10,7 +10,8 @@ namespace JunkBox.Controllers
     public class LoginController : Controller
     {
 
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        //private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static QueryTable queryTable = QueryTable.Instance();
 
         // POST: Login/Login/{data}
         [HttpPost]
@@ -105,8 +106,8 @@ namespace JunkBox.Controllers
                     Frequency = "",
                     PriceLimit = ""
             };
-            NonQueryResultModel queryResult = QueryTable.InsertQuery(customerQuery); //If this fails, we have the option of doing something
-
+            //NonQueryResultModel queryResult = QueryTable.InsertQuery(customerQuery); //If this fails, we have the option of doing something
+            NonQueryResultModel queryResult = queryTable.InsertQuery(customerQuery);
 
             //Aaaand we're done.
             return Json(new { result="Success"});

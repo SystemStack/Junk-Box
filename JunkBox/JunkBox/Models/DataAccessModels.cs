@@ -5,6 +5,17 @@ using System.Web;
 
 namespace JunkBox.Models
 {
+    public interface IDataResultModel
+    {
+
+    }
+
+    public interface IDataParameterModel
+    {
+    }
+
+
+
     public class AddressModel
     {
         public string CustomerUUID { get; set; }
@@ -62,7 +73,7 @@ namespace JunkBox.Models
         public string Email { get; set; }
     }
 
-    public class CustomerUUIDModel
+    public class CustomerUUIDModel : IDataResultModel, IDataParameterModel
     {
         public string CustomerUUID { get; set; }
     }
@@ -72,7 +83,7 @@ namespace JunkBox.Models
         public string Email { get; set; }
     }
 
-    public class InsertQueryModel
+    public class InsertQueryModel : IDataParameterModel
     {
         public string CustomerUUID { get; set; }
         public string Frequency { get; set; }
@@ -81,7 +92,25 @@ namespace JunkBox.Models
         public string CategoryID { get; set; }
     }
 
-    public class NonQueryResultModel
+    public class QueryModel : IDataResultModel
+    {
+        public int QueryID { get; set; }
+        public string CustomerUUID { get; set; }
+        public string Frequency { get; set; }
+        public string PriceLimit { get; set; }
+        public string Category { get; set; }
+        public string CategoryID { get; set; }
+    }
+
+    public class QueryDataModel : IDataResultModel
+    {
+        public string Frequency { get; set; }
+        public string PriceLimit { get; set; }
+        public string Category { get; set; }
+        public string CategoryID { get; set; }
+    }
+
+    public class NonQueryResultModel : IDataResultModel
     {
         public bool Success { get; set; }
     }
@@ -93,14 +122,6 @@ namespace JunkBox.Models
         public string ExpirationDate { get; set; }
         public string ImageURL { get; set; }
         public DateTime TimeStamp { get; set; }
-    }
-
-    public class QueryDataModel
-    {
-        public string Frequency { get; set; }
-        public string PriceLimit { get; set; }
-        public string Category { get; set; }
-        public string CategoryID { get; set; }
     }
 
     public class AccessTokenModel

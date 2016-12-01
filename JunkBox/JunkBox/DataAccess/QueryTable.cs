@@ -7,11 +7,27 @@ using JunkBox.Models;
 
 namespace JunkBox.DataAccess
 {
-    public class QueryTable
+    public class QueryTable : IDataTable<QueryDataModel, CustomerUUIDModel, NonQueryResultModel, InsertQueryModel, NonQueryResultModel, CustomerUUIDModel, NonQueryResultModel, CustomerUUIDModel>
     {
         private static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
-        public static NonQueryResultModel InsertQuery(InsertQueryModel queryData)
+        private static QueryTable instance = null;
+
+        private QueryTable()
+        {
+        }
+
+        public static QueryTable Instance()
+        {
+            if (instance == null)
+            {
+                instance = new QueryTable();
+            }
+
+            return instance;
+        }
+
+        public NonQueryResultModel InsertQuery(InsertQueryModel queryData)
         {
             IDictionary<string, object> parameters = new Dictionary<string, object>()
             {
@@ -40,7 +56,7 @@ namespace JunkBox.DataAccess
             return payload;
         }
 
-        public static QueryDataModel GetQueryData(CustomerUUIDModel customerUuid)
+        public QueryDataModel GetQueryData(CustomerUUIDModel customerUuid)
         {
             IDictionary<string, object> parameters = new Dictionary<string, object>()
             {
@@ -60,7 +76,7 @@ namespace JunkBox.DataAccess
             return payload;
         }
 
-        public static NonQueryResultModel UpdateQueryData(QueryDataModel queryData, CustomerUUIDModel customerUuid)
+        public NonQueryResultModel UpdateQueryData(QueryDataModel queryData, CustomerUUIDModel customerUuid)
         {
             IDictionary<string, object> parameters = new Dictionary<string, object>()
             {
@@ -87,6 +103,43 @@ namespace JunkBox.DataAccess
             };
 
             return payload;
+        }
+
+
+        public QueryDataModel SelectRecord(CustomerUUIDModel parameters)
+        {
+            IDictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "@CustomerUUID", parameters.CustomerUUID }
+            };
+            string query = "SELECT * FROM Query WHERE CustomerUUID=@CustomerUUID";
+
+            IDictionary<string, object> queryResult = dataAccess.Select(query, param).First();
+
+            QueryDataModel payload = new QueryDataModel()
+            {
+                Frequency = (string)queryResult["Frequency"],
+                PriceLimit = (string)queryResult["PriceLimit"],
+                Category = (string)queryResult["Category"],
+                CategoryID = (string)queryResult["CategoryID"]
+            };
+
+            return payload;
+        }
+
+        public NonQueryResultModel InsertRecord(InsertQueryModel parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public NonQueryResultModel UpdateRecord(CustomerUUIDModel parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public NonQueryResultModel DeleteRecord(CustomerUUIDModel parameters)
+        {
+            throw new NotImplementedException();
         }
     }
 }
