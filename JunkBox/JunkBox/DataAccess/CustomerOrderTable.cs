@@ -38,6 +38,35 @@ namespace JunkBox.DataAccess
             return payload;
         }
 
+        public static NonQueryResultModel InsertCustomerOrder(CustomerOrderModel customerOrder)
+        {
+            IDictionary<string, object> parameters = new Dictionary<string, object>()
+            {
+                { "@CustomerUUID", customerOrder.CustomerUUID },
+                { "@CheckoutSessionID", customerOrder.CheckoutSessionID },
+                { "@ExpirationDate", customerOrder.ExpirationDate },
+                { "@ImageURL", customerOrder.ImageURL },
+                { "@PurchasePrice", customerOrder.PurchasePrice }
+            };
 
+            //INSERT INTO table_name (column1,column2,column3,...) VALUES (value1, value2, value3,...);
+            string query = "INSERT INTO CustomerOrder (CustomerUUID, CheckoutSessionID, ExpirationDate, ImageURL, PurchasePrice)" +
+                                       " VALUES (@CustomerUUID, @CheckoutSessionID, @ExpirationDate, @ImageURL, @PurchasePrice);";
+
+            int result = dataAccess.Insert(query, parameters);
+
+            bool succeeded = false;
+            if (result == 1)
+            {
+                succeeded = true;
+            }
+
+            NonQueryResultModel payload = new NonQueryResultModel()
+            {
+                Success = succeeded
+            };
+
+            return payload;
+        }
     }
 }

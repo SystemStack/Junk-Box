@@ -46,6 +46,7 @@ namespace JunkBox.Models
 
     public class CustomerHashSaltModel
     {
+        public string CustomerUUID { get; set; }
         public string Hash { get; set; }
         public string Salt { get; set; }
     }
@@ -111,4 +112,16 @@ namespace JunkBox.Models
         public string TokenType { get; set; }
         public DateTime DateCreated { get; set; }
     }
+
+    public class CustomerOrderModel
+    {
+        public int OrderID { get; set; }
+        public string CustomerUUID { get; set; }
+        public string PurchasePrice { get; set; }
+        public string CheckoutSessionID { get; set; }
+        public string ExpirationDate { get; set; }
+        public string ImageURL { get; set; }
+        public DateTime TimeStamp { get; set; }
+    }
+
 }

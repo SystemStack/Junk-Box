@@ -198,7 +198,7 @@ namespace JunkBox.Common
         }
 
 
-        public static IDictionary<string, object> InitiateGuestCheckoutSession(string itemId, Dictionary<string, string> customerInfo, Dictionary<string, string> addressInfo)
+        public static IDictionary<string, object> InitiateGuestCheckoutSession(string itemId, CustomerDataModel customerInfo, AddressModel addressInfo)
         {
 
             /*
@@ -226,18 +226,18 @@ namespace JunkBox.Common
                 }
             */
             EbayGuestCheckoutSessionRequestModel payload = new EbayGuestCheckoutSessionRequestModel();
-            payload.contactEmail = customerInfo["Email"];
-            payload.contactFirstName = customerInfo["FirstName"];
-            payload.contactLastName = customerInfo["LastName"];
+            payload.contactEmail = customerInfo.Email;
+            payload.contactFirstName = customerInfo.FirstName;
+            payload.contactLastName = customerInfo.LastName;
 
             EbayShippingAddressModel shipping = new EbayShippingAddressModel();
-            shipping.recipient = customerInfo["FirstName"] + " " + customerInfo["LastName"];
-            shipping.phoneNumber = customerInfo["Phone"];
-            shipping.addressLine1 = addressInfo["ShippingAddress"];
-            shipping.addressLine2 = addressInfo["ShippingAddress2"];
-            shipping.city = addressInfo["ShippingCity"];
-            shipping.stateOrProvince = addressInfo["ShippingState"];
-            shipping.postalCode = addressInfo["ShippingZip"];
+            shipping.recipient = customerInfo.FirstName + " " + customerInfo.LastName;
+            shipping.phoneNumber = customerInfo.Phone;
+            shipping.addressLine1 = addressInfo.ShippingAddress;
+            shipping.addressLine2 = addressInfo.ShippingAddress2;
+            shipping.city = addressInfo.ShippingCity;
+            shipping.stateOrProvince = addressInfo.ShippingState;
+            shipping.postalCode = addressInfo.ShippingZip.ToString();
             shipping.country = "US";
 
             payload.shippingAddress = shipping;
