@@ -58,42 +58,44 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult ChangePassword(PreferenceChangePasswordModel data)
         {
-            /*
-            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT Hash, CustomerID FROM Customer WHERE Email='" + data.email + "'");
-            if(customerData.Count <= 0)
+            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+                Email = data.email
+            };
+            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+
+            if(customerUuid.CustomerUUID == null)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            string customerHash = customerData.First()["Hash"];
-            string customerId = customerData.First()["CustomerID"];
 
-            bool verifyPassword = Password.VerifyHash(data.oldPassword, customerHash);
+            CustomerHashSaltModel customerHashSalt = CustomerTable.GetCustomerHashSalt(customerUuid);
 
-            if(!verifyPassword)
+            bool verifyPassword = Password.VerifyHash(data.oldPassword, customerHashSalt.Hash);
+            if (!verifyPassword)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Fail", reason="Invalid Password" });
             }
 
+            //Generate Password's Salt and Hash
             byte[] salt = Password.ComputeSaltBytes();
-
             string hashString = Password.ComputeHash(data.newPassword, salt);
             string saltString = Convert.ToBase64String(salt);
 
-            Dictionary<string, string> updateParams = new Dictionary<string, string>(){
-                {"Hash", hashString},
-                {"Salt", saltString}
-            };
-            int result = dataAccess.Update("Customer", updateParams, "CustomerID", customerId);
+            customerHashSalt.Hash = hashString;
+            customerHashSalt.Salt = saltString;
+            customerHashSalt.CustomerUUID = customerUuid.CustomerUUID;
 
-            if(result == 0)
+            NonQueryResultModel updateResult = CustomerTable.UpdatePassword(customerHashSalt);
+
+            if(updateResult.Success)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Success" });
             }
-
-            return Json(new { result="Success" });
-            */
-            return Json(new { });
+            else
+            {
+                return Json(new { result="Fail", reason="Password was not updated"});
+            }
         }
 
         //POST: Preferences/HaltPurchases/{data}

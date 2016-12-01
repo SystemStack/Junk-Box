@@ -43,7 +43,7 @@ namespace JunkBox.DataAccess
                 { "@CustomerUUID", customerUuid.CustomerUUID }
             };
 
-            IDictionary<string, object> customerData = dataAccess.Select(query, null).First();
+            IDictionary<string, object> customerData = dataAccess.Select(query, parameters).First();
 
             CustomerDataModel payload = new CustomerDataModel() {
                 CustomerUUID = (string)customerData["CustomerUUID"],
@@ -54,6 +54,31 @@ namespace JunkBox.DataAccess
                 Salt = (string)customerData["Salt"],
                 Email = (string)customerData["Email"]
             };
+            return payload;
+        }
+
+        public static NonQueryResultModel UpdatePassword(CustomerHashSaltModel customerData)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>() {
+                { "@CustomerUUID", customerData.CustomerUUID },
+                { "@Hash", customerData.Hash },
+                { "@Salt", customerData.Salt }
+            };
+
+            string query = "UPDATE Customer SET Hash=@Hash, Salt=@Salt WHERE CustomerUUID=@CustomerUUID;";
+
+            int result = dataAccess.Update(query, parameters);
+
+            bool succeeded = false;
+            if(result == 1)
+            {
+                succeeded = true;
+            }
+
+            NonQueryResultModel payload = new NonQueryResultModel() {
+                Success = succeeded
+            };
+
             return payload;
         }
 

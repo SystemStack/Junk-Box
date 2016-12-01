@@ -28,7 +28,6 @@ namespace JunkBox.DataAccess {
         {
         }
 
-        //public void OpenConnection()
         private void OpenConnection()
         {
             try
@@ -42,7 +41,6 @@ namespace JunkBox.DataAccess {
             }
         }
 
-        //public void CloseConnection()
         private void CloseConnection()
         {
             if (connection != null)
@@ -51,23 +49,13 @@ namespace JunkBox.DataAccess {
             }
         }
 
-        /*
-        public DbDataReader Query(string query)
-        {
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            return reader;
-        }*/
-
-        public List<IDictionary<string, object>> Select(string query, IDictionary<string, object> whereParameters)
+        public List<IDictionary<string, object>> Select(string query, IDictionary<string, object> parameters)
         {
             List<IDictionary<string, object>> rows = null;
 
             OpenConnection();
 
-            MySqlCommand cmd = ParameterizeCommand(query, whereParameters);
+            MySqlCommand cmd = ParameterizeCommand(query, parameters);
             cmd.Connection = connection;
             using (MySqlDataReader reader = cmd.ExecuteReader())
             {
@@ -92,41 +80,20 @@ namespace JunkBox.DataAccess {
 
         public int Insert(string query, IDictionary<string, object> parameters)
         {
-            OpenConnection();
-
-            MySqlCommand cmd = ParameterizeCommand(query, parameters);
-            cmd.Connection = connection;
-
-            int result = cmd.ExecuteNonQuery();
-
-            CloseConnection();
-
-            return result;
+            return ExecuteNonQuery(query, parameters);
         }
 
-        public int Delete(string table, string key, string value)
+        public int Delete(string query, IDictionary<string, object> parameters)
         {
-            /*
-            //"DELETE FROM `cs341_t5`.`Customer` WHERE `Customer`.`CustomerID` = 9"
-
-            OpenConnection();
-            string query = "DELETE FROM " + table + " WHERE " + key + "=@value";
-
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.Add(new MySqlParameter("value", value));
-
-
-            int result = cmd.ExecuteNonQuery();
-
-            CloseConnection();
-
-            return result;
-            */
-            return 0;
+            return ExecuteNonQuery(query, parameters);
         }
 
-        //NOTE!!!!! This and Insert are /EXACTLY/ the same. Revise later.
         public int Update(string query, IDictionary<string, object> parameters)
+        {
+            return ExecuteNonQuery(query, parameters);
+        }
+
+        private int ExecuteNonQuery(string query, IDictionary<string, object> parameters)
         {
             OpenConnection();
 

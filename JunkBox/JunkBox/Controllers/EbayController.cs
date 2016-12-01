@@ -7,6 +7,7 @@ using JunkBox.DataAccess;
 using JunkBox.Models;
 using JunkBox.Common;
 using System.Web.Script.Serialization;
+using System;
 
 namespace JunkBox.Controllers
 {
@@ -68,44 +69,48 @@ namespace JunkBox.Controllers
         //POST: Ebay/OrderApiInitiateGuestCheckoutSession/{data}
         public ActionResult OrderApiInitiateGuestCheckoutSession(EbayOrderApiInitiateGuestCheckoutSessionModel data)
         {
-            /*   
-               //Get customer info
-               Dictionary<string, string> customerInfo = dataAccess.Select("SELECT * FROM Customer WHERE Email='" + data.email + "'").First();
+            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+                    Email = data.email
+            };
 
-               //Get customer address 
-               Dictionary<string, string> addressInfo = dataAccess.Select("SELECT * FROM Address WHERE AddressID='" + customerInfo["AddressID"] + "'").First();
+            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
 
-               IDictionary<string, object> response = EbayOrderAPI.InitiateGuestCheckoutSession(data.orderId, customerInfo, addressInfo);
+            if(customerUuid.CustomerUUID == null)
+            {
+                return Json(new { result="Fail", reason="Invalid User" });
+            }
 
-               string checkoutSessionId = response["checkoutSessionId"].ToString();
-               string expirationDate = response["expirationDate"].ToString();
+            CustomerDataModel customerData = CustomerTable.GetCustomerData(customerUuid);
 
-               IDictionary<string, object> pricingSummary = (IDictionary<string,object>)response["pricingSummary"];
-               IDictionary<string, object> total = (IDictionary<string, object>)pricingSummary["total"];
+            AddressModel addressData = AddressTable.GetAddress(customerUuid);
 
-               string totalPrice = total["value"].ToString();
+            //NOTE: Eventually convert this to a 'proper' model
+            IDictionary<string, object> response = EbayOrderAPI.InitiateGuestCheckoutSession(data.orderId, customerData, addressData);
 
-               //Need to insert... CustomerID, AddressID, PurchasePrice, CheckoutSessionID, ExpirationDate, ImageURL
-               Dictionary<string, string> parameters = new Dictionary<string, string>() {
-                   { "CustomerID", customerInfo["CustomerID"]},
-                   { "AddressID", customerInfo["AddressID"]},
-                   { "PurchasePrice", totalPrice},
-                   { "CheckoutSessionID", checkoutSessionId},
-                   { "ExpirationDate", expirationDate},
-                   { "ImageURL", data.imageUrl}
-               };
-               int insertResult = dataAccess.Insert("CustomerOrder", parameters);
 
-               JsonResult result = Json(response);
+            IDictionary<string, object> pricingSummary = (IDictionary<string, object>)response["pricingSummary"];
+            IDictionary<string, object> total = (IDictionary<string, object>)pricingSummary["total"];
 
-               return result;
-               */
-            return Json(new { });
+            string totalPrice = total["value"].ToString();
+
+            CustomerOrderModel customerOrder = new CustomerOrderModel() {
+                CustomerUUID = customerUuid.CustomerUUID,
+                CheckoutSessionID = (string)response["checkoutSessionId"],
+                ExpirationDate = (string)response["expirationDate"],
+                ImageURL = data.imageUrl,
+                PurchasePrice = totalPrice
+            };
+
+            NonQueryResultModel orderResult = CustomerOrderTable.InsertCustomerOrder(customerOrder);
+
+            
+            return Json(response);
         }
 
         //POST: Ebay/OrderApiPlaceGuestOrder/{data}
         public ActionResult OrderApiPlaceGuestOrder(EbayOrderApiPlaceGuestOrderModel data)
         {
+            throw new NotImplementedException();
             /*
             //Get customer info
             Dictionary<string, string> customerInfo = dataAccess.Select("SELECT * FROM Customer WHERE Email='" + data.email + "'").First();
@@ -158,7 +163,6 @@ namespace JunkBox.Controllers
             //Testing out Authorization
             return Json(EbayAccessToken.RequestApplicationAccessToken());
             */
-            return Json(new { });
         }
     }
 }
