@@ -8,26 +8,30 @@ using System.Security.Cryptography;
 using JunkBox.Models;
 using System.Linq;
 
-namespace JunkBox.Controllers {
-    public class HomeController : Controller {
+namespace JunkBox.Controllers
+{
+    public class HomeController : Controller
+    {
 
         private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
         // POST: Home/GetRecentPurchases/{data}
         [HttpPost]
-        public ActionResult GetRecentPurchases (HomeGetRecentPurchaseModel id) {
+        public ActionResult GetRecentPurchases (HomeGetRecentPurchaseModel id)
+        {
+            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+                Email = id.email
+            };
+            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
 
-            List<Dictionary<string, string>> results = dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='" + id.email + "'");
-            
-            if(results.Count <= 0)
+            if(customerUuid.CustomerUUID == null)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Fail", reason="Invalid Customer" });
             }
-            string customerId = results.First()["CustomerID"];
 
-            List<Dictionary<string, string>> purchaseResults = dataAccess.Select("SELECT * FROM CustomerOrder WHERE CustomerID='" + customerId + "' ORDER BY TimeStamp DESC");
+            List<CustomerOrderDataModel> orderResults = CustomerOrderTable.GetCustomerOrderData(customerUuid);
 
-            return Json(new { result=purchaseResults });
+            return Json(new { result=orderResults });
         }
     }
 }

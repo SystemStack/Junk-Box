@@ -17,40 +17,40 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult UpdateAddress(PreferenceAddressModel data)
         {
-
-            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT CustomerID, AddressID FROM Customer WHERE Email='" + data.email + "'");
-            if (customerData.Count <= 0)
+            CustomerEmailModel customerEmail = new CustomerEmailModel()
             {
-                return Json(new { result = "Fail" });
+                Email = data.email
+            };
+            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+
+            if (customerUuid.CustomerUUID == null)
+            {
+                return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            string customerId = customerData.First()["CustomerID"];
-            string addressId = customerData.First()["AddressID"];
-
-
-            Dictionary<string, string> addressUpdates = new Dictionary<string, string>()
+            AddressModel customerAddress = new AddressModel()
             {
-                {"BillingAddress", data.streetName},
-                {"BillingAddress2", data.streetName2},
-                {"BillingCity", data.city},
-                {"BillingZip", data.postalCode},
-                {"BillingState", data.state},
+                BillingAddress = data.streetName,
+                BillingAddress2 = data.streetName2,
+                BillingCity = data.city,
+                BillingState = data.state,
+                BillingZip = data.postalCode,
 
-                {"ShippingAddress", data.streetName},
-                {"ShippingAddress2", data.streetName2},
-                {"ShippingCity", data.city},
-                {"ShippingZip", data.postalCode},
-                {"ShippingState", data.state}
+                ShippingAddress = data.streetName,
+                ShippingAddress2 = data.streetName2,
+                ShippingCity = data.city,
+                ShippingState = data.state,
+                ShippingZip = data.postalCode
             };
-            int result = dataAccess.Update("Address", addressUpdates, "AddressID", addressId);
+            NonQueryResultModel updateResult = AddressTable.UpdateAddressData(customerAddress, customerUuid);
 
-            if (result == 1)
+            if (updateResult.Success)
             {
                 return Json(new { result = "Success" });
             }
             else
             {
-                return Json(new { result = "Fail" });
+                return Json(new { result = "Fail", reason="Database Update Failed" });
             }
         }
 
@@ -58,6 +58,7 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult ChangePassword(PreferenceChangePasswordModel data)
         {
+            /*
             List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT Hash, CustomerID FROM Customer WHERE Email='" + data.email + "'");
             if(customerData.Count <= 0)
             {
@@ -91,6 +92,8 @@ namespace JunkBox.Controllers
             }
 
             return Json(new { result="Success" });
+            */
+            return Json(new { });
         }
 
         //POST: Preferences/HaltPurchases/{data}
@@ -104,20 +107,19 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult GetAddress(PreferenceGetAddressModel data)
         {
-            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT CustomerID, AddressID FROM Customer WHERE Email='" + data.email + "'");
-            if(customerData.Count <= 0)
+            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+                Email = data.email
+            };
+            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+
+            if(customerUuid.CustomerUUID == null)
             {
-                return Json(new { result="Fail" });
+                return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            string addressId = customerData.First()["AddressID"];
-            List<Dictionary<string, string>> addressData = dataAccess.Select("SELECT * FROM Address WHERE AddressID='" + addressId + "'");
-            if(addressData.Count <= 0)
-            {
-                return Json(new { result="Fail" });
-            }
+            AddressModel customerAddress = AddressTable.GetAddress(customerUuid);
 
-            return Json(new { result=addressData.First() });
+            return Json(new { result=customerAddress });
         }
     }
 }

@@ -1,135 +1,114 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Web;
 using System.Web.Mvc;
 using JunkBox.DataAccess;
 
 using JunkBox.Models;
 using JunkBox.Common;
 
-using System.Linq;
-
-namespace JunkBox.Controllers {
-    public class LoginController : Controller {
+namespace JunkBox.Controllers
+{
+    public class LoginController : Controller
+    {
 
         private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
 
         // POST: Login/Login/{data}
         [HttpPost]
+        public ActionResult Login (LoginLoginModel id)
+        {
 
-        public ActionResult Login (LoginLoginModel id) {
-
-            List<Dictionary<string, string>> userRecord = dataAccess.Select("SELECT Hash, Salt FROM Customer WHERE Email='" + id.email + "'");
-
-            if(userRecord.Count <= 0)
+            //Get the customer's UUID, preferably in the future, instead of passing email addresses in,
+            //We'll pass the UUID, or an Access Token
+            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+                Email = id.email
+            };
+            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            //Check to see if the customer exists
+            if(customerUuid.CustomerUUID == null)
             {
-                return Json(new { result="Fail" });
+                return Json(new { result="Fail", reason="Invalid Credentials" });
             }
 
-            bool verifyHash = Password.VerifyHash(id.password, userRecord.First()["Hash"]);
+            //Get their hash and salt
+            CustomerHashSaltModel customerHashSalt = CustomerTable.GetCustomerHashSalt(customerUuid);
 
+            //Verify and report accordingly
+            bool verifyHash = Password.VerifyHash(id.password, customerHashSalt.Hash);
             if (verifyHash)
             {
                 return Json(new { result="Success" });
             }
             else
             {
-                return Json(new { result="Fail" });
+                return Json(new { result="Fail", reason="Invalid Credentials" });
             }
         }
 
         // POST: Login/Register/{data}
         [HttpPost]
-        public ActionResult Register (LoginRegisterModel id) {
+        public ActionResult Register (LoginRegisterModel id)
+        {
 
             //Check if we already have a user registered with the same email address
-            if(dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='" + id.email + "'").Count >= 1)
+            if (CustomerTable.GetCustomerUUID(new CustomerEmailModel() { Email = id.email }).CustomerUUID != null)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Fail", reason="Email address is already registered" });
             }
-
-            //Insert user's address into Address table
-            Dictionary<string, string> newUserAddress = new Dictionary<string, string>() {
-                {"BillingCity", id.city},
-                {"BillingState", id.state},
-                {"BillingZip", id.postalCode},
-                {"BillingAddress", id.address},
-                {"BillingAddress2", id.address2},
-                {"ShippingCity", id.city},
-                {"ShippingState", id.state},
-                {"ShippingZip", id.postalCode},
-                {"ShippingAddress", id.address},
-                {"ShippingAddress2", id.address2}
-            };
-            int addressResult = dataAccess.Insert("Address", newUserAddress);
-
-            //Get the AddressID of the record we just inserted
-            string addressId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
-
-            //Insert User's Query preferences into Query table
-            Dictionary<string, string> newUserQuery = new Dictionary<string, string>() {
-                {"Frequency", "NEVER"},
-                {"PriceLimit", "1.00"},
-                {"Category", "All Categories"}
-            };
-            int queryResult = dataAccess.Insert("Query", newUserQuery);
-
-            //Get the QueryID of the record we just inserted
-            string queryId = dataAccess.Select("SELECT LAST_INSERT_ID();").First()["LAST_INSERT_ID()"];
-
 
             //Generate Password's Salt and Hash
             byte[] salt = Password.ComputeSaltBytes();
             string hashString = Password.ComputeHash(id.password, salt);
             string saltString = Convert.ToBase64String(salt);
 
-
-            //Insert user into Customer table
-            Dictionary<string, string> newUserDetails = new Dictionary<string, string>() {
-                {"QueryID", queryId},
-                {"AddressID", addressId},
-                {"FirstName", id.firstName},
-                {"LastName", id.lastName},
-                {"Phone", id.phone},
-                {"Hash", hashString},
-                {"Salt", saltString},
-                {"Email", id.email}
+            //Insert into Customer table
+            InsertCustomerModel newCustomer = new InsertCustomerModel() {
+                FirstName = id.firstName,
+                LastName = id.lastName,
+                Phone = id.phone,
+                Email = id.email,
+                Hash = hashString,
+                Salt = saltString
             };
-            int customerResult = dataAccess.Insert("Customer", newUserDetails);
+            CustomerUUIDModel customerUuid = CustomerTable.InsertCustomer(newCustomer);
 
-            /*
-            //Example of gaining some info that we just entered
-            List<Dictionary<string, string>> cust = dataAccess.Select("SELECT CustomerID FROM Customer WHERE Email='test@guy.com'");
-            string custId = cust.First()["CustomerID"];
-            System.Windows.Forms.MessageBox.Show(custId);
-            */
+            //If it didn't insert, then we won't get a UUID back
+            if(customerUuid.CustomerUUID == null)
+            {
+                return Json(new { result="Fail", reason="Insert into the database was not successful" });
+            }
 
-            /*
-            //Example of delete
-            int delete = dataAccess.Delete("Customer", "CustomerID", custId);
-            System.Windows.Forms.MessageBox.Show(delete.ToString());
-            */
+            //Insert customer's address into the address table
+            AddressModel customerAddress = new AddressModel() {
+                CustomerUUID = customerUuid.CustomerUUID,
 
-            /*
-            //Example of update
-            Dictionary<string, string> items = new Dictionary<string, string> {
-                {"FirstName", "UpdatedFirstName"},
-                {"LastName", "updatedLastNAME"},
-                {"Email", "update@testguy.com"}
+                BillingAddress = id.address,
+                BillingAddress2 = id.address2,
+                BillingCity = id.city,
+                BillingState = id.state,
+                BillingZip = Int32.Parse(id.postalCode),
+
+                ShippingAddress = id.address,
+                ShippingAddress2 = id.address2,
+                ShippingCity = id.city,
+                ShippingState = id.state,
+                ShippingZip = Int32.Parse(id.postalCode)
             };
-            int update = dataAccess.Update("Customer", items, "CustomerID", custId);
+           
+            NonQueryResultModel addressResult = AddressTable.InsertAddress(customerAddress); //We have the option to 'do something' if the insert fails
 
-            */
+            //Insert into Query table
+            InsertQueryModel customerQuery = new InsertQueryModel() {
+                    CustomerUUID = customerUuid.CustomerUUID,
 
-            /*
-            // UPDATE address JOIN customer SET BillingCity = 'Oshkosh' WHERE Address.AddressID = Customer.AddressID = 5
-            //Example of update With table Join
-            Dictionary<string, string> items = new Dictionary<string, string> {
-                {"BillingCity", "Oshkosh"}
+                    Category = "",
+                    CategoryID = "",
+                    Frequency = "",
+                    PriceLimit = ""
             };
-            int update = dataAccess.Update("Customer JOIN Address", items, "Address.AddressID", "5");
-            */
+            NonQueryResultModel queryResult = QueryTable.InsertQuery(customerQuery); //If this fails, we have the option of doing something
 
+
+            //Aaaand we're done.
             return Json(new { result="Success"});
         }
     }
