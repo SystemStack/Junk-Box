@@ -11,25 +11,28 @@ namespace JunkBox.Controllers
 {
     public class PreferencesController : Controller
     {
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private CustomerTable customerTable = CustomerTable.Instance();
+        private AddressTable addressTable = AddressTable.Instance();
 
         //POST: Prefrences/ValidateAddress/{data}
         [HttpPost]
         public ActionResult UpdateAddress(PreferenceAddressModel data)
         {
-            CustomerEmailModel customerEmail = new CustomerEmailModel()
+            SelectCustomerModel customerData = new SelectCustomerModel()
             {
                 Email = data.email
             };
-            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            if (customerUuid.CustomerUUID == null)
+            if (customerResult.CustomerUUID == null)
             {
                 return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            AddressModel customerAddress = new AddressModel()
+            UpdateAddressModel customerAddress = new UpdateAddressModel()
             {
+                CustomerUUID = customerResult.CustomerUUID,
+
                 BillingAddress = data.streetName,
                 BillingAddress2 = data.streetName2,
                 BillingCity = data.city,
@@ -42,7 +45,7 @@ namespace JunkBox.Controllers
                 ShippingState = data.state,
                 ShippingZip = data.postalCode
             };
-            NonQueryResultModel updateResult = AddressTable.UpdateAddressData(customerAddress, customerUuid);
+            NonQueryResultModel updateResult = addressTable.UpdateRecord(customerAddress);
 
             if (updateResult.Success)
             {
@@ -58,20 +61,17 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult ChangePassword(PreferenceChangePasswordModel data)
         {
-            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+            SelectCustomerModel customerData = new SelectCustomerModel() {
                 Email = data.email
             };
-            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            if(customerUuid.CustomerUUID == null)
+            if(customerResult.CustomerUUID == null)
             {
                 return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-
-            CustomerHashSaltModel customerHashSalt = CustomerTable.GetCustomerHashSalt(customerUuid);
-
-            bool verifyPassword = Password.VerifyHash(data.oldPassword, customerHashSalt.Hash);
+            bool verifyPassword = Password.VerifyHash(data.oldPassword, customerResult.Hash);
             if (!verifyPassword)
             {
                 return Json(new { result="Fail", reason="Invalid Password" });
@@ -82,11 +82,20 @@ namespace JunkBox.Controllers
             string hashString = Password.ComputeHash(data.newPassword, salt);
             string saltString = Convert.ToBase64String(salt);
 
-            customerHashSalt.Hash = hashString;
-            customerHashSalt.Salt = saltString;
-            customerHashSalt.CustomerUUID = customerUuid.CustomerUUID;
+            customerResult.Hash = hashString;
+            customerResult.Salt = saltString;
 
-            NonQueryResultModel updateResult = CustomerTable.UpdatePassword(customerHashSalt);
+            UpdateCustomerModel customerUpdate = new UpdateCustomerModel() {
+                CustomerUUID = customerResult.CustomerUUID,
+                Email = customerResult.Email,
+                FirstName = customerResult.FirstName,
+                LastName = customerResult.LastName,
+                Hash = customerResult.Hash,
+                Salt = customerResult.Salt,
+                Phone = customerResult.Phone
+            };
+
+            NonQueryResultModel updateResult = customerTable.UpdateRecord(customerUpdate);
 
             if(updateResult.Success)
             {
@@ -109,17 +118,17 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult GetAddress(PreferenceGetAddressModel data)
         {
-            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+            SelectCustomerModel customerData = new SelectCustomerModel() {
                 Email = data.email
             };
-            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            if(customerUuid.CustomerUUID == null)
+            if(customerResult.CustomerUUID == null)
             {
                 return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            AddressModel customerAddress = AddressTable.GetAddress(customerUuid);
+            AddressResultModel customerAddress = addressTable.SelectRecord(new SelectAddressModel() { CustomerUUID = customerResult.CustomerUUID });
 
             return Json(new { result=customerAddress });
         }

@@ -6,6 +6,8 @@ using System.Text;
 using System.Web;
 using System.Web.Script.Serialization;
 
+using JunkBox.Ebay;
+
 namespace JunkBox.Common
 {
     public class Web
@@ -26,11 +28,12 @@ namespace JunkBox.Common
 
         public static IDictionary<string, object> GetWebRequest(string URL, string query)
         {
-            if(!EbayAccessToken.IsAccessTokenValid())
+            
+            if(!Auth.IsAccessTokenValid())
             {
-                EbayAccessToken.UpdateAccessToken();
+                Auth.UpdateAccessToken();
             }
-            string accessToken = EbayAccessToken.GetAccessToken();
+            string accessToken = Auth.GetAccessToken();
 
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(URL);
@@ -60,11 +63,11 @@ namespace JunkBox.Common
 
         public static IDictionary<string, object> PostWebRequest(string URL, string postBody)
         {
-            if (!EbayAccessToken.IsAccessTokenValid())
+            if (!Auth.IsAccessTokenValid())
             {
-                EbayAccessToken.UpdateAccessToken();
+                Auth.UpdateAccessToken();
             }
-            string accessToken = EbayAccessToken.GetAccessToken();
+            string accessToken = Auth.GetAccessToken();
 
             HttpClient client = new HttpClient();
 

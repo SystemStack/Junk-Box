@@ -2,7 +2,7 @@
 
 namespace JunkBox.DataAccess
 {
-    interface IDataAccess
+    public interface IDataAccess
     {
         List<IDictionary<string, object>> Select(string query, IDictionary<string, object> parameters);
         int Insert(string query, IDictionary<string, object> parameters);

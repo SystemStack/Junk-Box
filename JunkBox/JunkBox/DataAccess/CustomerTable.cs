@@ -7,45 +7,50 @@ using JunkBox.Models;
 
 namespace JunkBox.DataAccess
 {
-    public class CustomerTable
+    public class CustomerTable : DataTable, IDataTable<CustomerResultModel, SelectCustomerModel, CustomerResultModel, InsertCustomerModel, NonQueryResultModel, UpdateCustomerModel, NonQueryResultModel, DeleteCustomerModel>
     {
-        private static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static CustomerTable instance = null;
 
-        public static CustomerUUIDModel GetCustomerUUID(CustomerEmailModel email)
+        public static CustomerTable Instance()
         {
-            string query = "SELECT CustomerUUID FROM Customer WHERE Email=@Email;";
-
-            Dictionary<string, object> parameters = new Dictionary<string, object>()
+            if (instance == null)
             {
-                { "@Email", email.Email }
-            };
-
-            List<IDictionary<string, object>> customerId = dataAccess.Select(query, parameters);
-
-            string customerUuid = null;
-            if(customerId.Count == 1)
-            {
-                customerUuid = (string)customerId.First()["CustomerUUID"];
+                instance = new CustomerTable();
             }
 
-            CustomerUUIDModel payload = new CustomerUUIDModel() {
-                CustomerUUID = customerUuid
-            };
-            return payload;
+            return instance;
         }
 
-        public static CustomerDataModel GetCustomerData(CustomerUUIDModel customerUuid)
+        public CustomerResultModel SelectRecord(SelectCustomerModel parameters)
         {
-            string query = "SELECT * FROM Customer WHERE CustomerUUID=@CustomerUUID;";
+            Dictionary<string, object> param = new Dictionary<string, object>();
 
-            Dictionary<string, object> parameters = new Dictionary<string, object>()
+            string where = string.Empty;
+
+            if(parameters.CustomerUUID == null)
             {
-                { "@CustomerUUID", customerUuid.CustomerUUID }
-            };
+                where = "Email=@Email;";
+                param.Add("@Email", parameters.Email);
+            }
+            else
+            {
+                where = "CustomerUUID=@CustomerUUID;";
+                param.Add("@CustomerUUID", parameters.CustomerUUID);
+            }
 
-            IDictionary<string, object> customerData = dataAccess.Select(query, parameters).First();
+            string query = "SELECT * FROM Customer WHERE " + where;
 
-            CustomerDataModel payload = new CustomerDataModel() {
+            List<IDictionary<string, object>> customerResult = dataAccess.Select(query, param);
+
+            if(customerResult.Count == 0)
+            {
+                return new CustomerResultModel();
+            }
+
+            IDictionary<string, object> customerData = customerResult.First();
+
+            CustomerResultModel payload = new CustomerResultModel()
+            {
                 CustomerUUID = (string)customerData["CustomerUUID"],
                 FirstName = (string)customerData["FirstName"],
                 LastName = (string)customerData["LastName"],
@@ -54,79 +59,30 @@ namespace JunkBox.DataAccess
                 Salt = (string)customerData["Salt"],
                 Email = (string)customerData["Email"]
             };
-            return payload;
-        }
-
-        public static NonQueryResultModel UpdatePassword(CustomerHashSaltModel customerData)
-        {
-            Dictionary<string, object> parameters = new Dictionary<string, object>() {
-                { "@CustomerUUID", customerData.CustomerUUID },
-                { "@Hash", customerData.Hash },
-                { "@Salt", customerData.Salt }
-            };
-
-            string query = "UPDATE Customer SET Hash=@Hash, Salt=@Salt WHERE CustomerUUID=@CustomerUUID;";
-
-            int result = dataAccess.Update(query, parameters);
-
-            bool succeeded = false;
-            if(result == 1)
-            {
-                succeeded = true;
-            }
-
-            NonQueryResultModel payload = new NonQueryResultModel() {
-                Success = succeeded
-            };
 
             return payload;
         }
 
-        public static CustomerHashSaltModel GetCustomerHashSalt(CustomerUUIDModel customerUuid)
-        {
-            string query = "SELECT Hash, Salt FROM Customer WHERE CustomerUUID=@CustomerUUID;";
-
-            Dictionary<string, object> parameters = new Dictionary<string, object>()
-            {
-                { "@CustomerUUID", customerUuid.CustomerUUID },
-            };
-
-            IDictionary<string, object> customerData = dataAccess.Select(query, parameters).First();
-
-            CustomerHashSaltModel payload = new CustomerHashSaltModel {
-                Hash = (string)customerData["Hash"],
-                Salt = (string)customerData["Salt"]
-            };
-            return payload;
-        }
-
-        /*
-        public static void GetCustomerEmail(CustomerEmailModel email)
-        {
-
-        }
-        */
-
-        public static CustomerUUIDModel InsertCustomer(InsertCustomerModel customer)
+        public CustomerResultModel InsertRecord(InsertCustomerModel parameters)
         {
             //53944e06-b698-11e6-9e73-0050569e2378 <-- UUID Example, fine for right now, but should be stored as a Hex value later on
             IDictionary<string, object> uuidResult = dataAccess.Select("SELECT UUID();", null).First();
             string uuid = (string)uuidResult["UUID()"];
 
-            IDictionary<string, object> parameters = new Dictionary<string, object>() {
+            IDictionary<string, object> param = new Dictionary<string, object>() {
                 { "@CustomerUUID", uuid },
-                { "@FirstName", customer.FirstName },
-                { "@LastName", customer.LastName },
-                { "@Phone", customer.Phone },
-                { "@Hash", customer.Hash },
-                { "@Salt", customer.Salt },
-                { "@Email", customer.Email },
+                { "@FirstName", parameters.FirstName },
+                { "@LastName", parameters.LastName },
+                { "@Phone", parameters.Phone },
+                { "@Hash", parameters.Hash },
+                { "@Salt", parameters.Salt },
+                { "@Email", parameters.Email },
             };
 
-            //INSERT INTO table_name (column1,column2,column3,...) VALUES (value1, value2, value3,...);
-            string query = "INSERT INTO Customer (CustomerUUID, FirstName, LastName, Phone, Hash, Salt, Email) VALUES (@CustomerUUID, @FirstName, @LastName, @Phone, @Hash, @Salt, @Email);";
+            string query = "INSERT INTO Customer (CustomerUUID, FirstName, LastName, Phone, Hash, Salt, Email) " +
+                                         "VALUES (@CustomerUUID, @FirstName, @LastName, @Phone, @Hash, @Salt, @Email);";
 
-            int result = dataAccess.Insert(query, parameters);
+            int result = dataAccess.Insert(query, param);
 
             //If we dont have a successful insert... don't return an actual UUID
             if (result == 0)
@@ -134,11 +90,50 @@ namespace JunkBox.DataAccess
                 uuid = null;
             }
 
-            CustomerUUIDModel payload = new CustomerUUIDModel() {
+            CustomerResultModel payload = new CustomerResultModel()
+            {
                 CustomerUUID = uuid
             };
 
             return payload;
+        }
+
+        public NonQueryResultModel UpdateRecord(UpdateCustomerModel parameters)
+        {
+            Dictionary<string, object> param = new Dictionary<string, object>() {
+                { "@CustomerUUID", parameters.CustomerUUID },
+                { "@FirstName", parameters.FirstName },
+                { "@LastName", parameters.LastName },
+                { "@Phone", parameters.Phone },
+                { "@Hash", parameters.Hash },
+                { "@Salt", parameters.Salt },
+                { "@Email", parameters.Email }
+            };
+
+            string query = "UPDATE Customer SET FirstName=@FirstName, LastName=@LastName, Phone=@Phone, Hash=@Hash, Salt=@Salt, Email=@Email WHERE CustomerUUID=@CustomerUUID;";
+
+            int result = dataAccess.Update(query, param);
+
+            return PrepareNonQueryResult(result);
+        }
+
+        public NonQueryResultModel DeleteRecord(DeleteCustomerModel parameters)
+        {
+            IDictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "@CustomerUUID", parameters.CustomerUUID }
+            };
+
+            string query = "DELETE FROM Customer WHERE CustomerUUID=@CustomerUUID;";
+
+            int result = dataAccess.Delete(query, param);
+
+            return PrepareNonQueryResult(result);
+        }
+
+        public List<CustomerResultModel> SelectAll(SelectCustomerModel parameters)
+        {
+            throw new NotImplementedException();
         }
     }
 }

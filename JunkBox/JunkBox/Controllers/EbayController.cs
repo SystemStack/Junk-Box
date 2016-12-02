@@ -1,21 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Configuration;
-using System.Linq;
 
 using JunkBox.DataAccess;
 using JunkBox.Models;
-using JunkBox.Common;
-using System.Web.Script.Serialization;
-using System;
+using JunkBox.Ebay;
 
 namespace JunkBox.Controllers
 {
     public class EbayController : Controller
     {
-        //private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
-
         private static QueryTable queryTable = QueryTable.Instance();
+        private static CustomerTable customerTable = CustomerTable.Instance();
+        private static CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance();
+        private static AddressTable addressTable = AddressTable.Instance();
 
         private static string appId = ConfigurationManager.AppSettings["AppID"];
         private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"];
@@ -46,49 +45,46 @@ namespace JunkBox.Controllers
                 { "IncludeSelector", "ChildCategories"}
             };
 
-            return Json(Ebay.GetEbayResult(URL, urlParameters));
+            return Json(Categories.GetEbayResult(URL, urlParameters));
         }
 
         //POST: Ebay/BrowseApiFindViableItems/{data}
         [HttpPost]
         public ActionResult BrowseApiFindViableItems(EbayBrowseAPIModel data)
         {
-            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+            SelectCustomerModel customerData = new SelectCustomerModel() {
                 Email = data.email
             };
-            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            if(customerUuid.CustomerUUID == null)
+            if(customerResult.CustomerUUID == null)
             {
                 return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            //QueryDataModel queryPref = QueryTable.GetQueryData(customerUuid);
-            QueryDataModel queryPref = queryTable.GetQueryData(customerUuid);
+            QueryResultModel queryPref = queryTable.SelectRecord(new SelectQueryModel() { CustomerUUID = customerResult.CustomerUUID });
 
-            return Json(EbayBrowseAPI.ItemSummarySearch(queryPref.CategoryID, queryPref.PriceLimit));
+            return Json(BrowseAPI.ItemSummarySearch(queryPref.CategoryID, queryPref.PriceLimit));
         }
 
         //POST: Ebay/OrderApiInitiateGuestCheckoutSession/{data}
         public ActionResult OrderApiInitiateGuestCheckoutSession(EbayOrderApiInitiateGuestCheckoutSessionModel data)
         {
-            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+            SelectCustomerModel customerData = new SelectCustomerModel() {
                     Email = data.email
             };
 
-            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            if(customerUuid.CustomerUUID == null)
+            if(customerResult.CustomerUUID == null)
             {
                 return Json(new { result="Fail", reason="Invalid User" });
             }
 
-            CustomerDataModel customerData = CustomerTable.GetCustomerData(customerUuid);
-
-            AddressModel addressData = AddressTable.GetAddress(customerUuid);
+            AddressResultModel addressData = addressTable.SelectRecord(new SelectAddressModel() { CustomerUUID = customerResult.CustomerUUID });
 
             //NOTE: Eventually convert this to a 'proper' model
-            IDictionary<string, object> response = EbayOrderAPI.InitiateGuestCheckoutSession(data.orderId, customerData, addressData);
+            IDictionary<string, object> response = OrderAPI.InitiateGuestCheckoutSession(data.orderId, customerResult, addressData);
 
 
             IDictionary<string, object> pricingSummary = (IDictionary<string, object>)response["pricingSummary"];
@@ -96,15 +92,15 @@ namespace JunkBox.Controllers
 
             string totalPrice = total["value"].ToString();
 
-            CustomerOrderModel customerOrder = new CustomerOrderModel() {
-                CustomerUUID = customerUuid.CustomerUUID,
+            InsertCustomerOrderModel customerOrder = new InsertCustomerOrderModel() {
+                CustomerUUID = customerResult.CustomerUUID,
                 CheckoutSessionID = (string)response["checkoutSessionId"],
                 ExpirationDate = (string)response["expirationDate"],
                 ImageURL = data.imageUrl,
                 PurchasePrice = totalPrice
             };
 
-            NonQueryResultModel orderResult = CustomerOrderTable.InsertCustomerOrder(customerOrder);
+            NonQueryResultModel orderResult = customerOrderTable.InsertRecord(customerOrder);
 
             
             return Json(response);

@@ -12,24 +12,27 @@ namespace JunkBox.Controllers
 {
     public class HomeController : Controller
     {
-
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private CustomerTable customerTable = CustomerTable.Instance();
+        private CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance();
 
         // POST: Home/GetRecentPurchases/{data}
         [HttpPost]
         public ActionResult GetRecentPurchases (HomeGetRecentPurchaseModel id)
         {
-            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+            SelectCustomerModel customerData = new SelectCustomerModel() {
                 Email = id.email
             };
-            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            if(customerUuid.CustomerUUID == null)
+            if(customerResult.CustomerUUID == null)
             {
                 return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            List<CustomerOrderDataModel> orderResults = CustomerOrderTable.GetCustomerOrderData(customerUuid);
+            SelectCustomerOrderModel customerOrderData = new SelectCustomerOrderModel() {
+                CustomerUUID = customerResult.CustomerUUID
+            };
+            List<CustomerOrderResultModel> orderResults = customerOrderTable.SelectAllRecords(customerOrderData);
 
             return Json(new { result=orderResults });
         }
