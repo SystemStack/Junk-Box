@@ -205,9 +205,15 @@
     <Compile Include="DataAccess\AddressTable.cs" />
     <Compile Include="DataAccess\CustomerOrderTable.cs" />
     <Compile Include="DataAccess\CustomerTable.cs" />
+    <Compile Include="DataAccess\DataTable.cs" />
     <Compile Include="DataAccess\IDataAccess.cs" />
+    <Compile Include="DataAccess\IDataTable.cs" />
     <Compile Include="DataAccess\MySqlDataAccess.cs" />
     <Compile Include="DataAccess\QueryTable.cs" />
+    <Compile Include="Ebay\Auth.cs" />
+    <Compile Include="Ebay\BrowseApi.cs" />
+    <Compile Include="Ebay\Categories.cs" />
+    <Compile Include="Ebay\OrderApi.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

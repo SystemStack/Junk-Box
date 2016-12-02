@@ -9,23 +9,24 @@ namespace JunkBox.Controllers
 {
     public class QueryController : Controller
     {
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static QueryTable queryTable = QueryTable.Instance();
+        private static CustomerTable customerTable = CustomerTable.Instance();
 
         //POST: Query/GetSettings/{data}
         [HttpPost]
         public ActionResult GetSettings(QueryGetSettingsModel data)
         {
-            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+            SelectCustomerModel customerData = new SelectCustomerModel() {
                 Email = data.email
             };
-            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            if(customerUuid.CustomerUUID == null)
+            if(customerResult.CustomerUUID == null)
             {
                 return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            QueryDataModel queryData = QueryTable.GetQueryData(customerUuid);
+            QueryResultModel queryData = queryTable.SelectRecord(new SelectQueryModel() { CustomerUUID = customerResult.CustomerUUID});
 
             return Json(new { result=queryData });
         }
@@ -34,18 +35,19 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult SetSettings(QuerySetSettingsModel data)
         {
-            CustomerEmailModel customerEmail = new CustomerEmailModel() {
+            SelectCustomerModel customerData = new SelectCustomerModel() {
                 Email = data.email
             };
-            CustomerUUIDModel customerUuid = CustomerTable.GetCustomerUUID(customerEmail);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            QueryDataModel queryData = new QueryDataModel() {
+            UpdateQueryModel queryData = new UpdateQueryModel() {
+                CustomerUUID = customerResult.CustomerUUID,
                 Category = data.category,
                 CategoryID = data.categoryId,
                 Frequency = data.frequencyOptions.label,
                 PriceLimit = data.price
             };
-            NonQueryResultModel updateResult = QueryTable.UpdateQueryData(queryData, customerUuid);
+            NonQueryResultModel updateResult = queryTable.UpdateRecord(queryData);
 
             if(updateResult.Success)
             {

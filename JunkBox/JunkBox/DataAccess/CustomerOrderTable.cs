@@ -7,25 +7,70 @@ using JunkBox.Models;
 
 namespace JunkBox.DataAccess
 {
-    public class CustomerOrderTable
+    public class CustomerOrderTable : DataTable, IDataTable<CustomerOrderResultModel, SelectCustomerOrderModel, NonQueryResultModel, InsertCustomerOrderModel, NonQueryResultModel, UpdateCustomerOrderModel, NonQueryResultModel, DeleteCustomerOrderModel>
     {
-        private static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static CustomerOrderTable instance = null;
 
-        public static List<CustomerOrderDataModel> GetCustomerOrderData(CustomerUUIDModel customerUuid)
+        public static CustomerOrderTable Instance()
         {
-            string query = "SELECT * FROM CustomerOrder WHERE CustomerUUID=@CustomerUUID;";
-
-            Dictionary<string, object> parameters = new Dictionary<string, object>()
+            if (instance == null)
             {
-                { "@CustomerUUID", customerUuid.CustomerUUID },
+                instance = new CustomerOrderTable();
+            }
+
+            return instance;
+        }
+
+        public CustomerOrderResultModel SelectRecord(SelectCustomerOrderModel parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public NonQueryResultModel InsertRecord(InsertCustomerOrderModel parameters)
+        {
+            IDictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "@CustomerUUID", parameters.CustomerUUID },
+                { "@CheckoutSessionID", parameters.CheckoutSessionID },
+                { "@ExpirationDate", parameters.ExpirationDate },
+                { "@ImageURL", parameters.ImageURL },
+                { "@PurchasePrice", parameters.PurchasePrice }
             };
 
-            List<IDictionary<string, object>> customerData = dataAccess.Select(query, parameters); //Get all the Database entries
+            string query = "INSERT INTO CustomerOrder (CustomerUUID, CheckoutSessionID, ExpirationDate, ImageURL, PurchasePrice)" +
+                                       " VALUES (@CustomerUUID, @CheckoutSessionID, @ExpirationDate, @ImageURL, @PurchasePrice);";
 
-            List<CustomerOrderDataModel> payload = new List<CustomerOrderDataModel>(); //Store them in the payload model
-            foreach(IDictionary<string, object> entry in customerData)
+            int result = dataAccess.Insert(query, param);
+
+            return PrepareNonQueryResult(result);
+        }
+
+        public NonQueryResultModel UpdateRecord(UpdateCustomerOrderModel parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public NonQueryResultModel DeleteRecord(DeleteCustomerOrderModel parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<CustomerOrderResultModel> SelectAllRecords(SelectCustomerOrderModel parameters)
+        {
+            Dictionary<string, object> param = new Dictionary<string, object>()
             {
-                CustomerOrderDataModel order = new CustomerOrderDataModel() {
+                { "@CustomerUUID", parameters.CustomerUUID },
+            };
+
+            string query = "SELECT * FROM CustomerOrder WHERE CustomerUUID=@CustomerUUID;";
+
+            List<IDictionary<string, object>> customerData = dataAccess.Select(query, param); //Get all the Database entries
+
+            List<CustomerOrderResultModel> payload = new List<CustomerOrderResultModel>(); //Store them in the payload model
+            foreach (IDictionary<string, object> entry in customerData)
+            {
+                CustomerOrderResultModel order = new CustomerOrderResultModel()
+                {
                     CheckoutSessionID = (string)entry["CheckoutSessionID"],
                     ExpirationDate = (string)entry["ExpirationDate"],
                     PurchasePrice = (string)entry["PurchasePrice"],
@@ -38,35 +83,5 @@ namespace JunkBox.DataAccess
             return payload;
         }
 
-        public static NonQueryResultModel InsertCustomerOrder(CustomerOrderModel customerOrder)
-        {
-            IDictionary<string, object> parameters = new Dictionary<string, object>()
-            {
-                { "@CustomerUUID", customerOrder.CustomerUUID },
-                { "@CheckoutSessionID", customerOrder.CheckoutSessionID },
-                { "@ExpirationDate", customerOrder.ExpirationDate },
-                { "@ImageURL", customerOrder.ImageURL },
-                { "@PurchasePrice", customerOrder.PurchasePrice }
-            };
-
-            //INSERT INTO table_name (column1,column2,column3,...) VALUES (value1, value2, value3,...);
-            string query = "INSERT INTO CustomerOrder (CustomerUUID, CheckoutSessionID, ExpirationDate, ImageURL, PurchasePrice)" +
-                                       " VALUES (@CustomerUUID, @CheckoutSessionID, @ExpirationDate, @ImageURL, @PurchasePrice);";
-
-            int result = dataAccess.Insert(query, parameters);
-
-            bool succeeded = false;
-            if (result == 1)
-            {
-                succeeded = true;
-            }
-
-            NonQueryResultModel payload = new NonQueryResultModel()
-            {
-                Success = succeeded
-            };
-
-            return payload;
-        }
     }
 }

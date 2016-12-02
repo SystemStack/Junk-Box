@@ -1,56 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 using JunkBox.Models;
 
 namespace JunkBox.DataAccess
 {
-    public class QueryTable
+    public class QueryTable : DataTable, IDataTable<QueryResultModel, SelectQueryModel, NonQueryResultModel, InsertQueryModel, NonQueryResultModel, UpdateQueryModel, NonQueryResultModel, DeleteQueryModel>
     {
-        private static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static QueryTable instance = null;
 
-        public static NonQueryResultModel InsertQuery(InsertQueryModel queryData)
+        public static QueryTable Instance()
         {
-            IDictionary<string, object> parameters = new Dictionary<string, object>()
+            if (instance == null)
             {
-                { "@CustomerUUID", queryData.CustomerUUID },
-                { "@Frequency", queryData.Frequency },
-                { "@PriceLimit", queryData.PriceLimit },
-                { "@Category", queryData.Category },
-                { "@CategoryID", queryData.CategoryID }
-            };
-            //INSERT INTO table_name (column1,column2,column3,...) VALUES (value1, value2, value3,...);
-            string query = "INSERT INTO Query (CustomerUUID, Frequency, PriceLimit, Category, CategoryID)" +
-                                       " VALUES (@CustomerUUID, @Frequency, @PriceLimit, @Category, @CategoryID);";
-
-            int result = dataAccess.Insert(query, parameters);
-
-            bool succeeded = false;
-            if (result == 1)
-            {
-                succeeded = true;
+                instance = new QueryTable();
             }
 
-            NonQueryResultModel payload = new NonQueryResultModel() {
-                Success = succeeded
-            };
-
-            return payload;
+            return instance;
         }
 
-        public static QueryDataModel GetQueryData(CustomerUUIDModel customerUuid)
+        public QueryResultModel SelectRecord(SelectQueryModel parameters)
         {
-            IDictionary<string, object> parameters = new Dictionary<string, object>()
+            IDictionary<string, object> param = new Dictionary<string, object>()
             {
-                { "@CustomerUUID", customerUuid.CustomerUUID }
+                { "@CustomerUUID", parameters.CustomerUUID }
             };
             string query = "SELECT * FROM Query WHERE CustomerUUID=@CustomerUUID";
 
-            IDictionary<string, object> queryResult = dataAccess.Select(query, parameters).First();
+            IDictionary<string, object> queryResult = dataAccess.Select(query, param).First();
 
-            QueryDataModel payload = new QueryDataModel() {
+            QueryResultModel payload = new QueryResultModel()
+            {
+                QueryID = (int)queryResult["QueryID"],
+                CustomerUUID = (string)queryResult["CustomerUUID"],
                 Frequency = (string)queryResult["Frequency"],
                 PriceLimit = (string)queryResult["PriceLimit"],
                 Category = (string)queryResult["Category"],
@@ -60,33 +43,60 @@ namespace JunkBox.DataAccess
             return payload;
         }
 
-        public static NonQueryResultModel UpdateQueryData(QueryDataModel queryData, CustomerUUIDModel customerUuid)
+        public NonQueryResultModel InsertRecord(InsertQueryModel parameters)
         {
-            IDictionary<string, object> parameters = new Dictionary<string, object>()
+            IDictionary<string, object> param = new Dictionary<string, object>()
             {
-                { "@CustomerUUID", customerUuid.CustomerUUID },
-                { "@Category", queryData.Category },
-                { "@CategoryID", queryData.CategoryID },
-                { "@Frequency", queryData.Frequency },
-                { "@PriceLimit", queryData.PriceLimit }
+                { "@CustomerUUID", parameters.CustomerUUID },
+                { "@Frequency", parameters.Frequency },
+                { "@PriceLimit", parameters.PriceLimit },
+                { "@Category", parameters.Category },
+                { "@CategoryID", parameters.CategoryID }
             };
 
-            //UPDATE table_name SET column1 = value, column2 = value2,... WHERE some_column = some_value
+            string query = "INSERT INTO Query (CustomerUUID, Frequency, PriceLimit, Category, CategoryID)" +
+                                       " VALUES (@CustomerUUID, @Frequency, @PriceLimit, @Category, @CategoryID);";
+
+            int result = dataAccess.Insert(query, param);
+
+            return PrepareNonQueryResult(result);
+        }
+
+        public NonQueryResultModel UpdateRecord(UpdateQueryModel parameters)
+        {
+            IDictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "@CustomerUUID", parameters.CustomerUUID },
+                { "@Category", parameters.Category },
+                { "@CategoryID", parameters.CategoryID },
+                { "@Frequency", parameters.Frequency },
+                { "@PriceLimit", parameters.PriceLimit }
+            };
+
             string query = "UPDATE Query SET Category=@Category, CategoryID=@CategoryID, Frequency=@Frequency, PriceLimit=@PriceLimit WHERE CustomerUUID=@CustomerUUID";
 
-            int result = dataAccess.Update(query, parameters);
+            int result = dataAccess.Update(query, param);
 
-            bool succeeded = false;
-            if(result == 1)
+            return PrepareNonQueryResult(result);
+        }
+
+        public NonQueryResultModel DeleteRecord(DeleteQueryModel parameters)
+        {
+            IDictionary<string, object> param = new Dictionary<string, object>()
             {
-                succeeded = true;
-            }
-
-            NonQueryResultModel payload = new NonQueryResultModel() {
-                Success = succeeded
+                { "@CustomerUUID", parameters.CustomerUUID }
             };
 
-            return payload;
+            string query = "DELETE FROM Query WHERE CustomerUUID=@CustomerUUID;";
+
+            int result = dataAccess.Delete(query, param);
+
+            return PrepareNonQueryResult(result);
+        }
+
+        public List<QueryResultModel> SelectAll(SelectQueryModel parameters)
+        {
+            throw new NotImplementedException();
         }
     }
 }

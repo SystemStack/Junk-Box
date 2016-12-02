@@ -7,57 +7,31 @@ using JunkBox.Models;
 
 namespace JunkBox.DataAccess
 {
-    public class AddressTable
+    public class AddressTable : DataTable, IDataTable<AddressResultModel, SelectAddressModel, NonQueryResultModel, InsertAddressModel, NonQueryResultModel, UpdateAddressModel, NonQueryResultModel, DeleteAddressModel>
     {
-        private static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static AddressTable instance = null;
 
-        public static NonQueryResultModel InsertAddress(AddressModel address)
+        public static AddressTable Instance()
         {
-            IDictionary<string, object> parameters = new Dictionary<string, object>()
+            if (instance == null)
             {
-                { "@CustomerUUID", address.CustomerUUID },
-                { "@BillingCity", address.BillingCity },
-                { "@BillingState", address.BillingState },
-                { "@BillingZip", address.BillingZip },
-                { "@BillingAddress", address.BillingAddress },
-                { "@BillingAddress2", address.BillingAddress2 },
-                { "@ShippingCity", address.ShippingCity },
-                { "@ShippingState", address.ShippingState },
-                { "@ShippingZip", address.ShippingZip },
-                { "@ShippingAddress", address.ShippingAddress },
-                { "@ShippingAddress2", address.ShippingAddress2 }
-            };
-
-            //INSERT INTO table_name (column1,column2,column3,...) VALUES (value1, value2, value3,...);
-            string query = "INSERT INTO Address (CustomerUUID, BillingCity, BillingState, BillingZip, BillingAddress, BillingAddress2, ShippingCity, ShippingState, ShippingZip, ShippingAddress, ShippingAddress2)" +
-                                       " VALUES (@CustomerUUID, @BillingCity, @BillingState, @BillingZip, @BillingAddress, @BillingAddress2, @ShippingCity, @ShippingState, @ShippingZip, @ShippingAddress, @ShippingAddress2);";
-
-            int result = dataAccess.Insert(query, parameters);
-
-            bool succeeded = false;
-            if(result == 1)
-            {
-                succeeded = true;
+                instance = new AddressTable();
             }
 
-            NonQueryResultModel payload = new NonQueryResultModel() {
-                Success = succeeded
-            };
-
-            return payload;
+            return instance;
         }
 
-        public static AddressModel GetAddress(CustomerUUIDModel customerUuid)
+        public AddressResultModel SelectRecord(SelectAddressModel parameters)
         {
-            IDictionary<string, object> parameters = new Dictionary<string, object>()
+            IDictionary<string, object> param = new Dictionary<string, object>()
             {
-                { "@CustomerUUID", customerUuid.CustomerUUID }
+                { "@CustomerUUID", parameters.CustomerUUID }
             };
             string query = "SELECT * FROM Address WHERE CustomerUUID=@CustomerUUID";
 
-            IDictionary<string, object> addressResult = dataAccess.Select(query, parameters).First();
+            IDictionary<string, object> addressResult = dataAccess.Select(query, param).First();
 
-            AddressModel payload = new AddressModel()
+            AddressResultModel payload = new AddressResultModel()
             {
                 BillingAddress = (string)addressResult["BillingAddress"],
                 BillingAddress2 = (string)addressResult["BillingAddress2"],
@@ -75,26 +49,54 @@ namespace JunkBox.DataAccess
             return payload;
         }
 
-        public static NonQueryResultModel UpdateAddressData(AddressModel address, CustomerUUIDModel customerUuid)
+        public NonQueryResultModel InsertRecord(InsertAddressModel parameters)
         {
-            IDictionary<string, object> parameters = new Dictionary<string, object>() {
-                { "@CustomerUUID", customerUuid.CustomerUUID },
-                { "@BillingCity", address.BillingCity },
-                { "@BillingState", address.BillingState },
-                { "@BillingZip", address.BillingZip },
-                { "@BillingAddress", address.BillingAddress },
-                { "@BillingAddress2", address.BillingAddress2 },
-                { "@ShippingCity", address.ShippingCity },
-                { "@ShippingState", address.ShippingState },
-                { "@ShippingZip", address.ShippingZip },
-                { "@ShippingAddress", address.ShippingAddress },
-                { "@ShippingAddress2", address.ShippingAddress2 }
+            IDictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "@CustomerUUID", parameters.CustomerUUID },
+                { "@BillingCity", parameters.BillingCity },
+                { "@BillingState", parameters.BillingState },
+                { "@BillingZip", parameters.BillingZip },
+                { "@BillingAddress", parameters.BillingAddress },
+                { "@BillingAddress2", parameters.BillingAddress2 },
+                { "@ShippingCity", parameters.ShippingCity },
+                { "@ShippingState", parameters.ShippingState },
+                { "@ShippingZip", parameters.ShippingZip },
+                { "@ShippingAddress", parameters.ShippingAddress },
+                { "@ShippingAddress2", parameters.ShippingAddress2 }
+            };
+
+            //INSERT INTO table_name (column1,column2,column3,...) VALUES (value1, value2, value3,...);
+            string query = "INSERT INTO Address (CustomerUUID, BillingCity, BillingState, BillingZip, BillingAddress, BillingAddress2, ShippingCity, ShippingState, ShippingZip, ShippingAddress, ShippingAddress2)" +
+                                       " VALUES (@CustomerUUID, @BillingCity, @BillingState, @BillingZip, @BillingAddress, @BillingAddress2, @ShippingCity, @ShippingState, @ShippingZip, @ShippingAddress, @ShippingAddress2);";
+
+            int result = dataAccess.Insert(query, param);
+
+            return PrepareNonQueryResult(result);
+        }
+
+        public NonQueryResultModel UpdateRecord(UpdateAddressModel parameters)
+        {
+            IDictionary<string, object> param = new Dictionary<string, object>() {
+                { "@CustomerUUID", parameters.CustomerUUID },
+                { "@BillingCity", parameters.BillingCity },
+                { "@BillingState", parameters.BillingState },
+                { "@BillingZip", parameters.BillingZip },
+                { "@BillingAddress", parameters.BillingAddress },
+                { "@BillingAddress2", parameters.BillingAddress2 },
+                { "@ShippingCity", parameters.ShippingCity },
+                { "@ShippingState", parameters.ShippingState },
+                { "@ShippingZip", parameters.ShippingZip },
+                { "@ShippingAddress", parameters.ShippingAddress },
+                { "@ShippingAddress2", parameters.ShippingAddress2 }
             };
 
             //UPDATE table_name SET column1 = value, column2 = value2,... WHERE some_column = some_value
-            string query = "UPDATE Address SET BillingCity=@BillingCity, BillingState=@BillingState, BillingZip=@BillingZip, BillingAddress=@BillingAddress, BillingAddress2=@BillingAddress2, ShippingCity=@ShippingCity, ShippingState=@ShippingState, ShippingZip=@ShippingZip, ShippingAddress=@ShippingAddress, ShippingAddress2=@ShippingAddress2 WHERE CustomerUUID=@CustomerUUID;";
+            string query = "UPDATE Address SET BillingCity=@BillingCity, BillingState=@BillingState, BillingZip=@BillingZip, BillingAddress=@BillingAddress, BillingAddress2=@BillingAddress2, " +
+                                              "ShippingCity=@ShippingCity, ShippingState=@ShippingState, ShippingZip=@ShippingZip, ShippingAddress=@ShippingAddress, ShippingAddress2=@ShippingAddress2 " +
+                                              "WHERE CustomerUUID=@CustomerUUID;";
 
-            int result = dataAccess.Update(query, parameters);
+            int result = dataAccess.Update(query, param);
 
             bool succeeded = false;
             if (result == 1)
@@ -108,6 +110,11 @@ namespace JunkBox.DataAccess
             };
 
             return payload;
+        }
+
+        public NonQueryResultModel DeleteRecord(DeleteAddressModel parameters)
+        {
+            throw new NotImplementedException();
         }
     }
 }

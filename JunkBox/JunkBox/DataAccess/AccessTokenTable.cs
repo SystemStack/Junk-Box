@@ -7,17 +7,43 @@ using JunkBox.Models;
 
 namespace JunkBox.DataAccess
 {
-    public class AccessTokenTable
+    public class AccessTokenTable : DataTable, IDataTable<AccessTokenResultModel, SelectAccessTokenModel, NonQueryResultModel, InsertAccessTokenModel, NonQueryResultModel, UpdateAccessTokenModel, NonQueryResultModel, DeleteAccessTokenModel>
     {
-        private static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static AccessTokenTable instance = null;
 
-        public static AccessTokenModel GetAccessToken()
+        public static AccessTokenTable Instance()
+        {
+            if (instance == null)
+            {
+                instance = new AccessTokenTable();
+            }
+
+            return instance;
+        }
+
+        public NonQueryResultModel DeleteRecord(DeleteAccessTokenModel parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public NonQueryResultModel InsertRecord(InsertAccessTokenModel parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public AccessTokenResultModel SelectRecord(SelectAccessTokenModel parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public AccessTokenResultModel SelectRecord()
         {
             string query = "SELECT * FROM AccessToken WHERE UseType='ApplicationAccessToken'";
 
             IDictionary<string, object> result = dataAccess.Select(query, null).First();
 
-            AccessTokenModel payload = new AccessTokenModel() {
+            AccessTokenResultModel payload = new AccessTokenResultModel()
+            {
                 AccessToken = (string)result["AccessToken"],
                 ExpiresIn = (int)result["ExpiresIn"],
                 RefreshToken = (string)result["RefreshToken"],
@@ -29,35 +55,24 @@ namespace JunkBox.DataAccess
             return payload;
         }
 
-        public static NonQueryResultModel UpdateAccessToken(AccessTokenModel tokenData)
+        public NonQueryResultModel UpdateRecord(UpdateAccessTokenModel parameters)
         {
-            IDictionary<string, object> parameters = new Dictionary<string, object>()
+            IDictionary<string, object> param = new Dictionary<string, object>()
             {
-                { "@UseType", tokenData.UseType },
-                { "@AccessToken", tokenData.AccessToken },
-                { "@ExpiresIn", tokenData.ExpiresIn },
-                { "@RefreshToken", tokenData.RefreshToken },
-                { "@TokenType", tokenData.TokenType },
-                { "@DateCreated", tokenData.DateCreated }
+                { "@UseType", parameters.UseType },
+                { "@AccessToken", parameters.AccessToken },
+                { "@ExpiresIn", parameters.ExpiresIn },
+                { "@RefreshToken", parameters.RefreshToken },
+                { "@TokenType", parameters.TokenType },
+                { "@DateCreated", parameters.DateCreated }
             };
 
-            //UPDATE table_name SET column1 = value, column2 = value2,... WHERE some_column = some_value
             string query = "UPDATE AccessToken SET AccessToken=@AccessToken, ExpiresIn=@ExpiresIn, RefreshToken=@RefreshToken, TokenType=@TokenType, DateCreated=@DateCreated WHERE UseType=@UseType";
 
-            int result = dataAccess.Update(query, parameters);
+            int result = dataAccess.Update(query, param);
 
-            bool succeeded = false;
-            if (result == 1)
-            {
-                succeeded = true;
-            }
-
-            NonQueryResultModel payload = new NonQueryResultModel()
-            {
-                Success = succeeded
-            };
-
-            return payload;
+            return PrepareNonQueryResult(result);
         }
+
     }
 }
