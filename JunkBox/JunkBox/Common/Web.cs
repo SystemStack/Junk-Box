@@ -121,5 +121,34 @@ namespace JunkBox.Common
                 };
             }
         }
+
+        private static string GetAccessToken()
+        {
+            if (!Auth.IsAccessTokenValid())
+            {
+                Auth.UpdateAccessToken();
+            }
+            return Auth.GetAccessToken();
+        }
+
+        public static void Get(string uri)
+        {
+            string accessToken = GetAccessToken();
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                using (var response = client.GetAsync(uri))
+                {
+                    // Parse the response body. Blocking!
+                    //var dataObjects = response.Content.ReadAsStringAsync().Result;
+                    //var json_serializer = new JavaScriptSerializer();
+                    //var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(dataObjects);
+                    //return routes_list;
+                }
+            }
+        }
     }
 }

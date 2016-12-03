@@ -87,5 +87,48 @@ namespace JunkBox.Models
     {
         public EbayCreditCardModel creditCard { get; set; }
     }
+
+    [DataContract]
+    public class CheckoutSessionResponseModel
+    {
+        [DataMember]
+        public AcceptedPaymentMethods acceptedPaymentMethods { get; set; }
+    }
+
+    [DataContract]
+    public class AcceptedPaymentMethods
+    {
+        [DataMember]
+        public string label { get; set; }
+
+        [DataMember]
+        public LogoImage logoImage { get; set; }
+
+        [DataMember]
+        public PaymentMethodBrands paymentMethodBrands { get; set; }
+    }
+
+    [DataContract]
+    public class LogoImage
+    {
+        [DataMember]
+        public int height { get; set; }
+
+        [DataMember]
+        public string imageUrl { get; set; }
+
+        [DataMember]
+        public int width { get; set; }
+    }
+
+    [DataContract]
+    public class PaymentMethodBrands
+    {
+        [DataMember]
+        public LogoImage logoImage { get; set; }
+
+        [DataMember]
+        public string payment { get; set; }
+    }
 }
  
