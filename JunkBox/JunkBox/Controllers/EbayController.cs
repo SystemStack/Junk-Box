@@ -45,7 +45,7 @@ namespace JunkBox.Controllers
                 { "IncludeSelector", "ChildCategories"}
             };
 
-            return Json(Categories.GetEbayResult(URL, urlParameters));
+            return Json(Ebay.Categories.GetEbayResult(URL, urlParameters));
         }
 
         //POST: Ebay/BrowseApiFindViableItems/{data}
@@ -83,85 +83,27 @@ namespace JunkBox.Controllers
 
             AddressResultModel addressData = addressTable.SelectRecord(new SelectAddressModel() { CustomerUUID = customerResult.CustomerUUID });
 
-            //NOTE: Eventually convert this to a 'proper' model
-            IDictionary<string, object> response = OrderAPI.InitiateGuestCheckoutSession(data.orderId, customerResult, addressData);
-
-
-            IDictionary<string, object> pricingSummary = (IDictionary<string, object>)response["pricingSummary"];
-            IDictionary<string, object> total = (IDictionary<string, object>)pricingSummary["total"];
-
-            string totalPrice = total["value"].ToString();
+            CheckoutSessionResponse response = OrderAPI.InitiateGuestCheckoutSession(data.orderId, customerResult, addressData);
 
             InsertCustomerOrderModel customerOrder = new InsertCustomerOrderModel() {
                 CustomerUUID = customerResult.CustomerUUID,
-                CheckoutSessionID = (string)response["checkoutSessionId"],
-                ExpirationDate = (string)response["expirationDate"],
+                CheckoutSessionID = response.checkoutSessionId,
+                ExpirationDate = response.expirationDate,
                 ImageURL = data.imageUrl,
-                PurchasePrice = totalPrice
+                PurchasePrice = response.pricingSummary.total.value
             };
 
             NonQueryResultModel orderResult = customerOrderTable.InsertRecord(customerOrder);
 
-            
             return Json(response);
         }
 
         //POST: Ebay/OrderApiPlaceGuestOrder/{data}
         public ActionResult OrderApiPlaceGuestOrder(EbayOrderApiPlaceGuestOrderModel data)
         {
-            throw new NotImplementedException();
-            /*
-            //Get customer info
-            Dictionary<string, string> customerInfo = dataAccess.Select("SELECT * FROM Customer WHERE Email='" + data.email + "'").First();
+            PurchaseOrderSummary summary = OrderAPI.PlaceGuestOrder(data.checkoutSessionId);
 
-            //Get customer address 
-            Dictionary<string, string> addressInfo = dataAccess.Select("SELECT * FROM Address WHERE AddressID='" + customerInfo["AddressID"] + "'").First();
-
-            IDictionary<string, object> initiateResponse = EbayOrderAPI.InitiateGuestCheckoutSession(data.orderId, customerInfo, addressInfo);
-            string json = new JavaScriptSerializer().Serialize(Json(initiateResponse).Data);
-            System.Windows.Forms.MessageBox.Show(json);
-
-            string checkoutSessionId = initiateResponse["checkoutSessionId"].ToString();
-            string expirationDate = initiateResponse["expirationDate"].ToString();
-
-            IDictionary<string, object> pricingSummary = (IDictionary<string, object>)initiateResponse["pricingSummary"];
-            IDictionary<string, object> total = (IDictionary<string, object>)pricingSummary["total"];
-
-
-
-            IDictionary<string, object> updatePaymentResponse = EbayOrderAPI.UpdateGuestSessionPaymentInfo(checkoutSessionId, customerInfo, addressInfo);
-            json = new JavaScriptSerializer().Serialize(Json(updatePaymentResponse).Data);
-            System.Windows.Forms.MessageBox.Show(json);
-
-
-
-            IDictionary<string, object> placeOrderResponse = EbayOrderAPI.PlaceGuestOrder(checkoutSessionId);
-            json = new JavaScriptSerializer().Serialize(Json(placeOrderResponse).Data);
-            System.Windows.Forms.MessageBox.Show(json);
-
-
-            string totalPrice = total["value"].ToString();
-
-            //Need to insert... CustomerID, AddressID, PurchasePrice, CheckoutSessionID, ExpirationDate, ImageURL
-            Dictionary<string, string> parameters = new Dictionary<string, string>() {
-                { "CustomerID", customerInfo["CustomerID"]},
-                { "AddressID", customerInfo["AddressID"]},
-                { "PurchasePrice", totalPrice},
-                { "CheckoutSessionID", checkoutSessionId},
-                { "ExpirationDate", expirationDate},
-                { "ImageURL", data.imageUrl}
-            };
-            int insertResult = dataAccess.Insert("CustomerOrder", parameters);
-
-            //JsonResult result = Json(response);
-            JsonResult result = Json(placeOrderResponse);
-            return result;
-            
-
-            /*
-            //Testing out Authorization
-            return Json(EbayAccessToken.RequestApplicationAccessToken());
-            */
+            return Json(summary);
         }
     }
 }

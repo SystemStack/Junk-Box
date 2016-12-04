@@ -7,97 +7,58 @@ using System.Web;
 using System.Web.Script.Serialization;
 
 using JunkBox.Ebay;
+using System.IO;
+using System.Runtime.Serialization.Json;
 
 namespace JunkBox.Common
 {
     public class Web
     {
 
-        public static string BuildQueryString(IDictionary<string, List<object>> parameters)
+        public static T Get<T>(string uri)
         {
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            foreach (KeyValuePair<string, List<object>> entry in parameters)
+            string accessToken = GetAccessToken();
+
+            using (HttpClient client = new HttpClient())
             {
-                foreach (object value in entry.Value)
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                using (var response = client.GetStreamAsync(uri))
                 {
-                    query.Add(entry.Key, (string)value);
+                    DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
+
+                    return (T)serializer.ReadObject(response.Result);
                 }
             }
-            return "?" + query.ToString();
         }
 
-        public static IDictionary<string, object> GetWebRequest(string URL, string query)
+        public static T Post<T>(string uri)
         {
-            
-            if(!Auth.IsAccessTokenValid())
-            {
-                Auth.UpdateAccessToken();
-            }
-            string accessToken = Auth.GetAccessToken();
-
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
-
-            // Add an Accept header for JSON format.
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            // List data response.
-            HttpResponseMessage response = client.GetAsync(query).Result;  // Blocking call!
-            if (response.IsSuccessStatusCode)
-            {
-
-                // Parse the response body. Blocking!
-                var dataObjects = response.Content.ReadAsStringAsync().Result;
-                var json_serializer = new JavaScriptSerializer();
-                var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(dataObjects);
-                return routes_list;
-            }
-            else
-            {
-                return new Dictionary<string, object>() {
-                    { response.StatusCode.ToString(), "(" + response.ReasonPhrase + ")" }
-                };
-            }
+            return Post<T, object>(uri, null);
         }
 
-        public static IDictionary<string, object> PostWebRequest(string URL, string postBody)
+        public static T Post<T, K>(string uri, K postBody)
         {
-            if (!Auth.IsAccessTokenValid())
+            string accessToken = GetAccessToken();
+
+            using (HttpClient client = new HttpClient())
             {
-                Auth.UpdateAccessToken();
-            }
-            string accessToken = Auth.GetAccessToken();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            HttpClient client = new HttpClient();
-
-            // Add an Accept header for JSON format.
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            // List data response.
-            HttpResponseMessage response = client.PostAsync(URL, new StringContent(postBody, Encoding.UTF8, "application/json")).Result;
-            if (response.IsSuccessStatusCode)
-            {
-
-                // Parse the response body. Blocking!
-                var dataObjects = response.Content.ReadAsStringAsync().Result;
-                var json_serializer = new JavaScriptSerializer();
-                var routes_list = (IDictionary<string, object>)json_serializer.DeserializeObject(dataObjects);
-                return routes_list;
-            }
-            else
-            {
-                return new Dictionary<string, object>() {
-                    { response.StatusCode.ToString(), "(" + response.ReasonPhrase + ")" }
-                };
+                using (var response = client.PostAsJsonAsync(uri, postBody).Result)
+                {
+                    DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
+                   
+                    return (T)serializer.ReadObject(response.Content.ReadAsStreamAsync().Result);
+                }
             }
         }
 
         public static IDictionary<string, object> PostTokenRequest(string URL, string authorization, string postBody)
         {
             HttpClient client = new HttpClient();
-            //client.BaseAddress = new Uri(URL);
 
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -120,6 +81,28 @@ namespace JunkBox.Common
                     { response.StatusCode.ToString(), "(" + response.ReasonPhrase + ")" }
                 };
             }
+        }
+
+        public static string BuildQueryString(IDictionary<string, List<object>> parameters)
+        {
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            foreach (KeyValuePair<string, List<object>> entry in parameters)
+            {
+                foreach (object value in entry.Value)
+                {
+                    query.Add(entry.Key, (string)value);
+                }
+            }
+            return "?" + query.ToString();
+        }
+
+        private static string GetAccessToken()
+        {
+            if (!Auth.IsAccessTokenValid())
+            {
+                Auth.UpdateAccessToken();
+            }
+            return Auth.GetAccessToken();
         }
     }
 }

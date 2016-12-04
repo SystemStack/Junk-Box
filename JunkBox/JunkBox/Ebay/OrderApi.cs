@@ -12,18 +12,18 @@ namespace JunkBox.Ebay
         private static string authToken = ConfigurationManager.AppSettings["AuthToken"];
         private static string baseUrl = "https://api.sandbox.ebay.com";
 
-
-        public static IDictionary<string, object> PlaceGuestOrder(string checkoutSessionId)
+        
+        public static PurchaseOrderSummary PlaceGuestOrder(string checkoutSessionId)
         {
             //POST https://api.sandbox.ebay.com/buy/order/v1/guest_checkout_session/{guest_checkoutsession_id}/place_order
 
             string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/place_order";
 
-            return Web.PostWebRequest(apiUrl, "");
+            return Web.Post<PurchaseOrderSummary> (apiUrl);
         }
-
-
-        public static IDictionary<string, object> UpdateGuestSessionPaymentInfo(string checkoutSessionId, Dictionary<string, string> customerInfo, Dictionary<string, string> addressInfo)
+        
+        
+        public static CheckoutSessionResponse UpdateGuestSessionPaymentInfo(string checkoutSessionId, Dictionary<string, string> customerInfo, Dictionary<string, string> addressInfo)
         {
 
             /*
@@ -53,43 +53,36 @@ namespace JunkBox.Ebay
                 }
               }
             */
+            UpdatePaymentInformation payload = new UpdatePaymentInformation();
 
-            EbayUpdateGuestSessionPaymentInfoModel payload = new EbayUpdateGuestSessionPaymentInfoModel();
+            payload.creditCard = new CreditCard();
+            payload.creditCard.accountHolderName = "";
+            payload.creditCard.brand = "";
+            payload.creditCard.cardNumber = "";
+            payload.creditCard.cardNumber = "";
+            payload.creditCard.cvvNumber = "";
+            payload.creditCard.expireMonth = 0;
+            payload.creditCard.expireYear = 0;
 
-            EbayCreditCardModel creditCard = new EbayCreditCardModel();
-            creditCard.accountHolderName = "Frank Smith";
-            creditCard.brand = "MASTERCARD";
-            creditCard.cardNumber = "5100000001598174";
-            creditCard.cvvNumber = "012";
-            creditCard.expireMonth = 10;
-            creditCard.expireYear = 2019;
-
-            EbayBillingAddressModel billingAddress = new EbayBillingAddressModel();
-            billingAddress.firstName = "Frank";
-            billingAddress.lastName = "Smith";
-            billingAddress.addressLine1 = "3737 Any St";
-            billingAddress.addressLine2 = "";
-            billingAddress.city = "San Jose";
-            billingAddress.stateOrProvince = "CA";
-            billingAddress.postalCode = "95134";
-            billingAddress.country = "US";
-
-            creditCard.billingAddress = billingAddress;
-            payload.creditCard = creditCard;
+            payload.creditCard.billingAddress = new BillingAddress();
+            payload.creditCard.billingAddress.addressLine1 = "";
+            payload.creditCard.billingAddress.addressLine2 = "";
+            payload.creditCard.billingAddress.city = "";
+            payload.creditCard.billingAddress.country = "";
+            payload.creditCard.billingAddress.county = "";
+            payload.creditCard.billingAddress.firstName = "";
+            payload.creditCard.billingAddress.lastName = "";
+            payload.creditCard.billingAddress.postalCode = "";
+            payload.creditCard.billingAddress.stateOrProvince = "";
 
             string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/update_payment_info";
 
-            var json_serializer = new JavaScriptSerializer();
-            string postBody = json_serializer.Serialize(payload);
-            //System.Windows.Forms.MessageBox.Show(postBody);
-
-            return Web.PostWebRequest(apiUrl, postBody);
+            return Web.Post<CheckoutSessionResponse, UpdatePaymentInformation>(apiUrl, payload);
         }
+        
 
-
-        public static IDictionary<string, object> InitiateGuestCheckoutSession(string itemId, CustomerResultModel customerInfo, AddressModel addressInfo)
+        public static CheckoutSessionResponse InitiateGuestCheckoutSession(string itemId, CustomerResultModel customerInfo, AddressModel addressInfo)
         {
-
             /*
              * Initiate a guest checkout session
                 POST https://api.sandbox.ebay.com/buy/order/v1/guest_checkout_session/initiate
@@ -114,35 +107,27 @@ namespace JunkBox.Ebay
                     ]
                 }
             */
-            EbayGuestCheckoutSessionRequestModel payload = new EbayGuestCheckoutSessionRequestModel();
-            payload.contactEmail = customerInfo.Email;
-            payload.contactFirstName = customerInfo.FirstName;
-            payload.contactLastName = customerInfo.LastName;
+            CreateGuestCheckoutSessionRequest request = new CreateGuestCheckoutSessionRequest();
+            request.contactEmail = "fsmith1234@gmail.com";
+            request.contactFirstName = "Frank";
+            request.contactLastName = "Smith";
 
-            EbayShippingAddressModel shipping = new EbayShippingAddressModel();
-            shipping.recipient = customerInfo.FirstName + " " + customerInfo.LastName;
-            shipping.phoneNumber = customerInfo.Phone;
-            shipping.addressLine1 = addressInfo.ShippingAddress;
-            shipping.addressLine2 = addressInfo.ShippingAddress2;
-            shipping.city = addressInfo.ShippingCity;
-            shipping.stateOrProvince = addressInfo.ShippingState;
-            shipping.postalCode = addressInfo.ShippingZip.ToString();
-            shipping.country = "US";
+            request.shippingAddress = new ShippingAddress();
+            request.shippingAddress.recipient = "Frank Smith";
+            request.shippingAddress.phoneNumber = "617 817 7449 ";
+            request.shippingAddress.addressLine1 = "3737 Casa Verde St";
+            request.shippingAddress.city = "San Jose";
+            request.shippingAddress.stateOrProvince = "CA";
+            request.shippingAddress.postalCode = "95134";
+            request.shippingAddress.country = "US";
 
-            payload.shippingAddress = shipping;
-
-            EbayLineItemModel[] lineItems = new EbayLineItemModel[] {
-                new EbayLineItemModel { quantity = 1, itemId = itemId }
-            };
-
-            payload.lineItemInputs = lineItems;
+            request.lineItemInputs = new LineItemInputs[] { new LineItemInputs { quantity = 1, itemId = itemId } };
 
             string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/initiate";
 
-            var json_serializer = new JavaScriptSerializer();
-            string postBody = json_serializer.Serialize(payload);
+            CheckoutSessionResponse response = Web.Post<CheckoutSessionResponse, CreateGuestCheckoutSessionRequest>(apiUrl, request);
 
-            return Web.PostWebRequest(apiUrl, postBody);
+            return response;
         }
     }
 }
