@@ -23,7 +23,33 @@ namespace JunkBox.DataAccess
 
         public CustomerOrderResultModel SelectRecord(SelectCustomerOrderModel parameters)
         {
-            throw new NotImplementedException();
+            IDictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "@OrderID", parameters.OrderID }
+            };
+
+            string query = "SELECT * FROM CustomerOrder WHERE OrderID=@OrderID";
+
+            List<IDictionary<string, object>> selectResult = dataAccess.Select(query, param);
+            
+            if(selectResult.Count == 0)
+            {
+                return new CustomerOrderResultModel();
+            }
+
+            IDictionary<string, object> result = selectResult.First();
+
+            CustomerOrderResultModel payload = new CustomerOrderResultModel() {
+                CheckoutSessionID = (string)result["CheckoutSessionID"],
+                CustomerUUID = (string)result["CustomerUUID"],
+                ExpirationDate = (string)result["ExpirationDate"],
+                ImageURL = (string)result["ImageURL"],
+                OrderID = (int)result["OrderID"],
+                PurchasePrice = (string)result["PurchasePrice"],
+                TimeStamp = (DateTime)result["TimeStamp"]
+            };
+
+            return payload;
         }
 
         public NonQueryResultModel InsertRecord(InsertCustomerOrderModel parameters)

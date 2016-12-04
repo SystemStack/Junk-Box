@@ -47,6 +47,7 @@ namespace JunkBox.DataAccess {
             {
                 connection.Close();
             }
+            connection.Dispose();
         }
 
         public List<IDictionary<string, object>> Select(string query, IDictionary<string, object> parameters)

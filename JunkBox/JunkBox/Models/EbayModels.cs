@@ -7,11 +7,8 @@ using System.Runtime.Serialization;
 
 namespace JunkBox.Models
 {
-    public class EbayGetViablePurchasesModel
-    {
-        public string email { get; set; }
-    }
-
+    #region general purpose EbayModels
+    //These models could probably use a rework
     public class EbayBrowseAPIModel
     {
         public string email { get; set; }
@@ -27,69 +24,20 @@ namespace JunkBox.Models
     public class EbayOrderApiPlaceGuestOrderModel
     {
         public string email { get; set; }
-        public string orderId { get; set; }
-        public string imageUrl { get; set; }
+        public string customerUuid { get; set; }
+        public string checkoutSessionId { get; set; }
     }
-
-    public class EbayBillingAddressModel
+    public class EbayGetViablePurchasesModel
     {
-        public string addressLine1 { get; set; }
-        public string addressLine2 { get; set; }
-        public string city { get; set; }
-        public string country { get; set; }
-        public string county { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string postalCode { get; set; }
-        public string stateOrProvince { get; set; }
+        public string email { get; set; }
     }
+    #endregion
 
-    public class EbayCreditCardModel
-    {
-        public string accountHolderName { get; set; }
-        public EbayBillingAddressModel billingAddress { get; set; }
-        public string brand { get; set; }
-        public string cardNumber { get; set; }
-        public string cvvNumber { get; set; }
-        public int expireMonth { get; set; }
-        public int expireYear { get; set; }
-    }
-
-    public class EbayLineItemModel
-    {
-        public string itemId { get; set; }
-        public int quantity { get; set; }
-    }
-
-    public class EbayShippingAddressModel
-    {
-        public string addressLine1 { get; set; }
-        public string addressLine2 { get; set; }
-        public string city { get; set; }
-        public string country { get; set; }
-        public string phoneNumber { get; set; }
-        public string postalCode { get; set; }
-        public string recipient { get; set; }
-        public string stateOrProvince { get; set; }
-    }
-
-    public class EbayGuestCheckoutSessionRequestModel
-    {
-        public string contactEmail { get; set; }
-        public string contactFirstName { get; set; }
-        public string contactLastName { get; set; }
-        public EbayCreditCardModel creditCard { get; set; }
-        public EbayLineItemModel[] lineItemInputs { get; set; }
-        public EbayShippingAddressModel shippingAddress { get; set; }
-    }
-
-    public class EbayUpdateGuestSessionPaymentInfoModel
-    {
-        public EbayCreditCardModel creditCard { get; set; }
-    }
-
+    /// <summary>
+    /// Root Model for Order API GET /guest_checkout_session/{checkoutSessionId}
+    /// </summary>
     [DataContract]
-    public class CheckoutSessionResponseModel
+    public class CheckoutSessionResponse
     {
         [DataMember]
         public AcceptedPaymentMethods acceptedPaymentMethods { get; set; }
@@ -104,7 +52,7 @@ namespace JunkBox.Models
         public LineItems[] lineItems { get; set; }
 
         [DataMember]
-        public PricingSummary[] pricingSummary { get; set; }
+        public PricingSummary pricingSummary { get; set; }
 
         [DataMember]
         public ProvidedPaymentInstrument providedPaymentInstrument { get; set; }
@@ -113,7 +61,115 @@ namespace JunkBox.Models
         public ShippingAddress shippingAddress { get; set; }
 
         [DataMember]
-        public Warnings[] warning { get; set; }
+        public Warnings[] warnings { get; set; }
+
+        [DataMember]
+        public Errors[] errors { get; set; }
+    }
+
+    /// <summary>
+    /// Root Model for Browse API GET /item_summary/search
+    /// </summary>
+    [DataContract]
+    public class SearchPagedCollection
+    {
+        [DataMember]
+        public string href { get; set; }
+
+        [DataMember]
+        public ItemSummaries[] itemSummaries { get; set; }
+
+        [DataMember]
+        public int limit { get; set; }
+
+        [DataMember]
+        public string next { get; set; }
+
+        [DataMember]
+        public int offset { get; set; }
+
+        [DataMember]
+        public string prev { get; set; }
+
+        [DataMember]
+        public int total { get; set; }
+
+        [DataMember]
+        public Warnings[] warnings { get; set; }
+
+        [DataMember]
+        public Errors[] errors { get; set; }
+    }
+
+    /// <summary>
+    /// Root Model for Order API POST /guest_checkout_session/initiate
+    /// </summary>
+    [DataContract]
+    public class CreateGuestCheckoutSessionRequest
+    {
+        [DataMember]
+        public string contactEmail { get; set; }
+
+        [DataMember]
+        public string contactFirstName { get; set; }
+
+        [DataMember]
+        public string contactLastName { get; set; }
+
+        [DataMember]
+        public CreditCard creditCard { get; set; }
+
+        [DataMember]
+        public LineItemInputs[] lineItemInputs { get; set; }
+
+        [DataMember]
+        public ShippingAddress shippingAddress { get; set; }
+    }
+
+    /// <summary>
+    /// Payload Model for Order API POST /guest_checkout_session/{checkoutSessionId}/update_payment_info
+    /// </summary>
+    public class UpdatePaymentInformation
+    {
+        public CreditCard creditCard { get; set; }
+    }
+
+    [DataContract]
+    public class Errors
+    {
+        [DataMember]
+        public int errorId { get; set; }
+
+        [DataMember]
+        public string domain { get; set; }
+
+        [DataMember]
+        public string category { get; set; }
+
+        [DataMember]
+        public string message { get; set; }
+
+        [DataMember]
+        public Parameters[] parameters { get; set; }
+    }
+
+    [DataContract]
+    public class PurchaseOrderSummary
+    {
+        [DataMember]
+        public string purchaseOrderHref { get; set; }
+
+        [DataMember]
+        public string purchaseOrderId { get; set; }
+
+        [DataMember]
+        public string purchaseOrderPaymentStatus { get; set; }
+
+        [DataMember]
+        public Warnings[] warnings { get; set; }
+
+        [DataMember]
+        public Errors[] errors { get; set; }
     }
 
     [DataContract]
@@ -529,6 +585,267 @@ namespace JunkBox.Models
 
         [DataMember]
         public string value { get; set; }
+    }
+
+    [DataContract]
+    public class ItemSummaries
+    {
+        [DataMember]
+        public AdditionalImages[] additionalImages { get; set; }
+
+        [DataMember]
+        public int bidCount { get; set; }
+
+        [DataMember]
+        public string[] buyingOptions { get; set; }
+
+        [DataMember]
+        public Categories[] categories { get; set; }
+
+        [DataMember]
+        public string condition { get; set; }
+
+        [DataMember]
+        public CurrentBidPrice currentBidPrice { get; set; }
+
+        [DataMember]
+        public DistanceFromPickupLocation distanceFromPickupLocation { get; set; }
+
+        [DataMember]
+        public string energyEfficiencyClass { get; set; }
+
+        [DataMember]
+        public Image image { get; set; }
+
+        [DataMember]
+        public string itemAffiliateWebUrl { get; set; }
+
+        [DataMember]
+        public string itemGroupHref { get; set; }
+
+        [DataMember]
+        public string itemId { get; set; }
+
+        [DataMember]
+        public ItemLocation itemLocation { get; set; }
+
+        [DataMember]
+        public MarketingPrice marketingPrice { get; set; }
+
+        [DataMember]
+        public PickupOptions[] pickupOptions { get; set; }
+
+        [DataMember]
+        public Price price { get; set; }
+
+        [DataMember]
+        public Seller seller { get; set; }
+
+        [DataMember]
+        public ShippingOptions[] shippingOptions { get; set; }
+
+        [DataMember]
+        public ThumbnailImages[] thumbnailImages { get; set; }
+
+        [DataMember]
+        public string title { get; set; }
+
+        [DataMember]
+        public bool topRatedBuyingExperience { get; set; }
+    }
+
+    [DataContract]
+    public class AdditionalImages
+    {
+        [DataMember]
+        public int height { get; set; }
+
+        [DataMember]
+        public string imageUrl { get; set; }
+
+        [DataMember]
+        public int width { get; set; }
+    }
+
+    [DataContract]
+    public class Categories
+    {
+        [DataMember]
+        public string categoryId { get; set; }
+    }
+
+    [DataContract]
+    public class CurrentBidPrice
+    {
+        [DataMember]
+        public string currency { get; set; }
+
+        [DataMember]
+        public string value { get; set; }
+    }
+
+    [DataContract]
+    public class DistanceFromPickupLocation
+    {
+        [DataMember]
+        public string unitOfMeasure { get; set; }
+
+        [DataMember]
+        public string value { get; set; }
+    }
+
+    [DataContract]
+    public class ItemLocation
+    {
+        [DataMember]
+        public string addressLine1 { get; set; }
+
+        [DataMember]
+        public string addressLine2 { get; set; }
+
+        [DataMember]
+        public string city { get; set; }
+
+        [DataMember]
+        public string country { get; set; }
+
+        [DataMember]
+        public string county { get; set; }
+
+        [DataMember]
+        public string postalCode { get; set; }
+
+        [DataMember]
+        public string stateOrProvince { get; set; }
+    }
+
+    [DataContract]
+    public class MarketingPrice
+    {
+        [DataMember]
+        public DiscountAmount discountAmount { get; set; }
+
+        [DataMember]
+        public string discountPercentage { get; set; }
+
+        [DataMember]
+        public OriginalPrice originalPrice { get; set; }
+    }
+
+    [DataContract]
+    public class DiscountAmount
+    {
+        [DataMember]
+        public string currency { get; set; }
+
+        [DataMember]
+        public string value { get; set; }
+    }
+
+    [DataContract]
+    public class OriginalPrice
+    {
+        [DataMember]
+        public string currency { get; set; }
+
+        [DataMember]
+        public string value { get; set; }
+    }
+
+    [DataContract]
+    public class PickupOptions
+    {
+        [DataMember]
+        public string pickupLocationType { get; set; }
+    }
+
+    [DataContract]
+    public class Price
+    {
+        [DataMember]
+        public string currency { get; set; }
+
+        [DataMember]
+        public string value { get; set; }
+    }
+
+    [DataContract]
+    public class ThumbnailImages
+    {
+        [DataMember]
+        public int height { get; set; }
+
+        [DataMember]
+        public string imageUrl { get; set; }
+
+        [DataMember]
+        public int width { get; set; }
+    }
+
+    [DataContract]
+    public class CreditCard
+    {
+        [DataMember]
+        public string accountHolderName { get; set; }
+
+        [DataMember]
+        public BillingAddress billingAddress { get; set; }
+
+        [DataMember]
+        public string brand { get; set; }
+
+        [DataMember]
+        public string cardNumber { get; set; }
+
+        [DataMember]
+        public string cvvNumber { get; set; }
+
+        [DataMember]
+        public int expireMonth { get; set; }
+
+        [DataMember]
+        public int expireYear { get; set; }
+    }
+
+    [DataContract]
+    public class BillingAddress
+    {
+        [DataMember]
+        public string addressLine1 { get; set; }
+
+        [DataMember]
+        public string addressLine2 { get; set; }
+
+        [DataMember]
+        public string city { get; set; }
+
+        [DataMember]
+        public string country { get; set; }
+
+        [DataMember]
+        public string county { get; set; }
+
+        [DataMember]
+        public string firstName { get; set; }
+
+        [DataMember]
+        public string lastName { get; set; }
+
+        [DataMember]
+        public string postalCode { get; set; }
+
+        [DataMember]
+        public string stateOrProvince { get; set; }
+    }
+
+    [DataContract]
+    public class LineItemInputs
+    {
+        [DataMember]
+        public string itemId { get; set; }
+
+        [DataMember]
+        public int quantity { get; set; }
     }
 }
  
