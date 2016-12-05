@@ -1,17 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Configuration;
-using System.Linq;
 
 using JunkBox.DataAccess;
 using JunkBox.Models;
-using JunkBox.Common;
+using JunkBox.Ebay;
 
 namespace JunkBox.Controllers
 {
     public class EbayController : Controller
     {
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static QueryTable queryTable = QueryTable.Instance();
+        private static CustomerTable customerTable = CustomerTable.Instance();
+        private static CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance();
+        private static AddressTable addressTable = AddressTable.Instance();
 
         private static string appId = ConfigurationManager.AppSettings["AppID"];
         private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"];
@@ -42,56 +45,65 @@ namespace JunkBox.Controllers
                 { "IncludeSelector", "ChildCategories"}
             };
 
-            return Json(Ebay.GetEbayResult(URL, urlParameters));
+            return Json(Ebay.Categories.GetEbayResult(URL, urlParameters));
         }
 
         //POST: Ebay/BrowseApiFindViableItems/{data}
         [HttpPost]
         public ActionResult BrowseApiFindViableItems(EbayBrowseAPIModel data)
         {
-            //Get customer info
-            Dictionary<string, string> customerInfo = dataAccess.Select("SELECT CustomerID, QueryID FROM Customer WHERE Email='" + data.email + "'").First();
+            SelectCustomerModel customerData = new SelectCustomerModel() {
+                Email = data.email
+            };
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            //Get customer query prefrences 
-            Dictionary<string, string> queryPref = dataAccess.Select("SELECT * FROM Query WHERE QueryID='" + customerInfo["QueryID"] + "'").First();
+            if(customerResult.CustomerUUID == null)
+            {
+                return Json(new { result="Fail", reason="Invalid Customer" });
+            }
 
+            QueryResultModel queryPref = queryTable.SelectRecord(new SelectQueryModel() { CustomerUUID = customerResult.CustomerUUID });
 
-            return Json(EbayBrowseAPI.ItemSummarySearch(queryPref["CategoryID"], queryPref["PriceLimit"]));
+            return Json(BrowseAPI.ItemSummarySearch(queryPref.CategoryID, queryPref.PriceLimit));
         }
 
         //POST: Ebay/OrderApiInitiateGuestCheckoutSession/{data}
         public ActionResult OrderApiInitiateGuestCheckoutSession(EbayOrderApiInitiateGuestCheckoutSessionModel data)
         {
-            //Get customer info
-            Dictionary<string, string> customerInfo = dataAccess.Select("SELECT * FROM Customer WHERE Email='" + data.email + "'").First();
-
-            //Get customer address 
-            Dictionary<string, string> addressInfo = dataAccess.Select("SELECT * FROM Address WHERE AddressID='" + customerInfo["AddressID"] + "'").First();
-
-            IDictionary<string, object> response = EbayOrderAPI.InitiateGuestCheckoutSession(data.orderId, customerInfo, addressInfo);
-
-            string checkoutSessionId = response["checkoutSessionId"].ToString();
-            string expirationDate = response["expirationDate"].ToString();
-
-            IDictionary<string, object> pricingSummary = (IDictionary<string,object>)response["pricingSummary"];
-            IDictionary<string, object> total = (IDictionary<string, object>)pricingSummary["total"];
-
-            string totalPrice = total["value"].ToString();
-
-            //Need to insert... CustomerID, AddressID, PurchasePrice, CheckoutSessionID, ExpirationDate, ImageURL
-            Dictionary<string, string> parameters = new Dictionary<string, string>() {
-                { "CustomerID", customerInfo["CustomerID"]},
-                { "AddressID", customerInfo["AddressID"]},
-                { "PurchasePrice", totalPrice},
-                { "CheckoutSessionID", checkoutSessionId},
-                { "ExpirationDate", expirationDate},
-                { "ImageURL", data.imageUrl}
+            SelectCustomerModel customerData = new SelectCustomerModel() {
+                    Email = data.email
             };
-            int insertResult = dataAccess.Insert("CustomerOrder", parameters);
 
-            JsonResult result = Json(response);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            return result;
+            if(customerResult.CustomerUUID == null)
+            {
+                return Json(new { result="Fail", reason="Invalid User" });
+            }
+
+            AddressResultModel addressData = addressTable.SelectRecord(new SelectAddressModel() { CustomerUUID = customerResult.CustomerUUID });
+
+            CheckoutSessionResponse response = OrderAPI.InitiateGuestCheckoutSession(data.orderId, customerResult, addressData);
+
+            InsertCustomerOrderModel customerOrder = new InsertCustomerOrderModel() {
+                CustomerUUID = customerResult.CustomerUUID,
+                CheckoutSessionID = response.checkoutSessionId,
+                ExpirationDate = response.expirationDate,
+                ImageURL = data.imageUrl,
+                PurchasePrice = response.pricingSummary.total.value
+            };
+
+            NonQueryResultModel orderResult = customerOrderTable.InsertRecord(customerOrder);
+
+            return Json(response);
+        }
+
+        //POST: Ebay/OrderApiPlaceGuestOrder/{data}
+        public ActionResult OrderApiPlaceGuestOrder(EbayOrderApiPlaceGuestOrderModel data)
+        {
+            PurchaseOrderSummary summary = OrderAPI.PlaceGuestOrder(data.checkoutSessionId);
+
+            return Json(summary);
         }
     }
 }

@@ -26,6 +26,7 @@
         $scope.stuff.orderId = itemId;
         $scope.stuff.imageUrl = imgUrl;
         Ebay.ebayOrderApiInitiateGuestCheckoutSession($scope.stuff).then(function (success) {
+        //Ebay.ebayOrderApiPlaceGuestOrder($scope.stuff).then(function (success) {
             console.log(success);
         }, function (failure) {
             console.log(failure);

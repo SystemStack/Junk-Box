@@ -11,46 +11,49 @@ namespace JunkBox.Controllers
 {
     public class PreferencesController : Controller
     {
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private CustomerTable customerTable = CustomerTable.Instance();
+        private AddressTable addressTable = AddressTable.Instance();
 
         //POST: Prefrences/ValidateAddress/{data}
         [HttpPost]
         public ActionResult UpdateAddress(PreferenceAddressModel data)
         {
-
-            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT CustomerID, AddressID FROM Customer WHERE Email='" + data.email + "'");
-            if (customerData.Count <= 0)
+            SelectCustomerModel customerData = new SelectCustomerModel()
             {
-                return Json(new { result = "Fail" });
+                Email = data.email
+            };
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
+
+            if (customerResult.CustomerUUID == null)
+            {
+                return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            string customerId = customerData.First()["CustomerID"];
-            string addressId = customerData.First()["AddressID"];
-
-
-            Dictionary<string, string> addressUpdates = new Dictionary<string, string>()
+            UpdateAddressModel customerAddress = new UpdateAddressModel()
             {
-                {"BillingAddress", data.streetName},
-                {"BillingAddress2", data.streetName2},
-                {"BillingCity", data.city},
-                {"BillingZip", data.postalCode},
-                {"BillingState", data.state},
+                CustomerUUID = customerResult.CustomerUUID,
 
-                {"ShippingAddress", data.streetName},
-                {"ShippingAddress2", data.streetName2},
-                {"ShippingCity", data.city},
-                {"ShippingZip", data.postalCode},
-                {"ShippingState", data.state}
+                BillingAddress = data.streetName,
+                BillingAddress2 = data.streetName2,
+                BillingCity = data.city,
+                BillingState = data.state,
+                BillingZip = data.postalCode,
+
+                ShippingAddress = data.streetName,
+                ShippingAddress2 = data.streetName2,
+                ShippingCity = data.city,
+                ShippingState = data.state,
+                ShippingZip = data.postalCode
             };
-            int result = dataAccess.Update("Address", addressUpdates, "AddressID", addressId);
+            NonQueryResultModel updateResult = addressTable.UpdateRecord(customerAddress);
 
-            if (result == 1)
+            if (updateResult.Success)
             {
                 return Json(new { result = "Success" });
             }
             else
             {
-                return Json(new { result = "Fail" });
+                return Json(new { result = "Fail", reason="Database Update Failed" });
             }
         }
 
@@ -58,39 +61,50 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult ChangePassword(PreferenceChangePasswordModel data)
         {
-            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT Hash, CustomerID FROM Customer WHERE Email='" + data.email + "'");
-            if(customerData.Count <= 0)
+            SelectCustomerModel customerData = new SelectCustomerModel() {
+                Email = data.email
+            };
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
+
+            if(customerResult.CustomerUUID == null)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            string customerHash = customerData.First()["Hash"];
-            string customerId = customerData.First()["CustomerID"];
-
-            bool verifyPassword = Password.VerifyHash(data.oldPassword, customerHash);
-
-            if(!verifyPassword)
+            bool verifyPassword = Password.VerifyHash(data.oldPassword, customerResult.Hash);
+            if (!verifyPassword)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Fail", reason="Invalid Password" });
             }
 
+            //Generate Password's Salt and Hash
             byte[] salt = Password.ComputeSaltBytes();
-
             string hashString = Password.ComputeHash(data.newPassword, salt);
             string saltString = Convert.ToBase64String(salt);
 
-            Dictionary<string, string> updateParams = new Dictionary<string, string>(){
-                {"Hash", hashString},
-                {"Salt", saltString}
+            customerResult.Hash = hashString;
+            customerResult.Salt = saltString;
+
+            UpdateCustomerModel customerUpdate = new UpdateCustomerModel() {
+                CustomerUUID = customerResult.CustomerUUID,
+                Email = customerResult.Email,
+                FirstName = customerResult.FirstName,
+                LastName = customerResult.LastName,
+                Hash = customerResult.Hash,
+                Salt = customerResult.Salt,
+                Phone = customerResult.Phone
             };
-            int result = dataAccess.Update("Customer", updateParams, "CustomerID", customerId);
 
-            if(result == 0)
+            NonQueryResultModel updateResult = customerTable.UpdateRecord(customerUpdate);
+
+            if(updateResult.Success)
             {
-                return Json(new { result="Fail"});
+                return Json(new { result="Success" });
             }
-
-            return Json(new { result="Success" });
+            else
+            {
+                return Json(new { result="Fail", reason="Password was not updated"});
+            }
         }
 
         //POST: Preferences/HaltPurchases/{data}
@@ -104,20 +118,19 @@ namespace JunkBox.Controllers
         [HttpPost]
         public ActionResult GetAddress(PreferenceGetAddressModel data)
         {
-            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT CustomerID, AddressID FROM Customer WHERE Email='" + data.email + "'");
-            if(customerData.Count <= 0)
+            SelectCustomerModel customerData = new SelectCustomerModel() {
+                Email = data.email
+            };
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
+
+            if(customerResult.CustomerUUID == null)
             {
-                return Json(new { result="Fail" });
+                return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            string addressId = customerData.First()["AddressID"];
-            List<Dictionary<string, string>> addressData = dataAccess.Select("SELECT * FROM Address WHERE AddressID='" + addressId + "'");
-            if(addressData.Count <= 0)
-            {
-                return Json(new { result="Fail" });
-            }
+            AddressResultModel customerAddress = addressTable.SelectRecord(new SelectAddressModel() { CustomerUUID = customerResult.CustomerUUID });
 
-            return Json(new { result=addressData.First() });
+            return Json(new { result=customerAddress });
         }
     }
 }

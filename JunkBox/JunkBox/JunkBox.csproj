@@ -191,7 +191,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Common\Ebay.cs" />
     <Compile Include="Common\Password.cs" />
     <Compile Include="Common\Web.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -201,12 +200,24 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\PreferencesController.cs" />
     <Compile Include="Controllers\QueryController.cs" />
+    <Compile Include="DataAccess\AccessTokenTable.cs" />
+    <Compile Include="DataAccess\AddressTable.cs" />
+    <Compile Include="DataAccess\CustomerOrderTable.cs" />
+    <Compile Include="DataAccess\CustomerTable.cs" />
+    <Compile Include="DataAccess\DataTable.cs" />
     <Compile Include="DataAccess\IDataAccess.cs" />
+    <Compile Include="DataAccess\IDataTable.cs" />
     <Compile Include="DataAccess\MySqlDataAccess.cs" />
+    <Compile Include="DataAccess\QueryTable.cs" />
+    <Compile Include="Ebay\Auth.cs" />
+    <Compile Include="Ebay\BrowseApi.cs" />
+    <Compile Include="Ebay\Categories.cs" />
+    <Compile Include="Ebay\OrderApi.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\DataAccessModels.cs" />
     <Compile Include="Models\EbayModels.cs" />
     <Compile Include="Models\HomeModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />

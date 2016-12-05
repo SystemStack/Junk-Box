@@ -28,7 +28,7 @@ namespace JunkBox.DataAccess {
         {
         }
 
-        public void OpenConnection()
+        private void OpenConnection()
         {
             try
             {
@@ -41,86 +41,65 @@ namespace JunkBox.DataAccess {
             }
         }
 
-        public void CloseConnection()
+        private void CloseConnection()
         {
             if (connection != null)
             {
                 connection.Close();
             }
+            connection.Dispose();
         }
 
-        public DbDataReader Query(string query)
+        public List<IDictionary<string, object>> Select(string query, IDictionary<string, object> parameters)
         {
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            return reader;
-        }
-
-        public List<Dictionary<string, string>> Select(string query)
-        {
-            List<Dictionary<string, string>> rows = null;
+            List<IDictionary<string, object>> rows = null;
 
             OpenConnection();
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
+            MySqlCommand cmd = ParameterizeCommand(query, parameters);
+            cmd.Connection = connection;
             using (MySqlDataReader reader = cmd.ExecuteReader())
             {
-                rows = new List<Dictionary<string, string>>();
+                rows = new List<IDictionary<string, object>>();
                 while (reader.Read())
                 {
-                    var row = new Dictionary<string, string>();
+                    IDictionary<string, object> row = new Dictionary<string, object>();
                     for (var i = 0; i < reader.FieldCount; i++)
                     {
                         var columnName = reader.GetName(i);
-                        var columnValue = reader.IsDBNull(i) ? null : reader.GetString(i);
+                        var columnValue = reader.IsDBNull(i) ? null : reader.GetValue(i);
                         row.Add(columnName, columnValue);
                     }
                     rows.Add(row);
                 }
             }
 
-
             CloseConnection();
 
             return rows;
         }
-        
-        public int Insert(string table, Dictionary<string, string> parameters)
+
+        public int Insert(string query, IDictionary<string, object> parameters)
         {
-            OpenConnection();
-            //"INSERT INTO `cs341_t5`.`Customer` (`CustomerID`, `QueryID`, `AddressID`, `FirstName`, `LastName`, `Phone`, `Hash`, `Salt`, `Email`) 
-            //VALUES (NULL, '3', '3', 'REGISTER_TEST', 'Test', '1112223333', '4', 'r', 'walter@test.com');
-            
-
-            string[] keys = parameters.Keys.ToArray();
-            string columns = String.Join(", ", keys);
-
-            string[] vals = parameters.Values.ToArray();
-            string values = "'" + String.Join("', '", vals) + "'";
-
-            string query = "INSERT INTO " + table + " (" + columns + ") VALUES (" + values + ");";
-
-
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            int result = cmd.ExecuteNonQuery();
-
-            CloseConnection();
-
-            return result;
+            return ExecuteNonQuery(query, parameters);
         }
 
-        public int Delete(string table, string key, string value)
+        public int Delete(string query, IDictionary<string, object> parameters)
         {
-            //"DELETE FROM `cs341_t5`.`Customer` WHERE `Customer`.`CustomerID` = 9"
+            return ExecuteNonQuery(query, parameters);
+        }
 
+        public int Update(string query, IDictionary<string, object> parameters)
+        {
+            return ExecuteNonQuery(query, parameters);
+        }
+
+        private int ExecuteNonQuery(string query, IDictionary<string, object> parameters)
+        {
             OpenConnection();
-            string query = "DELETE FROM " + table + " WHERE " + key + "=@value";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.Add(new MySqlParameter("value", value));
-
+            MySqlCommand cmd = ParameterizeCommand(query, parameters);
+            cmd.Connection = connection;
 
             int result = cmd.ExecuteNonQuery();
 
@@ -129,35 +108,19 @@ namespace JunkBox.DataAccess {
             return result;
         }
 
-        public int Update(string table, Dictionary<string, string> items, string key, string value)
+        private MySqlCommand ParameterizeCommand(string query, IDictionary<string, object> parameters)
         {
-            //UPDATE `cs341_t5`.`Customer` 
-            //SET `QueryID` = '2', `AddressID` = '9', `FirstName` = 'UpdateTest', `Phone` = '111222444', `Hash` = 't', `Salt` = '3', `Email` = 'test2@guy.com' 
-            //WHERE `Customer`.`CustomerID` = 27;
-            OpenConnection();
+            MySqlCommand command = new MySqlCommand(query);
 
-
-            string[] i = new string[items.Count];
-            int iCount = 0;
-            foreach (KeyValuePair<string, string> set in items)
+            if (parameters != null)
             {
-                i[iCount++] = set.Key + "='" + set.Value + "'";
+                foreach (KeyValuePair<string, object> entry in parameters)
+                {
+                    command.Parameters.Add(new MySqlParameter(entry.Key, entry.Value));
+                }
             }
 
-            string itemList = String.Join(", ", i);
-
-
-            string query = "UPDATE " + table + " SET " + itemList + " WHERE " + key + "=@value;";
-
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            cmd.Parameters.Add(new MySqlParameter("value", value));
-
-
-            int result = cmd.ExecuteNonQuery();
-
-            CloseConnection();
-
-            return result;
+            return command;
         }
 
     }

@@ -37,37 +37,13 @@ angular
         $scope.displayToUser("We could not validate your address");
       }
     };
+
     $scope.updateUserInformation = function () {
         Preferences.updateAddress($scope.address).then(function (data) {
             console.log(data);
         });
     };
-    $scope.haltAccount = function(e) {
-        if (e === false) {
-            var haltData = {
-                action: false
-            };
-        Preferences.haltPurchases(haltData).then(function(data){
-            $scope.displayToUser('Purchases are continuing');
-            console.log(data);
-        },function(){
-          $scope.displayToUser("Update failed, try again");
-        });
-        } else if (e === true) {
-            var haltData = {
-                action: true
-            };
-        Preferences.haltPurchases(haltData).then(function(data){
-            $scope.displayToUser('Purchases have been halted');
-            console.log(data);
-        },function(){
-          $scope.displayToUser("Update failed, try again");
-        });
-      } else {
-        $scope.displayToUser("Update failed, try again");
-      }
-    };
-
+    
     $scope.changePassword = function () {
         var passwordData = {
             email: $rootScope.email,

@@ -9,63 +9,54 @@ namespace JunkBox.Controllers
 {
     public class QueryController : Controller
     {
-        private IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        private static QueryTable queryTable = QueryTable.Instance();
+        private static CustomerTable customerTable = CustomerTable.Instance();
 
         //POST: Query/GetSettings/{data}
         [HttpPost]
         public ActionResult GetSettings(QueryGetSettingsModel data)
         {
-            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT CustomerID, QueryID FROM Customer WHERE Email='" + data.email + "'");
-            if(customerData.Count <= 0)
+            SelectCustomerModel customerData = new SelectCustomerModel() {
+                Email = data.email
+            };
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
+
+            if(customerResult.CustomerUUID == null)
             {
-                return Json(new { result="Fail" });
+                return Json(new { result="Fail", reason="Invalid Customer" });
             }
 
-            string queryId = customerData.First()["QueryID"];
+            QueryResultModel queryData = queryTable.SelectRecord(new SelectQueryModel() { CustomerUUID = customerResult.CustomerUUID});
 
-            List<Dictionary<string, string>> queryData = dataAccess.Select("SELECT * FROM Query WHERE QueryID='" + queryId + "'");
-            if(queryData.Count <= 0)
-            {
-                return Json(new { result="Fail" });
-            }
-
-            return Json(new { result=queryData.First() });
+            return Json(new { result=queryData });
         }
 
         //POST: Query/SetSettings/{data}
         [HttpPost]
         public ActionResult SetSettings(QuerySetSettingsModel data)
         {
-            List<Dictionary<string, string>> customerData = dataAccess.Select("SELECT CustomerID, QueryID FROM Customer WHERE Email='" + data.email + "'");
-            if(customerData.Count <= 0)
-            {
-                return Json(new { result="Fail" });
-            }
-
-            string queryId = customerData.First()["QueryID"];
-            string customerId = customerData.First()["CustomerID"];
-
-            List<Dictionary<string, string>> queryData = dataAccess.Select("SELECT QueryID FROM Query WHERE QueryID='" + queryId + "'");
-            if(queryData.Count <= 0)
-            {
-                //We have the option to create and insert a new Query record here for the customer
-                return Json(new { result="Fail" });
-            }
-
-            Dictionary<string, string> queryUpdate = new Dictionary<string, string>() {
-                {"Category", data.category},
-                {"PriceLimit", data.price},
-                {"Frequency", data.frequencyOptions.label},
-                {"CategoryID", data.categoryId}
+            SelectCustomerModel customerData = new SelectCustomerModel() {
+                Email = data.email
             };
-            int updateResult = dataAccess.Update("Query", queryUpdate, "QueryID", queryId);
+            CustomerResultModel customerResult = customerTable.SelectRecord(customerData);
 
-            if(updateResult <= 0)
+            UpdateQueryModel queryData = new UpdateQueryModel() {
+                CustomerUUID = customerResult.CustomerUUID,
+                Category = data.category,
+                CategoryID = data.categoryId,
+                Frequency = data.frequencyOptions.label,
+                PriceLimit = data.price
+            };
+            NonQueryResultModel updateResult = queryTable.UpdateRecord(queryData);
+
+            if(updateResult.Success)
+            {
+                return Json(new { result="Success" });
+            }
+            else
             {
                 return Json(new { result="Fail" });
             }
-
-            return Json(new { result="Success" });
         }
     }
 }

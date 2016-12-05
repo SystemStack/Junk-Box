@@ -9,9 +9,9 @@ angular
         "password": "password"
     };
     $scope.account = {
-        "email": "",
-        "password": "password",
-        "password2": "password",
+        "email": "ABC"+Math.random()+"@uwosh.edu",
+        "password": "ValidPassword1!",
+        "password2": "ValidPassword1!",
         "address": "918 Wisconsin St.",
         "address2": "",
         "city": "Oshkosh",
@@ -28,41 +28,72 @@ angular
     $scope.newAccount = function () {
         $scope.switchToNewAccountView = !$scope.switchToNewAccountView;
     };
-
+    
     $scope.register = function () {
-        console.log($scope.account);
+        $scope.waitServerResult = true;
         var validate = function () {
-            if ($scope.account.password !== $scope.account.password2) {
+            if (!$scope.account.email) {
+                $scope.displayToUser("You must have a valid email");
+            } else if ($scope.account.password !== $scope.account.password2) {
                 $scope.displayToUser("Your passwords must match");
             } else if ($scope.account.password.length < 8) {
                 $scope.displayToUser("Your password must be at least 8 characters");
+            } else if (!/[A-Z]/.test($scope.account.password)) {
+                $scope.displayToUser("Your password must have a capital letter");
+            } else if (!/[a-z]/.test($scope.account.password)) {
+                $scope.displayToUser("Your password must have a lowercase letter");
+            } else if (!/[0-9]/.test($scope.account.password)) {
+                $scope.displayToUser("Your password must have a number");
             } else {
                 return true;
             }
+            $scope.waitServerResult = false;
         };
 
         if (validate()) {
             Login.register($scope.account).then(function (data) {
-                console.log(data);
+                $scope.credentials = {
+                    "email": $scope.account.email,
+                    "password": $scope.account.password
+                };
+                Login.login($scope.credentials).then(function (data) {
+                    if (data.result === "Success") {
+                        $scope.displayToUser("Account successfully created");
+                        sessionStorage.email = $scope.account.email;
+                        window.location.assign("../../index.html");
+                    } else {
+                        $scope.displayToUser("Account could not be created", 5000);
+                        $scope.isClicked = false;
+                    }
+                }).error(function (data) {
+                    console.log(data);
+                    delete sessionStorage.userName;
+                });
             });
         }
     };
     $scope.logIn = function () {
         $scope.isClicked = true;
+        $scope.waitServerResult = true;
         Login.login($scope.credentials).then(function (data) {
             if (data.result === "Success") {
                 sessionStorage.email = $scope.credentials.email;
                 window.location.assign("../../index.html");
             } else {
-                $mdToast.show($mdToast.simple()
-                                      .textContent("Wrong username or password")
-                                      .hideDelay(3000)
-                              );
-               $scope.isClicked = false;
+                $scope.displayToUser("Wrong username or password");                                    
+                $scope.waitServerResult = false;
+                $scope.isClicked = false;
             }
         }).error(function (data) {
             console.log(data);
             delete sessionStorage.userName;
         });
+    };
+    $scope.displayToUser = function (text, milliseconds) {
+        $mdToast.show(
+            $mdToast.simple()
+            .textContent(text)
+            .hideDelay(milliseconds || 3000)
+        );
     };
 });
