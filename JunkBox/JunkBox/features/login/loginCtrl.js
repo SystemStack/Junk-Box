@@ -84,7 +84,7 @@ angular
                 $scope.waitServerResult = false;
                 $scope.isClicked = false;
             }
-        }).error(function (data) {
+        }).catch(function (data) {
             console.log(data);
             delete sessionStorage.userName;
         });

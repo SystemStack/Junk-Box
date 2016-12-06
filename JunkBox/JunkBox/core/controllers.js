@@ -4,5 +4,6 @@ angular
     "junkBox.controllers.homeCtrl",
     "junkBox.controllers.queriesCtrl",
     "junkBox.controllers.preferencesCtrl",
-    "junkBox.controllers.ebayCtrl"
+    "junkBox.controllers.ebayCtrl",
+    "junkBox.controllers.orderHistoryCtrl"
   ]);
