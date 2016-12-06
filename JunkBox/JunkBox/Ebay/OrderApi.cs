@@ -81,7 +81,7 @@ namespace JunkBox.Ebay
         }
         
 
-        public static CheckoutSessionResponse InitiateGuestCheckoutSession(string itemId, CustomerResultModel customerInfo, AddressModel addressInfo)
+        public static CheckoutSessionResponse InitiateGuestCheckoutSession(string itemId, CustomerResultModel customerInfo, AddressResultModel addressInfo)
         {
             /*
              * Initiate a guest checkout session

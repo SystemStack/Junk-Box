@@ -11,25 +11,25 @@
         <md-grid-tile height="100%" width="100%" ng-if="PreviousPurchases.result[0]">
           <img ng-src="{{PreviousPurchases.result[0].ImageURL}}" style="opacity : .70" height="100%" width="100%">
           <md-grid-tile-footer>
-            <h3>Yesterdays Purchase</h3>
+            <h3>Yesterdays Purchase {{PreviousPurchases.result[0].PurchasePrice}}</h3>
           </md-grid-tile-footer>
         </md-grid-tile>
         <md-grid-tile height="100%" width="100%" ng-if="PreviousPurchases.result[1]">
           <img ng-src="{{PreviousPurchases.result[1].ImageURL}}" style="opacity : .70" height="100%" width="100%">
           <md-grid-tile-footer>
-            <h3>Previous Purchase</h3>
+            <h3>Previous Purchase {{PreviousPurchases.result[1].PurchasePrice}}</h3>
           </md-grid-tile-footer>
         </md-grid-tile>
         <md-grid-tile height="100%" width="100%" ng-if="PreviousPurchases.result[2]">
           <img ng-src="{{PreviousPurchases.result[2].ImageURL}}" style="opacity : .70" height="100%" width="100%">
           <md-grid-tile-footer>
-            <h3>Previous Purchase</h3>
+            <h3>Previous Purchase {{PreviousPurchases.result[2].PurchasePrice}}</h3>
           </md-grid-tile-footer>
         </md-grid-tile>
         <md-grid-tile height="100%" width="100%"ng-if="PreviousPurchases.result[3]">
           <img ng-src="{{PreviousPurchases.result[3].ImageURL}}" style="opacity : .70" height="100%" width="100%">
           <md-grid-tile-footer>
-            <h3>Previous Purchase</h3>
+            <h3>Previous Purchase {{PreviousPurchases.result[3].PurchasePrice}}</h3>
           </md-grid-tile-footer>
         </md-grid-tile>
   </md-grid-list>
