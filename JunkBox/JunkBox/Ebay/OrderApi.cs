@@ -19,7 +19,7 @@ namespace JunkBox.Ebay
 
             string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/place_order";
 
-            return Web.Post<PurchaseOrderSummary> (apiUrl);
+            return Web.Post<PurchaseOrderSummary>(apiUrl);
         }
         
         
@@ -81,7 +81,7 @@ namespace JunkBox.Ebay
         }
         
 
-        public static CheckoutSessionResponse InitiateGuestCheckoutSession(string itemId, CustomerResultModel customerInfo, AddressModel addressInfo)
+        public static CheckoutSessionResponse InitiateGuestCheckoutSession(string itemId, CustomerResultModel customerInfo, AddressResultModel addressInfo)
         {
             /*
              * Initiate a guest checkout session

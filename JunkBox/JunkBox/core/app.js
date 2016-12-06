@@ -39,6 +39,11 @@ angular.module("junkBox", [
                 url: "/ebay",
                 templateUrl: "/features/ebay/ebay.html",
                 controller: "ebayCtrl"
+            })
+            .state("orderHistory", {
+                url: "/orderHistory",
+                templateUrl: "/features/orderHistory/orderHistory.html",
+                controller: "orderHistoryCtrl"
             });
         $urlRouterProvider.otherwise("/home");
     }).run(function ($rootScope, $http) {
