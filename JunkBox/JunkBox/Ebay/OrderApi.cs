@@ -19,7 +19,7 @@ namespace JunkBox.Ebay
 
             string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/place_order";
 
-            return Web.Post<PurchaseOrderSummary> (apiUrl);
+            return Web.Post<PurchaseOrderSummary>(apiUrl);
         }
         
         
@@ -81,7 +81,7 @@ namespace JunkBox.Ebay
         }
         
 
-        public static CheckoutSessionResponse InitiateGuestCheckoutSession(string itemId, CustomerResultModel customerInfo, AddressModel addressInfo)
+        public static CheckoutSessionResponse InitiateGuestCheckoutSession(string itemId, CustomerResultModel customerInfo, AddressResultModel addressInfo)
         {
             /*
              * Initiate a guest checkout session
@@ -128,6 +128,13 @@ namespace JunkBox.Ebay
             CheckoutSessionResponse response = Web.Post<CheckoutSessionResponse, CreateGuestCheckoutSessionRequest>(apiUrl, request);
 
             return response;
+        }
+
+        public static CheckoutSessionResponse GetGuestCheckoutSession(string checkoutSessionId)
+        {
+            //GET https://api.ebay.com/buy/order/v1/guest_checkout_session/{checkoutSessionId}
+            string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId;
+            return Web.Get<CheckoutSessionResponse>(apiUrl);
         }
     }
 }

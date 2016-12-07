@@ -103,6 +103,7 @@ namespace JunkBox.Models
         public int OrderID { get; set; }
         public string CustomerUUID { get; set; }
         public string PurchasePrice { get; set; }
+        public string Title { get; set; }
         public string CheckoutSessionID { get; set; }
         public string ExpirationDate { get; set; }
         public string ImageURL { get; set; }

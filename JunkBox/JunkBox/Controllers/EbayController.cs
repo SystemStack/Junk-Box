@@ -90,7 +90,8 @@ namespace JunkBox.Controllers
                 CheckoutSessionID = response.checkoutSessionId,
                 ExpirationDate = response.expirationDate,
                 ImageURL = data.imageUrl,
-                PurchasePrice = response.pricingSummary.total.value
+                PurchasePrice = response.pricingSummary.total.value,
+                Title = response.lineItems[0].title
             };
 
             NonQueryResultModel orderResult = customerOrderTable.InsertRecord(customerOrder);
@@ -99,6 +100,7 @@ namespace JunkBox.Controllers
         }
 
         //POST: Ebay/OrderApiPlaceGuestOrder/{data}
+        [HttpPost]
         public ActionResult OrderApiPlaceGuestOrder(EbayOrderApiPlaceGuestOrderModel data)
         {
             PurchaseOrderSummary summary = OrderAPI.PlaceGuestOrder(data.checkoutSessionId);

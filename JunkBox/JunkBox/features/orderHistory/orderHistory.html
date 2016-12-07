@@ -1,0 +1,24 @@
+﻿<md-card>
+    <h2 layout="row" layout-align="center center" class="md-headline">
+        Order History
+    </h2>
+    <md-grid-list md-cols="1" md-gutter="1em" md-row-height="200px">
+        <md-grid-tile ng-repeat="order in orders.orderList">
+            <md-grid-tile-header>
+                <h3>{{order.CheckoutSessionID}}</h3>
+            </md-grid-tile-header>
+            <table>
+                <tr>
+                    <td><img ng-src="{{ order.ImageURL }}" /></td>
+                    <td><md-button ng-click="getSessionData(order.CheckoutSessionID)" class="md-raised md-primary" style="color:white">View Details</md-button></td>
+                </tr>
+                <tr colspan="2">
+                    <td>{{order.checkoutSessionDetails}}</td>
+                </tr>
+            </table>
+            <md-grid-tile-footer>
+                <h3>{{order.PurchasePrice}}</h3>
+            </md-grid-tile-footer>
+        </md-grid-tile>
+    </md-grid-list>
+</md-card>

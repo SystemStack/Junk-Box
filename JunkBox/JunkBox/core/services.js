@@ -4,5 +4,6 @@ angular
     "junkBox.services.homeService",
     "junkBox.services.queriesService",
     "junkBox.services.preferencesService",
-    "junkBox.services.ebayService"
+    "junkBox.services.ebayService",
+    "junkBox.services.orderHistoryService"
   ]);

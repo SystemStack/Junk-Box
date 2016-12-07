@@ -198,6 +198,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\OrderHistoryController.cs" />
     <Compile Include="Controllers\PreferencesController.cs" />
     <Compile Include="Controllers\QueryController.cs" />
     <Compile Include="DataAccess\AccessTokenTable.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoginModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\OrderHistoryModels.cs" />
     <Compile Include="Models\PreferencesModels.cs" />
     <Compile Include="Models\QueryModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -818,6 +820,7 @@
     <Content Include="core\services.js" />
     <Content Include="core\services\ebayService.js" />
     <Content Include="core\services\homeService.js" />
+    <Content Include="core\services\orderHistoryService.js" />
     <Content Include="core\services\preferencesService.js" />
     <Content Include="core\services\queriesService.js" />
     <Content Include="favicon.ico" />
@@ -829,6 +832,8 @@
     <Content Include="features\login\loginApp.js" />
     <Content Include="features\login\loginCtrl.js" />
     <Content Include="features\login\loginService.js" />
+    <Content Include="features\orderHistory\orderHistory.html" />
+    <Content Include="features\orderHistory\orderHistoryCtrl.js" />
     <Content Include="features\preferences\preferences.html" />
     <Content Include="features\preferences\preferencesCtrl.js" />
     <Content Include="features\queries\queries.html" />
@@ -852,6 +857,7 @@
   <ItemGroup>
     <Folder Include="Views\Ebay\" />
     <Folder Include="Views\Login\" />
+    <Folder Include="Views\OrderHistory\" />
     <Folder Include="Views\Preferences\" />
     <Folder Include="Views\Query\" />
   </ItemGroup>
