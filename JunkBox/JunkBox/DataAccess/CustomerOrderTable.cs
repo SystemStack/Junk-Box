@@ -46,7 +46,8 @@ namespace JunkBox.DataAccess
                 ImageURL = (string)result["ImageURL"],
                 OrderID = (int)result["OrderID"],
                 PurchasePrice = (string)result["PurchasePrice"],
-                TimeStamp = (DateTime)result["TimeStamp"]
+                TimeStamp = (DateTime)result["TimeStamp"],
+                Title = (string)result["Title"]
             };
 
             return payload;
@@ -60,11 +61,12 @@ namespace JunkBox.DataAccess
                 { "@CheckoutSessionID", parameters.CheckoutSessionID },
                 { "@ExpirationDate", parameters.ExpirationDate },
                 { "@ImageURL", parameters.ImageURL },
-                { "@PurchasePrice", parameters.PurchasePrice }
+                { "@PurchasePrice", parameters.PurchasePrice },
+                {"@Title", parameters.Title }
             };
 
-            string query = "INSERT INTO CustomerOrder (CustomerUUID, CheckoutSessionID, ExpirationDate, ImageURL, PurchasePrice)" +
-                                       " VALUES (@CustomerUUID, @CheckoutSessionID, @ExpirationDate, @ImageURL, @PurchasePrice);";
+            string query = "INSERT INTO CustomerOrder (CustomerUUID, CheckoutSessionID, ExpirationDate, ImageURL, PurchasePrice, Title)" +
+                                       " VALUES (@CustomerUUID, @CheckoutSessionID, @ExpirationDate, @ImageURL, @PurchasePrice, @Title);";
 
             int result = dataAccess.Insert(query, param);
 
@@ -101,7 +103,8 @@ namespace JunkBox.DataAccess
                     ExpirationDate = (string)entry["ExpirationDate"],
                     PurchasePrice = (string)entry["PurchasePrice"],
                     ImageURL = (string)entry["ImageURL"],
-                    TimeStamp = (DateTime)entry["TimeStamp"]
+                    TimeStamp = (DateTime)entry["TimeStamp"],
+                    Title = (string)entry["Title"]
                 };
                 payload.Add(order);
             }
