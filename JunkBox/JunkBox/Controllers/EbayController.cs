@@ -99,6 +99,7 @@ namespace JunkBox.Controllers
         }
 
         //POST: Ebay/OrderApiPlaceGuestOrder/{data}
+        [HttpPost]
         public ActionResult OrderApiPlaceGuestOrder(EbayOrderApiPlaceGuestOrderModel data)
         {
             PurchaseOrderSummary summary = OrderAPI.PlaceGuestOrder(data.checkoutSessionId);

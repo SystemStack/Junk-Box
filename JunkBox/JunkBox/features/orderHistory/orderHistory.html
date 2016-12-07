@@ -10,7 +10,10 @@
             <table>
                 <tr>
                     <td><img ng-src="{{ order.ImageURL }}" /></td>
-                    <td><md-button ng-click="" class="md-raised md-primary" style="color:white">View Details</md-button></td>
+                    <td><md-button ng-click="getSessionData(order.CheckoutSessionID)" class="md-raised md-primary" style="color:white">View Details</md-button></td>
+                </tr>
+                <tr colspan="2">
+                    <td>{{order.checkoutSessionDetails}}</td>
                 </tr>
             </table>
             <md-grid-tile-footer>
