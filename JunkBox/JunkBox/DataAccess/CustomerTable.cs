@@ -130,10 +130,5 @@ namespace JunkBox.DataAccess
 
             return PrepareNonQueryResult(result);
         }
-
-        public List<CustomerResultModel> SelectAll(SelectCustomerModel parameters)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

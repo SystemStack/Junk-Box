@@ -19,7 +19,7 @@ namespace JunkBox.Ebay
 
             string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId + "/place_order";
 
-            return Web.Post<PurchaseOrderSummary> (apiUrl);
+            return Web.Post<PurchaseOrderSummary>(apiUrl);
         }
         
         
