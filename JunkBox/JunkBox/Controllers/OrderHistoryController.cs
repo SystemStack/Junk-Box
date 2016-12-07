@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 using JunkBox.Models;
 using JunkBox.DataAccess;
+using JunkBox.Ebay;
 
 namespace JunkBox.Controllers
 {
@@ -23,6 +24,13 @@ namespace JunkBox.Controllers
             List<CustomerOrderResultModel> orderResults = customerOrderTable.SelectAllRecords(new SelectCustomerOrderModel() { CustomerUUID = customerResult.CustomerUUID });
 
             return Json(orderResults);
+        }
+
+        //POST /OrderHistory/GetGuestCheckoutSession/{data}
+        [HttpPost]
+        public ActionResult GetGuestCheckoutSession(OrderHistoryGetGuestCheckoutSessionModel data)
+        {
+            return Json(OrderAPI.GetGuestCheckoutSession(data.checkoutSessionId));
         }
     }
 }

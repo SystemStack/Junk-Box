@@ -129,5 +129,12 @@ namespace JunkBox.Ebay
 
             return response;
         }
+
+        public static CheckoutSessionResponse GetGuestCheckoutSession(string checkoutSessionId)
+        {
+            //GET https://api.ebay.com/buy/order/v1/guest_checkout_session/{checkoutSessionId}
+            string apiUrl = baseUrl + "/buy/order/v1/guest_checkout_session/" + checkoutSessionId;
+            return Web.Get<CheckoutSessionResponse>(apiUrl);
+        }
     }
 }
