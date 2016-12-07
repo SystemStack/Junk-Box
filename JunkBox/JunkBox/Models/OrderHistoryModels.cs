@@ -9,4 +9,9 @@ namespace JunkBox.Models
     {
         public string email { get; set; }
     }
+
+    public class OrderHistoryGetGuestCheckoutSessionModel
+    {
+        public string checkoutSessionId { get; set; }
+    }
 }

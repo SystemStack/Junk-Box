@@ -27,6 +27,7 @@ namespace JunkBox.Models
         public string customerUuid { get; set; }
         public string checkoutSessionId { get; set; }
     }
+
     public class EbayGetViablePurchasesModel
     {
         public string email { get; set; }
