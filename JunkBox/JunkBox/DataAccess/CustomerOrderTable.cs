@@ -90,7 +90,7 @@ namespace JunkBox.DataAccess
                 { "@CustomerUUID", parameters.CustomerUUID },
             };
 
-            string query = "SELECT * FROM CustomerOrder WHERE CustomerUUID=@CustomerUUID;";
+            string query = "SELECT * FROM CustomerOrder WHERE CustomerUUID=@CustomerUUID ORDER BY TimeStamp DESC;";
 
             List<IDictionary<string, object>> customerData = dataAccess.Select(query, param); //Get all the Database entries
 
