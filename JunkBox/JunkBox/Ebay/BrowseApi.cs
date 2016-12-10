@@ -27,10 +27,10 @@ namespace JunkBox.Ebay
             Dictionary<string, List<object>> urlParameters = new Dictionary<string, List<object>>() {
                 { "category_ids",   new List<object>() { categoryId } },
                 { "filter",         new List<object>() { "price:[.." + maxPrice + "]",
-                                                         "priceCurrency:USD" } },
+                                                         "priceCurrency:USD",
+                                                         "buyingOptions:{FIXED_PRICE}"} },
                 { "limit",          new List<object>() { "10" } },
                 { "offset",         new List<object>() { "10" } },
-                
                 //{"q",             new List<object>() { "" } }
                 //{"sort",          new List<object>() { "" } }
             };
