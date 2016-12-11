@@ -63,6 +63,33 @@ namespace JunkBox.DataAccess
             return payload;
         }
 
+        public List<CustomerResultModel> SelectAllRecords()
+        {
+            string query = "SELECT * FROM Customer";
+
+            List<IDictionary<string, object>> results = dataAccess.Select(query, null);
+
+            List<CustomerResultModel> payload = new List<CustomerResultModel>();
+
+            foreach(IDictionary<string, object> entry in results)
+            {
+                CustomerResultModel customer = new CustomerResultModel()
+                {
+                    CustomerUUID = (string)entry["CustomerUUID"],
+                    FirstName = (string)entry["FirstName"],
+                    LastName = (string)entry["LastName"],
+                    Phone = (string)entry["Phone"],
+                    Hash = (string)entry["Hash"],
+                    Salt = (string)entry["Salt"],
+                    Email = (string)entry["Email"]
+                };
+
+                payload.Add(customer);
+            }
+
+            return payload;
+        }
+
         public CustomerResultModel InsertRecord(InsertCustomerModel parameters)
         {
             //53944e06-b698-11e6-9e73-0050569e2378 <-- UUID Example, fine for right now, but should be stored as a Hex value later on

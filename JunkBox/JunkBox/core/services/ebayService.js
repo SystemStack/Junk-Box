@@ -44,6 +44,16 @@
                       deferred.reject(error);
                   });
             return deferred.promise;
+        },
+        ebayDailyPurchases: function () {
+            var deferred = $q.defer();
+            $http.post('/Ebay/DailyPurchase/')
+                  .success(function (data, status, headers, config) {
+                      deferred.resolve(data);
+                  }).error(function (error) {
+                      deferred.reject(error);
+                  });
+            return deferred.promise;
         }
     };
 });
