@@ -31,5 +31,17 @@
     <md-button ng-click="send()" style="color: white" class="md-primary md-raised md-padding">
       Update Query Preferences
     </md-button>
+    <md-button ng-click="preview()" style="color: white" class="md-primary md-raised md-padding">
+      Preview Query Results
+    </md-button>
   </div>
+</md-card>
+<md-card ng-show="preview">
+    <table>
+        <tr ng-repeat="item in previewData.itemSummaries">
+            <td><img ng-src="{{ item.image.imageUrl }}" /></td>
+            <td>{{ item.title }}</td>
+            <td><md-button ng-click="forceBuy(item.itemId, item.image.imageUrl)" class="md-raised md-primary" style="color:white">Force Buy</md-button></td>
+        </tr>
+    </table>
 </md-card>
