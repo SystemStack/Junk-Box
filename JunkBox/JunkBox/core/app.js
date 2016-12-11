@@ -50,8 +50,14 @@ angular.module("junkBox", [
         if (!sessionStorage.email) {
             delete sessionStorage;
             window.location.assign("features/login/login.html");
-        }
-    }).controller("MainCtrl", function ($scope, $mdToast, $rootScope) {
+        }    
+    }).controller("MainCtrl", function ($scope, $mdToast, $rootScope, $interval) {
+        $scope.time = function () {
+            return $interval(function () {
+                console.log("HI!!!");
+            }, 1000);
+        }();
+
         $scope.checkSessionStorage = function () {
             if (sessionStorage.email) {
                 $rootScope.email = sessionStorage.email;
