@@ -1,5 +1,5 @@
  
--# SoftwareEngineeringGroup 
+# SoftwareEngineeringGroup 
 
 
 
@@ -9,44 +9,44 @@
 
 
  
--# To install and run locally 
+# To install and run locally 
 
 
 
  
--1. Install Chocolatey https://chocolatey.org/install 
+1. Install Chocolatey https://chocolatey.org/install 
 
 
 
  
--2. In the (administrator) command line, run <code>choco install nodejs</code> 
+2. In the (administrator) command line, run <code>choco install nodejs</code> 
 
 
 
  
--3. In the same command line run <code> choco install php</code> (this is the easiest built in server I can come up with, it's lightweight enough) 
+3. In the same command line run <code> choco install php</code> (this is the easiest built in server I can come up with, it's lightweight enough) 
 
 
 
  
--4. Close the command line 
+4. Close the command line 
 
 
 
  
--5. Open the command line again, and run <code>npm install -g bower</code> 
+5. Open the command line again, and run <code>npm install -g bower</code> 
 
 
 
  
--6. Install github for Windows, and install this repository in a directory of your choice. https://desktop.github.com/ 
+6. Install github for Windows, and install this repository in a directory of your choice. https://desktop.github.com/ 
 
 
 
  
--7. Open a command line in the SoftwareEngineeringGroup directory, and run  <code>php -S localhost:8080</code> 
+7. Open a command line in the SoftwareEngineeringGroup directory, and run  <code>php -S localhost:8080</code> 
 
 
 
  
--8. In Google Chrome, open localhost:8080 as if it were a URL. Reload this page as you update your code. 
+8. In Google Chrome, open localhost:8080 as if it were a URL. Reload this page as you update your code. 
