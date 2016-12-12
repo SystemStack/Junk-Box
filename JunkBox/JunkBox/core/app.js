@@ -50,8 +50,19 @@ angular.module("junkBox", [
         if (!sessionStorage.email) {
             delete sessionStorage;
             window.location.assign("features/login/login.html");
-        }
-    }).controller("MainCtrl", function ($scope, $mdToast, $rootScope) {
+        }    
+    }).controller("MainCtrl", function ($scope, $mdToast, $rootScope, $interval, Ebay) {
+        $scope.time = function () {
+            return $interval(function () {
+                console.log("Processing 'Daily' Ebay items");
+                Ebay.ebayDailyPurchases().then(function (resolve) {
+                    console.log(resolve);
+                }).catch(function (reject) {
+                    console.log(reject);
+                });
+            }, 300000);
+        }();
+
         $scope.checkSessionStorage = function () {
             if (sessionStorage.email) {
                 $rootScope.email = sessionStorage.email;

@@ -5,6 +5,8 @@ angular
         email: $rootScope.email,
         frequencyOptions: {}
     };
+    $scope.isPreviewing = false;
+    $scope.previewData = undefined;
     $scope.frequencyOptions = [{
         value: 0,
         label: "Never"
@@ -132,5 +134,15 @@ angular
         $scope.query.categoryId = $scope.categories[$scope.query.category];
         console.log($scope.query.categoryId);
     };
+
+    $scope.preview = function () {
+        $scope.isPreviewing = true;
+        Ebay.ebayBrowseApiFindViableItems($scope.query).then(function (success) {
+            console.log(success);
+            $scope.previewData = success;
+        }, function (failure) {
+            console.log(failure);
+        });
+    }
 
 });

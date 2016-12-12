@@ -28,7 +28,14 @@ namespace JunkBox.Common
                 {
                     DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
 
-                    return (T)serializer.ReadObject(response.Result);
+                    try
+                    {
+                        return (T)serializer.ReadObject(response.Result);
+                    }
+                    catch(Exception e)
+                    {
+                        return default(T);
+                    }
                 }
             }
         }

@@ -107,6 +107,56 @@ namespace JunkBox.Controllers
 
             return Json(summary);
         }
+
+        //POST: Ebay/DailyPurchase
+        [HttpPost]
+        public ActionResult DailyPurchase()
+        {
+            List<CustomerResultModel> customerList = customerTable.SelectAllRecords();
+
+            foreach(CustomerResultModel customer in customerList)
+            {
+                //Get customer's query prefrences
+                QueryResultModel queryPref = queryTable.SelectRecord(new SelectQueryModel() { CustomerUUID = customer.CustomerUUID });
+
+                //Ask Ebay for items.
+                SearchPagedCollection itemCollection = BrowseAPI.ItemSummarySearch(queryPref.CategoryID, queryPref.PriceLimit);
+
+                try
+                {
+                    //There were no items found for this query
+                    if (itemCollection.itemSummaries.Length == 0)
+                        continue;
+
+                    //Get customer's address data
+                    AddressResultModel customerAddress = addressTable.SelectRecord(new SelectAddressModel() { CustomerUUID = customer.CustomerUUID });
+
+                    //Initiate order with a randomly chosen index from itemCollection's itemSummaries
+                    Random rand = new Random();
+                    int itemIndex = rand.Next(itemCollection.itemSummaries.Length);
+
+                    CheckoutSessionResponse response = OrderAPI.InitiateGuestCheckoutSession(itemCollection.itemSummaries[itemIndex].itemId, customer, customerAddress);
+
+                    InsertCustomerOrderModel customerOrder = new InsertCustomerOrderModel()
+                    {
+                        CustomerUUID = customer.CustomerUUID,
+                        CheckoutSessionID = response.checkoutSessionId,
+                        ExpirationDate = response.expirationDate,
+                        ImageURL = itemCollection.itemSummaries[itemIndex].image.imageUrl,
+                        PurchasePrice = response.pricingSummary.total.value,
+                        Title = response.lineItems[0].title
+                    };
+
+                    NonQueryResultModel orderResult = customerOrderTable.InsertRecord(customerOrder);
+                }
+                catch(Exception e)
+                {
+
+                }
+            }
+
+            return Json(new { result="Daily Purchases Complete" });
+        }
     }
 }
  
