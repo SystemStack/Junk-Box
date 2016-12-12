@@ -11,11 +11,16 @@ namespace JunkBox.DataAccess
     {
         private static CustomerTable instance = null;
 
-        public static CustomerTable Instance()
+        private CustomerTable(IDataAccess access):base(access)
+        {
+
+        }
+
+        public static CustomerTable Instance(IDataAccess access)
         {
             if (instance == null)
             {
-                instance = new CustomerTable();
+                instance = new CustomerTable(access);
             }
 
             return instance;

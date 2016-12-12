@@ -11,11 +11,16 @@ namespace JunkBox.DataAccess
     {
         private static AddressTable instance = null;
 
-        public static AddressTable Instance()
+        private AddressTable(IDataAccess access) : base(access)
+        {
+
+        }
+
+        public static AddressTable Instance(IDataAccess access)
         {
             if (instance == null)
             {
-                instance = new AddressTable();
+                instance = new AddressTable(access);
             }
 
             return instance;

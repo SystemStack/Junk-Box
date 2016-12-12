@@ -11,8 +11,8 @@ namespace JunkBox.Controllers
 {
     public class PreferencesController : Controller
     {
-        private CustomerTable customerTable = CustomerTable.Instance();
-        private AddressTable addressTable = AddressTable.Instance();
+        private CustomerTable customerTable = CustomerTable.Instance(MySqlDataAccess.GetDataAccess());
+        private AddressTable addressTable = AddressTable.Instance(MySqlDataAccess.GetDataAccess());
 
         //POST: Prefrences/ValidateAddress/{data}
         [HttpPost]

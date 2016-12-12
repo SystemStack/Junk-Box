@@ -9,9 +9,9 @@ namespace JunkBox.Controllers
 {
     public class LoginController : Controller
     {
-        private static QueryTable queryTable = QueryTable.Instance();
-        private static CustomerTable customerTable = CustomerTable.Instance();
-        private static AddressTable addressTable = AddressTable.Instance();
+        private static QueryTable queryTable = QueryTable.Instance(MySqlDataAccess.GetDataAccess());
+        private static CustomerTable customerTable = CustomerTable.Instance(MySqlDataAccess.GetDataAccess());
+        private static AddressTable addressTable = AddressTable.Instance(MySqlDataAccess.GetDataAccess());
 
         // POST: Login/Login/{data}
         [HttpPost]

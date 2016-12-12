@@ -12,8 +12,8 @@ namespace JunkBox.Controllers
 {
     public class HomeController : Controller
     {
-        private CustomerTable customerTable = CustomerTable.Instance();
-        private CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance();
+        private CustomerTable customerTable = CustomerTable.Instance(MySqlDataAccess.GetDataAccess());
+        private CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance(MySqlDataAccess.GetDataAccess());
 
         // POST: Home/GetRecentPurchases/{data}
         [HttpPost]
