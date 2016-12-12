@@ -10,11 +10,16 @@ namespace JunkBox.DataAccess
     {
         private static QueryTable instance = null;
 
-        public static QueryTable Instance()
+        private QueryTable(IDataAccess access) : base(access)
+        {
+
+        }
+
+        public static QueryTable Instance(IDataAccess access)
         {
             if (instance == null)
             {
-                instance = new QueryTable();
+                instance = new QueryTable(access);
             }
 
             return instance;

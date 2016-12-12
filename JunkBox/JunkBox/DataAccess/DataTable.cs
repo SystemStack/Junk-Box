@@ -9,11 +9,11 @@ namespace JunkBox.DataAccess
 {
     public abstract class DataTable
     {
-        protected static IDataAccess dataAccess = MySqlDataAccess.GetDataAccess();
+        protected static IDataAccess dataAccess;// = MySqlDataAccess.GetDataAccess();
 
-        protected DataTable()
+        protected DataTable(IDataAccess access)
         {
-
+            dataAccess = access;
         }
 
         protected NonQueryResultModel PrepareNonQueryResult(int result, int expectedResult = 1)

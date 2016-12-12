@@ -11,10 +11,10 @@ namespace JunkBox.Controllers
 {
     public class EbayController : Controller
     {
-        private static QueryTable queryTable = QueryTable.Instance();
-        private static CustomerTable customerTable = CustomerTable.Instance();
-        private static CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance();
-        private static AddressTable addressTable = AddressTable.Instance();
+        private static QueryTable queryTable = QueryTable.Instance(MySqlDataAccess.GetDataAccess());
+        private static CustomerTable customerTable = CustomerTable.Instance(MySqlDataAccess.GetDataAccess());
+        private static CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance(MySqlDataAccess.GetDataAccess());
+        private static AddressTable addressTable = AddressTable.Instance(MySqlDataAccess.GetDataAccess());
 
         private static string appId = ConfigurationManager.AppSettings["AppID"];
         private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"];

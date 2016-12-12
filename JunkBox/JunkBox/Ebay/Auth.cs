@@ -15,7 +15,7 @@ namespace JunkBox.Ebay
         private static string appIdSandbox = ConfigurationManager.AppSettings["AppIDSandBox"]; //Our 'Client ID'
         private static string certIdSandbox = ConfigurationManager.AppSettings["CertIDSandBox"];//Our 'Client Secret'
 
-        private static AccessTokenTable accessTokenTable = AccessTokenTable.Instance();
+        private static AccessTokenTable accessTokenTable = AccessTokenTable.Instance(MySqlDataAccess.GetDataAccess());
 
         public static IDictionary<string, object> RequestApplicationAccessToken()
         {
