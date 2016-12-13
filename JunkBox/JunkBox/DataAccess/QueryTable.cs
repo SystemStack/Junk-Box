@@ -33,7 +33,13 @@ namespace JunkBox.DataAccess
             };
             string query = "SELECT * FROM Query WHERE CustomerUUID=@CustomerUUID";
 
-            IDictionary<string, object> queryResult = dataAccess.Select(query, param).First();
+            List<IDictionary<string, object>> results = dataAccess.Select(query, param);
+
+            if(results.Count == 0)
+            {
+                return new QueryResultModel();
+            }
+            IDictionary<string, object> queryResult = results.First();
 
             QueryResultModel payload = new QueryResultModel()
             {
