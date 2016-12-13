@@ -9,8 +9,8 @@ namespace JunkBox.Controllers
 {
     public class QueryController : Controller
     {
-        private static QueryTable queryTable = QueryTable.Instance();
-        private static CustomerTable customerTable = CustomerTable.Instance();
+        private static QueryTable queryTable = QueryTable.Instance(MySqlDataAccess.GetDataAccess());
+        private static CustomerTable customerTable = CustomerTable.Instance(MySqlDataAccess.GetDataAccess());
 
         //POST: Query/GetSettings/{data}
         [HttpPost]

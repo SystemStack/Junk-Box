@@ -12,8 +12,8 @@ namespace JunkBox.Controllers
 {
     public class OrderHistoryController : Controller
     {
-        private CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance();
-        private CustomerTable customerTable = CustomerTable.Instance();
+        private CustomerOrderTable customerOrderTable = CustomerOrderTable.Instance(MySqlDataAccess.GetDataAccess());
+        private CustomerTable customerTable = CustomerTable.Instance(MySqlDataAccess.GetDataAccess());
 
         // POST /OrderHistory/GetCustomerOrders/{data}
         [HttpPost]

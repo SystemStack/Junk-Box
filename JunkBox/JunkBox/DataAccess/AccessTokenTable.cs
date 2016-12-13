@@ -11,11 +11,16 @@ namespace JunkBox.DataAccess
     {
         private static AccessTokenTable instance = null;
 
-        public static AccessTokenTable Instance()
+        private AccessTokenTable(IDataAccess access) : base(access)
+        {
+
+        }
+
+        public static AccessTokenTable Instance(IDataAccess access)
         {
             if (instance == null)
             {
-                instance = new AccessTokenTable();
+                instance = new AccessTokenTable(access);
             }
 
             return instance;
